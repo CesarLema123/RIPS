@@ -1,7 +1,7 @@
 LAMMPS (8 Feb 2019)
 OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:87)
   using 1 OpenMP thread(s) per MPI task
-# First try at a a lammps sim
+# First try at a lammps sim
 
 # ----------------- Initializating the configuration --------------------------
 
@@ -15,7 +15,7 @@ atom_style atomic
 
 
 # --------------------- Create Atom-----------------------
-read_data	data.Cu-Ni
+read_data	data.CuNi
   orthogonal box = (-0.02 -0.02 -0.02) to (41.42 41.42 41.42)
   1 by 1 by 1 MPI processor grid
   reading atoms ...
@@ -81,7 +81,7 @@ Per MPI rank memory allocation (min/avg/max) = 4.33 | 4.33 | 4.33 Mbytes
 Step Temp PotEng TotEng Press Lx Ly Lz 
        0            0     218107.9     218107.9   -4520.1322        41.44        41.44        41.44 
      100            0   -10114.393   -10114.393   -70756.083        41.44        41.44        41.44 
-Loop time of 0.738791 on 1 procs for 100 steps with 3430 atoms
+Loop time of 0.735736 on 1 procs for 100 steps with 3430 atoms
 
 100.0% CPU use with 1 MPI tasks x 1 OpenMP threads
 
@@ -97,12 +97,12 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.37732    | 0.37732    | 0.37732    |   0.0 | 51.07
-Neigh   | 0.34016    | 0.34016    | 0.34016    |   0.0 | 46.04
-Comm    | 0.0087568  | 0.0087568  | 0.0087568  |   0.0 |  1.19
-Output  | 2.7008e-05 | 2.7008e-05 | 2.7008e-05 |   0.0 |  0.00
+Pair    | 0.37759    | 0.37759    | 0.37759    |   0.0 | 51.32
+Neigh   | 0.33687    | 0.33687    | 0.33687    |   0.0 | 45.79
+Comm    | 0.0086695  | 0.0086695  | 0.0086695  |   0.0 |  1.18
+Output  | 2.9923e-05 | 2.9923e-05 | 2.9923e-05 |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.01253    |            |       |  1.70
+Other   |            | 0.01258    |            |       |  1.71
 
 Nlocal:    3430 ave 3430 max 3430 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -145,20 +145,20 @@ Step Temp PotEng TotEng Press Lx Ly Lz
     1500      245.654   -10243.142    -10134.26   -57801.076        41.44        41.44        41.44 
     2000    304.18663   -10303.903   -10169.078   -48511.684        41.44        41.44        41.44 
     2100    309.53321   -10314.918   -10177.722   -46758.098        41.44        41.44        41.44 
-Loop time of 8.29861 on 1 procs for 2000 steps with 3430 atoms
+Loop time of 8.37367 on 1 procs for 2000 steps with 3430 atoms
 
-Performance: 2.082 ns/day, 11.526 hours/ns, 241.004 timesteps/s
+Performance: 2.064 ns/day, 11.630 hours/ns, 238.844 timesteps/s
 100.0% CPU use with 1 MPI tasks x 1 OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 7.9462     | 7.9462     | 7.9462     |   0.0 | 95.75
-Neigh   | 0.1987     | 0.1987     | 0.1987     |   0.0 |  2.39
-Comm    | 0.039182   | 0.039182   | 0.039182   |   0.0 |  0.47
-Output  | 0.00011023 | 0.00011023 | 0.00011023 |   0.0 |  0.00
-Modify  | 0.093904   | 0.093904   | 0.093904   |   0.0 |  1.13
-Other   |            | 0.02052    |            |       |  0.25
+Pair    | 8.0186     | 8.0186     | 8.0186     |   0.0 | 95.76
+Neigh   | 0.19978    | 0.19978    | 0.19978    |   0.0 |  2.39
+Comm    | 0.039043   | 0.039043   | 0.039043   |   0.0 |  0.47
+Output  | 0.00012333 | 0.00012333 | 0.00012333 |   0.0 |  0.00
+Modify  | 0.094763   | 0.094763   | 0.094763   |   0.0 |  1.13
+Other   |            | 0.0214     |            |       |  0.26
 
 Nlocal:    3430 ave 3430 max 3430 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -186,7 +186,343 @@ thermo_style	custom step temp pe etotal press lx ly lz v_variance
 variable 	loopnum equal 1
 
 label 		loop
-if 		"${variance} > 100" then 		& 	# All the commands in an if statement must be in double quotes.
-&
-ERROR: Unknown command: & (src/input.cpp:314)
-Last command: &
+if 		"${variance} > 100" then "run 2000" "jump SELF loop" else "print 'continue'"  	# All the commands in an if statement must be in double quotes.
+run 2000
+Per MPI rank memory allocation (min/avg/max) = 3.594 | 3.594 | 3.594 Mbytes
+Step Temp PotEng TotEng Press Lx Ly Lz v_variance 
+    2100    309.53321   -10314.918   -10177.722   -46758.098        41.44        41.44        41.44    256250.24 
+    2500    323.97916   -10359.791   -10216.193   -41070.117        41.44        41.44        41.44    124804.39 
+    3000    318.96811   -10410.868    -10269.49   -36350.566        41.44        41.44        41.44    52843.374 
+    3500    299.99356   -10456.112   -10323.145   -32942.288        41.44        41.44        41.44    32739.796 
+    4000    272.39797   -10494.711   -10373.975   -29618.539        41.44        41.44        41.44    40260.534 
+    4100    265.92325   -10501.367   -10383.501   -28936.038        41.44        41.44        41.44    38831.861 
+Loop time of 8.85284 on 1 procs for 2000 steps with 3430 atoms
+
+Performance: 1.952 ns/day, 12.296 hours/ns, 225.916 timesteps/s
+100.0% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 8.3978     | 8.3978     | 8.3978     |   0.0 | 94.86
+Neigh   | 0.2898     | 0.2898     | 0.2898     |   0.0 |  3.27
+Comm    | 0.042494   | 0.042494   | 0.042494   |   0.0 |  0.48
+Output  | 0.00012845 | 0.00012845 | 0.00012845 |   0.0 |  0.00
+Modify  | 0.10454    | 0.10454    | 0.10454    |   0.0 |  1.18
+Other   |            | 0.01807    |            |       |  0.20
+
+Nlocal:    3430 ave 3430 max 3430 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    5177 ave 5177 max 5177 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    107874 ave 107874 max 107874 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 107874
+Ave neighs/atom = 31.4501
+Neighbor list builds = 88
+Dangerous builds = 0
+jump SELF loop
+if 		"${variance} > 100" then "run 2000" "jump SELF loop" else "print 'continue'"  	# All the commands in an if statement must be in double quotes.
+run 2000
+Per MPI rank memory allocation (min/avg/max) = 3.596 | 3.596 | 3.596 Mbytes
+Step Temp PotEng TotEng Press Lx Ly Lz v_variance 
+    4100    265.92325   -10501.367   -10383.501   -28936.038        41.44        41.44        41.44    38831.861 
+    4500    246.65842   -10528.879   -10419.552     -26569.9        41.44        41.44        41.44    23701.267 
+    5000    223.99097   -10560.281   -10461.001   -24439.725        41.44        41.44        41.44    10599.713 
+    5500    205.10446    -10589.15   -10498.241   -23468.023        41.44        41.44        41.44    1579.9741 
+    6000    183.45915   -10612.624   -10531.309   -22949.986        41.44        41.44        41.44    496.57549 
+    6100    180.07048    -10617.24   -10537.426   -22885.076        41.44        41.44        41.44    348.71536 
+Loop time of 9.21056 on 1 procs for 2000 steps with 3430 atoms
+
+Performance: 1.876 ns/day, 12.792 hours/ns, 217.142 timesteps/s
+100.0% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 8.7068     | 8.7068     | 8.7068     |   0.0 | 94.53
+Neigh   | 0.33618    | 0.33618    | 0.33618    |   0.0 |  3.65
+Comm    | 0.044908   | 0.044908   | 0.044908   |   0.0 |  0.49
+Output  | 0.00013765 | 0.00013765 | 0.00013765 |   0.0 |  0.00
+Modify  | 0.10494    | 0.10494    | 0.10494    |   0.0 |  1.14
+Other   |            | 0.01764    |            |       |  0.19
+
+Nlocal:    3430 ave 3430 max 3430 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    5265 ave 5265 max 5265 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    109880 ave 109880 max 109880 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 109880
+Ave neighs/atom = 32.035
+Neighbor list builds = 101
+Dangerous builds = 0
+jump SELF loop
+if 		"${variance} > 100" then "run 2000" "jump SELF loop" else "print 'continue'"  	# All the commands in an if statement must be in double quotes.
+run 2000
+Per MPI rank memory allocation (min/avg/max) = 3.597 | 3.597 | 3.597 Mbytes
+Step Temp PotEng TotEng Press Lx Ly Lz v_variance 
+    6100    180.07048    -10617.24   -10537.426   -22885.076        41.44        41.44        41.44    348.71536 
+    6500    168.77517   -10635.497    -10560.69   -22664.664        41.44        41.44        41.44    242.06537 
+    7000    157.55187   -10657.221   -10587.389   -22555.133        41.44        41.44        41.44    31.486056 
+    7500     143.1527   -10675.249   -10611.799   -22613.142        41.44        41.44        41.44    52.518328 
+    8000    126.84769   -10689.401   -10633.178   -22543.132        41.44        41.44        41.44    188.25079 
+    8100    123.90208   -10691.974   -10637.056   -22482.056        41.44        41.44        41.44     312.3483 
+Loop time of 9.26304 on 1 procs for 2000 steps with 3430 atoms
+
+Performance: 1.865 ns/day, 12.865 hours/ns, 215.912 timesteps/s
+100.0% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 8.7715     | 8.7715     | 8.7715     |   0.0 | 94.69
+Neigh   | 0.32398    | 0.32398    | 0.32398    |   0.0 |  3.50
+Comm    | 0.044885   | 0.044885   | 0.044885   |   0.0 |  0.48
+Output  | 0.00013014 | 0.00013014 | 0.00013014 |   0.0 |  0.00
+Modify  | 0.10466    | 0.10466    | 0.10466    |   0.0 |  1.13
+Other   |            | 0.01791    |            |       |  0.19
+
+Nlocal:    3430 ave 3430 max 3430 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    5293 ave 5293 max 5293 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    109933 ave 109933 max 109933 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 109933
+Ave neighs/atom = 32.0504
+Neighbor list builds = 97
+Dangerous builds = 0
+jump SELF loop
+if 		"${variance} > 100" then "run 2000" "jump SELF loop" else "print 'continue'"  	# All the commands in an if statement must be in double quotes.
+run 2000
+Per MPI rank memory allocation (min/avg/max) = 3.597 | 3.597 | 3.597 Mbytes
+Step Temp PotEng TotEng Press Lx Ly Lz v_variance 
+    8100    123.90208   -10691.974   -10637.056   -22482.056        41.44        41.44        41.44     312.3483 
+    8500    112.98922   -10701.592   -10651.512   -22134.438        41.44        41.44        41.44    784.01202 
+    9000    104.04222   -10713.468   -10667.353   -21915.643        41.44        41.44        41.44    1.8944688 
+    9500    98.578988   -10725.786   -10682.092   -22103.086        41.44        41.44        41.44    419.63602 
+   10000    92.460384   -10736.839   -10695.857    -22538.07        41.44        41.44        41.44    463.14596 
+   10100    90.310051   -10738.478   -10698.449   -22592.473        41.44        41.44        41.44    244.48897 
+Loop time of 9.24355 on 1 procs for 2000 steps with 3430 atoms
+
+Performance: 1.869 ns/day, 12.838 hours/ns, 216.367 timesteps/s
+100.0% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 8.7729     | 8.7729     | 8.7729     |   0.0 | 94.91
+Neigh   | 0.30322    | 0.30322    | 0.30322    |   0.0 |  3.28
+Comm    | 0.044561   | 0.044561   | 0.044561   |   0.0 |  0.48
+Output  | 0.00013132 | 0.00013132 | 0.00013132 |   0.0 |  0.00
+Modify  | 0.10457    | 0.10457    | 0.10457    |   0.0 |  1.13
+Other   |            | 0.01815    |            |       |  0.20
+
+Nlocal:    3430 ave 3430 max 3430 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    5317 ave 5317 max 5317 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    110011 ave 110011 max 110011 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 110011
+Ave neighs/atom = 32.0732
+Neighbor list builds = 90
+Dangerous builds = 0
+jump SELF loop
+if 		"${variance} > 100" then "run 2000" "jump SELF loop" else "print 'continue'"  	# All the commands in an if statement must be in double quotes.
+run 2000
+Per MPI rank memory allocation (min/avg/max) = 3.597 | 3.597 | 3.597 Mbytes
+Step Temp PotEng TotEng Press Lx Ly Lz v_variance 
+   10100    90.310051   -10738.478   -10698.449   -22592.473        41.44        41.44        41.44    244.48897 
+   10500    82.414491   -10744.609    -10708.08   -22647.531        41.44        41.44        41.44    17.967252 
+   11000    72.554475   -10750.691   -10718.533   -22478.817        41.44        41.44        41.44    102.46702 
+   11500     66.65455   -10757.108   -10727.564   -22363.727        41.44        41.44        41.44    38.365395 
+   12000    61.789776   -10763.126   -10735.739   -22125.468        41.44        41.44        41.44    368.01554 
+   12100    60.670804   -10764.166   -10737.275   -22059.324        41.44        41.44        41.44    364.99332 
+Loop time of 9.15977 on 1 procs for 2000 steps with 3430 atoms
+
+Performance: 1.887 ns/day, 12.722 hours/ns, 218.346 timesteps/s
+100.0% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 8.7588     | 8.7588     | 8.7588     |   0.0 | 95.62
+Neigh   | 0.23476    | 0.23476    | 0.23476    |   0.0 |  2.56
+Comm    | 0.042916   | 0.042916   | 0.042916   |   0.0 |  0.47
+Output  | 0.00012731 | 0.00012731 | 0.00012731 |   0.0 |  0.00
+Modify  | 0.10409    | 0.10409    | 0.10409    |   0.0 |  1.14
+Other   |            | 0.01905    |            |       |  0.21
+
+Nlocal:    3430 ave 3430 max 3430 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    5331 ave 5331 max 5331 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    109950 ave 109950 max 109950 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 109950
+Ave neighs/atom = 32.0554
+Neighbor list builds = 70
+Dangerous builds = 0
+jump SELF loop
+if 		"${variance} > 100" then "run 2000" "jump SELF loop" else "print 'continue'"  	# All the commands in an if statement must be in double quotes.
+run 2000
+Per MPI rank memory allocation (min/avg/max) = 3.597 | 3.597 | 3.597 Mbytes
+Step Temp PotEng TotEng Press Lx Ly Lz v_variance 
+   12100    60.670804   -10764.166   -10737.275   -22059.324        41.44        41.44        41.44    364.99332 
+   12500     56.41758   -10768.069   -10743.062   -21864.984        41.44        41.44        41.44    95.537808 
+   13000     55.08864   -10774.152   -10749.735   -21910.283        41.44        41.44        41.44    105.80931 
+   13500    53.551041    -10780.13   -10756.394   -22114.992        41.44        41.44        41.44    92.908438 
+   14000    47.289739   -10783.269   -10762.309   -22435.062        41.44        41.44        41.44    634.84476 
+   14100    46.323511   -10783.925   -10763.393   -22521.109        41.44        41.44        41.44    616.50387 
+Loop time of 9.21447 on 1 procs for 2000 steps with 3430 atoms
+
+Performance: 1.875 ns/day, 12.798 hours/ns, 217.050 timesteps/s
+100.0% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 8.748      | 8.748      | 8.748      |   0.0 | 94.94
+Neigh   | 0.29943    | 0.29943    | 0.29943    |   0.0 |  3.25
+Comm    | 0.044649   | 0.044649   | 0.044649   |   0.0 |  0.48
+Output  | 0.00012594 | 0.00012594 | 0.00012594 |   0.0 |  0.00
+Modify  | 0.10405    | 0.10405    | 0.10405    |   0.0 |  1.13
+Other   |            | 0.01824    |            |       |  0.20
+
+Nlocal:    3430 ave 3430 max 3430 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    5357 ave 5357 max 5357 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    109759 ave 109759 max 109759 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 109759
+Ave neighs/atom = 31.9997
+Neighbor list builds = 90
+Dangerous builds = 0
+jump SELF loop
+if 		"${variance} > 100" then "run 2000" "jump SELF loop" else "print 'continue'"  	# All the commands in an if statement must be in double quotes.
+run 2000
+Per MPI rank memory allocation (min/avg/max) = 3.597 | 3.597 | 3.597 Mbytes
+Step Temp PotEng TotEng Press Lx Ly Lz v_variance 
+   14100    46.323511   -10783.925   -10763.393   -22521.109        41.44        41.44        41.44    616.50387 
+   14500     43.68667   -10786.842   -10767.479   -22826.262        41.44        41.44        41.44    346.16289 
+   15000    41.100736   -10790.425   -10772.208   -22917.134        41.44        41.44        41.44    1.9633698 
+   15500     38.72016   -10793.765   -10776.603   -22850.815        41.44        41.44        41.44    29.510242 
+   16000    35.292574   -10796.203    -10780.56   -22771.398        41.44        41.44        41.44    14.826543 
+   16100    34.707932   -10796.681   -10781.298   -22756.968        41.44        41.44        41.44    17.168802 
+Loop time of 9.08415 on 1 procs for 2000 steps with 3430 atoms
+
+Performance: 1.902 ns/day, 12.617 hours/ns, 220.164 timesteps/s
+100.0% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 8.7802     | 8.7802     | 8.7802     |   0.0 | 96.65
+Neigh   | 0.13647    | 0.13647    | 0.13647    |   0.0 |  1.50
+Comm    | 0.041178   | 0.041178   | 0.041178   |   0.0 |  0.45
+Output  | 0.00013256 | 0.00013256 | 0.00013256 |   0.0 |  0.00
+Modify  | 0.10557    | 0.10557    | 0.10557    |   0.0 |  1.16
+Other   |            | 0.02063    |            |       |  0.23
+
+Nlocal:    3430 ave 3430 max 3430 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    5379 ave 5379 max 5379 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    109791 ave 109791 max 109791 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 109791
+Ave neighs/atom = 32.009
+Neighbor list builds = 41
+Dangerous builds = 0
+jump SELF loop
+if 		"${variance} > 100" then "run 2000" "jump SELF loop" else "print 'continue'"  	# All the commands in an if statement must be in double quotes.
+print 'continue'
+continue
+#"run 		2000" 					&	# Single quotes used where quotes are normally needed
+#"print 		'----------Looping Back------------'" 	#"variable 	temporary equal '${loopnum} + 1'"	#"variable	loopnum equal '${temporary}'"		#"jump 		SELF loop" 				#else 							#"print 		'----------Continue On-------------'"
+
+unfix 		1
+
+dump           	1 all custom 500 dump.atom id type x y z
+
+
+
+
+
+
+
+
+# Begin computing the mean square displacement and switch to npt ensemble
+
+compute 	MSD all msd com yes
+thermo 		500
+thermo_style 	custom step temp pe etotal press lx ly lz c_MSD[4]
+
+fix 		2 all npt temp 1.0 1.0 1.0 iso 0.0 0.0 1.0
+
+run 		10000
+Per MPI rank memory allocation (min/avg/max) = 3.972 | 3.972 | 3.972 Mbytes
+Step Temp PotEng TotEng Press Lx Ly Lz c_MSD[4] 
+   16100    34.707932   -10796.681   -10781.298   -22756.968        41.44        41.44        41.44 5.0487098e-29 
+   16500     49.54651    -10820.79   -10798.829    507.70091    40.906536    40.906536    40.906536  0.082900402 
+   17000    67.038887   -10831.024    -10801.31    -98.82068    40.693593    40.693593    40.693593   0.18023067 
+   17500    79.035674   -10840.437   -10805.405   -37.402989    40.467215    40.467215    40.467215   0.32688617 
+   18000    92.596891   -10852.251   -10811.209   -28.697421     40.27278     40.27278     40.27278   0.49113293 
+   18500    99.259145   -10862.675    -10818.68   -31.149111    40.096721    40.096721    40.096721   0.67296968 
+   19000    98.291548   -10870.577   -10827.011   -32.060295    39.910888    39.910888    39.910888   0.89592152 
+   19500    93.958378   -10877.109   -10835.464   -31.593681    39.706902    39.706902    39.706902    1.1704707 
+   20000    85.400897   -10881.368   -10843.516   -24.868199     39.51681     39.51681     39.51681    1.4605202 
+   20500    76.936302    -10884.83   -10850.729   -19.380913    39.360913    39.360913    39.360913    1.7310566 
+   21000    72.999196   -10889.674   -10857.319   -13.878968    39.237861    39.237861    39.237861    1.9730872 
+   21500    72.105054   -10895.741   -10863.782   -13.176165    39.137791    39.137791    39.137791    2.1936645 
+   22000    70.907851   -10901.661   -10870.232    -11.31019    39.049644    39.049644    39.049644    2.4032303 
+   22500    71.104896    -10908.23   -10876.714   -10.984249    38.963422    38.963422    38.963422    2.6125058 
+   23000    70.841135   -10914.667   -10883.268   -11.208539    38.873381    38.873381    38.873381    2.8283529 
+   23500    72.553234    -10922.18   -10890.022   -9.4207824    38.784887    38.784887    38.784887    3.0427875 
+   24000    72.479696   -10929.072   -10896.947   -8.7950829     38.70949     38.70949     38.70949    3.2411881 
+   24500    71.864271   -10935.833   -10903.981   -9.6882103    38.637157    38.637157    38.637157    3.4426794 
+   25000    70.571641   -10942.178   -10910.898   -9.2581382    38.559504    38.559504    38.559504    3.6602127 
+   25500    70.576766   -10949.125   -10917.843    -12.53909    38.475381    38.475381    38.475381    3.8959553 
+   26000    72.185647   -10956.877   -10924.882    -14.17034    38.378243    38.378243    38.378243    4.1677336 
+   26100    73.009011   -10958.698   -10926.338   -14.737962    38.356317    38.356317    38.356317    4.2287518 
+Loop time of 49.8055 on 1 procs for 10000 steps with 3430 atoms
+
+Performance: 1.735 ns/day, 13.835 hours/ns, 200.781 timesteps/s
+100.0% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 46.962     | 46.962     | 46.962     |   0.0 | 94.29
+Neigh   | 1.4406     | 1.4406     | 1.4406     |   0.0 |  2.89
+Comm    | 0.22271    | 0.22271    | 0.22271    |   0.0 |  0.45
+Output  | 0.089927   | 0.089927   | 0.089927   |   0.0 |  0.18
+Modify  | 0.99682    | 0.99682    | 0.99682    |   0.0 |  2.00
+Other   |            | 0.09371    |            |       |  0.19
+
+Nlocal:    3430 ave 3430 max 3430 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    5457 ave 5457 max 5457 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    121700 ave 121700 max 121700 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 121700
+Ave neighs/atom = 35.481
+Neighbor list builds = 413
+Dangerous builds = 20
+
+
+print		'All Done!'
+All Done!
+Total wall time: 0:02:03

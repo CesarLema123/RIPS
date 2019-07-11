@@ -10,7 +10,7 @@ atom_style atomic
 
 
 # --------------------- Create Atom-----------------------
-read_data	data.Cu-Ni
+read_data	data.CuNi
 
 # ------------ Define Interatomic Potential ----------------
 
@@ -88,14 +88,14 @@ thermo_style	custom step temp pe etotal press lx ly lz v_variance
 variable 	loopnum equal 1
 
 label 		loop
-if 		"${variance} > 100" then 		& 	# All the commands in an if statement must be in double quotes.  
-"run 		2000" 					&	# Single quotes used where quotes are normally needed
-"print 		'----------Looping Back------------'" 	&
-"variable 	temporary equal '${loopnum} + 1'"	&
-"variable	loopnum equal '${temporary}'"		&
-"jump 		SELF loop" 				&
-else 							&
-"print 		'----------Continue On-------------'"			
+if 		"${variance} > 100" then "run 2000" "jump SELF loop" else "print 'continue'"  	# All the commands in an if statement must be in double quotes.  
+#"run 		2000" 					&	# Single quotes used where quotes are normally needed
+#"print 		'----------Looping Back------------'" 	&
+#"variable 	temporary equal '${loopnum} + 1'"	&
+#"variable	loopnum equal '${temporary}'"		&
+#"jump 		SELF loop" 				&
+#else 							&
+#"print 		'----------Continue On-------------'"			
 
 unfix 		1
 
