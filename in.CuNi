@@ -1,0 +1,122 @@
+# First try at a lammps sim
+
+# ----------------- Initializating the configuration --------------------------
+
+clear
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+
+# --------------------- Create Atom-----------------------
+read_data	data.CuNi
+
+# ------------ Define Interatomic Potential ----------------
+
+pair_style eam/alloy
+pair_coeff * * CuNi.eam.alloy Ni Cu  
+neighbor .05 bin
+neigh_modify delay 10 check yes
+
+
+# ------------- Define Settings ----------------
+
+
+reset_timestep 0
+thermo 500
+thermo_style    custom step temp pe etotal press lx ly lz
+timestep .0001
+
+
+
+
+
+# Make variables which I can use to check the pressure and temperature.
+compute 	my_temp all temp
+compute 	mypress all pressure my_temp
+variable	glpress equal "c_mypress"
+
+
+
+
+
+
+
+
+# minimize the energy of the initial configuration using conjugate gradient algorithm
+# ------------------ Run Minimization -----------
+
+print 		'Minimizing the Energy'
+
+min_style 	cg 
+minimize 	1.0e-4 1.0e-6 100 100000 
+
+
+
+
+
+
+
+# Set the ensemble and make variables which compute averages in time
+
+fix 		1 all nvt temp 1.0 1.0 1.0 
+
+fix 		avepress all ave/time 1 100 100 v_glpress mode scalar ave one start 1000 #file ave.press
+variable	presssq equal "v_glpress * v_glpress"
+fix		avepresssq all ave/time 1 100 100 v_presssq mode scalar ave one start 1000 #file ave.presssq
+variable 	variance equal  "f_avepresssq - f_avepress*f_avepress"
+
+
+
+
+# Do a short run to have data to average.
+
+run 2000
+
+
+
+
+
+thermo 		500
+thermo_style	custom step temp pe etotal press lx ly lz v_variance
+
+
+
+# Begin lopping until the variance in the pressure is below a given value
+
+variable 	loopnum equal 1
+
+label 		loop
+if 		"${variance} > 100" then "run 2000" "jump SELF loop" else "print 'continue'"  	# All the commands in an if statement must be in double quotes.  
+#"run 		2000" 					&	# Single quotes used where quotes are normally needed
+#"print 		'----------Looping Back------------'" 	&
+#"variable 	temporary equal '${loopnum} + 1'"	&
+#"variable	loopnum equal '${temporary}'"		&
+#"jump 		SELF loop" 				&
+#else 							&
+#"print 		'----------Continue On-------------'"			
+
+unfix 		1
+
+dump           	1 all custom 500 dump.atom id type x y z  
+
+
+
+
+
+
+
+
+# Begin computing the mean square displacement and switch to npt ensemble
+
+compute 	MSD all msd com yes
+thermo 		500
+thermo_style 	custom step temp pe etotal press lx ly lz c_MSD[4]
+
+fix 		2 all npt temp 1.0 1.0 1.0 iso 0.0 0.0 1.0
+
+run 		10000
+
+
+print		'All Done!'
