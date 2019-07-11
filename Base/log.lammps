@@ -1,0 +1,192 @@
+LAMMPS (8 Feb 2019)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:87)
+  using 1 OpenMP thread(s) per MPI task
+# First try at a a lammps sim
+
+# ----------------- Initializating the configuration --------------------------
+
+clear
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:87)
+  using 1 OpenMP thread(s) per MPI task
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+
+# --------------------- Create Atom-----------------------
+read_data	data.Cu-Ni
+  orthogonal box = (-0.02 -0.02 -0.02) to (41.42 41.42 41.42)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  3430 atoms
+  reading velocities ...
+  3430 velocities
+
+# ------------ Define Interatomic Potential ----------------
+
+pair_style eam/alloy
+pair_coeff * * CuNi.eam.alloy Ni Cu
+Reading potential file CuNi.eam.alloy with DATE: 2014-07-11
+neighbor .05 bin
+neigh_modify delay 10 check yes
+
+
+# ------------- Define Settings ----------------
+
+
+reset_timestep 0
+thermo 500
+thermo_style    custom step temp pe etotal press lx ly lz
+timestep .0001
+
+
+
+
+
+# Make variables which I can use to check the pressure and temperature.
+compute 	my_temp all temp
+compute 	mypress all pressure my_temp
+variable	glpress equal "c_mypress"
+
+
+
+
+
+
+
+
+# minimize the energy of the initial configuration using conjugate gradient algorithm
+# ------------------ Run Minimization -----------
+
+print 		'Minimizing the Energy'
+Minimizing the Energy
+
+min_style 	cg
+minimize 	1.0e-4 1.0e-6 100 100000
+WARNING: Using 'neigh_modify every 1 delay 0 check yes' setting during minimization (src/min.cpp:168)
+Neighbor list info ...
+  update every 1 steps, delay 0 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 6.44433
+  ghost atom cutoff = 6.44433
+  binsize = 3.22217, bins = 13 13 13
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair eam/alloy, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d/newton
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 4.33 | 4.33 | 4.33 Mbytes
+Step Temp PotEng TotEng Press Lx Ly Lz 
+       0            0     218107.9     218107.9   -4520.1322        41.44        41.44        41.44 
+     100            0   -10114.393   -10114.393   -70756.083        41.44        41.44        41.44 
+Loop time of 0.738791 on 1 procs for 100 steps with 3430 atoms
+
+100.0% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max iterations
+  Energy initial, next-to-last, final = 
+         218107.895615     -10099.5208854      -10114.393273
+  Force two-norm initial, final = 42355 10.5511
+  Force max component initial, final = 3821.26 1.00195
+  Final line search alpha, max atom move = 0.131544 0.131801
+  Iterations, force evaluations = 100 100
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.37732    | 0.37732    | 0.37732    |   0.0 | 51.07
+Neigh   | 0.34016    | 0.34016    | 0.34016    |   0.0 | 46.04
+Comm    | 0.0087568  | 0.0087568  | 0.0087568  |   0.0 |  1.19
+Output  | 2.7008e-05 | 2.7008e-05 | 2.7008e-05 |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.01253    |            |       |  1.70
+
+Nlocal:    3430 ave 3430 max 3430 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    4783 ave 4783 max 4783 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    97850 ave 97850 max 97850 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 97850
+Ave neighs/atom = 28.5277
+Neighbor list builds = 100
+Dangerous builds = 100
+
+
+
+
+
+
+
+# Set the ensemble and make variables which compute averages in time
+
+fix 		1 all nvt temp 1.0 1.0 1.0
+
+fix 		avepress all ave/time 1 100 100 v_glpress mode scalar ave one start 1000 #file ave.press
+variable	presssq equal "v_glpress * v_glpress"
+fix		avepresssq all ave/time 1 100 100 v_presssq mode scalar ave one start 1000 #file ave.presssq
+variable 	variance equal  "f_avepresssq - f_avepress*f_avepress"
+
+
+
+
+# Do a short run to have data to average.
+
+run 2000
+Per MPI rank memory allocation (min/avg/max) = 3.211 | 3.211 | 3.211 Mbytes
+Step Temp PotEng TotEng Press Lx Ly Lz 
+     100            0   -10114.393   -10114.393   -70756.083        41.44        41.44        41.44 
+     500    29.506467   -10127.531   -10114.452   -69728.791        41.44        41.44        41.44 
+    1000     134.0005   -10177.036   -10117.643   -65448.326        41.44        41.44        41.44 
+    1500      245.654   -10243.142    -10134.26   -57801.076        41.44        41.44        41.44 
+    2000    304.18663   -10303.903   -10169.078   -48511.684        41.44        41.44        41.44 
+    2100    309.53321   -10314.918   -10177.722   -46758.098        41.44        41.44        41.44 
+Loop time of 8.29861 on 1 procs for 2000 steps with 3430 atoms
+
+Performance: 2.082 ns/day, 11.526 hours/ns, 241.004 timesteps/s
+100.0% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 7.9462     | 7.9462     | 7.9462     |   0.0 | 95.75
+Neigh   | 0.1987     | 0.1987     | 0.1987     |   0.0 |  2.39
+Comm    | 0.039182   | 0.039182   | 0.039182   |   0.0 |  0.47
+Output  | 0.00011023 | 0.00011023 | 0.00011023 |   0.0 |  0.00
+Modify  | 0.093904   | 0.093904   | 0.093904   |   0.0 |  1.13
+Other   |            | 0.02052    |            |       |  0.25
+
+Nlocal:    3430 ave 3430 max 3430 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    4907 ave 4907 max 4907 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    102177 ave 102177 max 102177 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 102177
+Ave neighs/atom = 29.7892
+Neighbor list builds = 61
+Dangerous builds = 0
+
+
+
+
+
+thermo 		500
+thermo_style	custom step temp pe etotal press lx ly lz v_variance
+
+
+
+# Begin lopping until the variance in the pressure is below a given value
+
+variable 	loopnum equal 1
+
+label 		loop
+if 		"${variance} > 100" then 		& 	# All the commands in an if statement must be in double quotes.
+&
+ERROR: Unknown command: & (src/input.cpp:314)
+Last command: &

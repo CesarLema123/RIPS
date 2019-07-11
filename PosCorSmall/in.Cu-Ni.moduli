@@ -1,0 +1,70 @@
+# This simulation first equalibrates the system in npt to get zero pressure volume 
+# and then applies a force in the x direction and computes the resulting 
+# strain tensor
+
+# ----------------- Initializating the configuration --------------------------
+
+clear
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+
+# --------------------- Create Atom-----------------------
+read_data	data.Cu-Ni
+
+# ------------ Define Interatomic Potential ----------------
+
+pair_style eam/alloy
+pair_coeff * * CuNi.eam.alloy Ni Cu  
+neighbor .1 bin
+neigh_modify delay 10 check yes
+
+# ------------- Define Settings ----------------
+
+compute 	pepa all pe/atom
+#compute 	eatoms all reduce sum c_pepa
+
+
+# ---- Minimizin the pe per atom -----
+
+
+compute 	ens_temp all temp
+# Compute the stress tensor for each atom
+compute 	ensprs all pressure ens_temp ke pair improper fix #compute id group_id compute_id temp_id keywords...
+
+thermo 		1000
+thermo_style	custom step temp pe ke etotal press lx ly lz 	
+timestep 	0.00001
+
+
+fix 		start all nve
+variable 	tcontrol internal 1000.0
+fix 		tstat all langevin v_tcontrol 1000.0 1.0 3884739
+
+run 		150000
+
+unfix 		start
+unfix		tstat
+
+thermo  	1000 
+thermo_style 	custom step temp press pe ke etotal lx ly lz
+
+#dump            1 all custom/gz 1000 dump.atom.gz id type x y z vx vy vz
+dump            2 all custom 10000 dump.atom id type x y z vx vy vz
+dump 		3 all custom 10000 dump.xyz id x y z 
+
+fix		2 all npt temp 1.0 1.0 1.0 iso 0.0 0.0 1.0
+
+run 		1000000
+
+unfix 		2
+
+thermo 		1000
+#thermo_style 	custom step temp press pe ke lx ly lz c_ensprs[1] c_ensprs[2] c_ensprs[3]
+
+#fix		3 all npt temp 1000.0 1000.0 1000.0 x 1000.0 1000.0 1000.0
+
+#run 		150000
+

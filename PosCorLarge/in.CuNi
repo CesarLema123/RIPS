@@ -1,0 +1,47 @@
+# First try at a a lammps sim
+
+# ----------------- Initializating the configuration --------------------------
+
+clear
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+#atom_modify 
+
+
+# --------------------- Create Atom-----------------------
+read_data	data.CuNi
+
+# ------------ Define Interatomic Potential ----------------
+
+pair_style eam/alloy
+pair_coeff * * CuNi.eam.alloy Ni Cu  
+neighbor .05 bin
+neigh_modify delay 10 check yes
+
+
+# ------------- Define Settings ----------------
+
+compute pepa all pe/atom
+
+# ------------------ Run Minimization -----------
+
+reset_timestep 0
+thermo 500
+thermo_style    custom step temp pe ke etotal press lx ly lz
+timestep .0001
+
+dump           	1 all custom 500 dump.atom id type x y z c_pepa 
+fix 		1 all nvt temp 1.0 1.0 1.0 
+run 		100000
+
+unfix 		1
+
+compute 	MSD all msd com yes
+thermo 		500
+thermo_style 	custom step temp pe etotal press lx ly lz c_MSD[4]
+
+fix 		2 all npt temp 1.0 1.0 1.0 iso 0.0 0.0 1.0
+
+run 		1000000
