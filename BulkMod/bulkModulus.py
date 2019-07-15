@@ -13,8 +13,8 @@ def getRunNum(loopFileName):
     """
     a function that caculates the correct run number for the data wanted
     """
-    n = int( open(loopFileName).readline().split()[0] )
-    runNum = n + 2#2#3
+    n = int( open(loopFileName).readline().split()[0] ) # number of loops
+    runNum = n + 2 # there are two runs before the loop, the minimisation and trial run.
     return runNum
 
 #-------------------------------------------------------
