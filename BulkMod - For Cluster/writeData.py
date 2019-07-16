@@ -1,5 +1,5 @@
 #!/usr/bin/python3.6
-from numpy.random import random,normal
+#from numpy.random import random,normal
 import sys
 
 # random([size]) -> numpy array 1 x size with elements in [0.0,1.0)

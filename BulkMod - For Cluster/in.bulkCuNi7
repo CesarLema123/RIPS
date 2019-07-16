@@ -1,5 +1,5 @@
 # ---------------- Define Variables ---------------
-variable		SIMNUM string "4"
+variable		SIMNUM string "7"
 variable        RUNNUMBER equal 500000
 variable        TEMP equal 1000.0
 variable        SCALE index 1 1.001 1.002 1.003 1.004 1.005 1.006 1.007 1.008 1.009

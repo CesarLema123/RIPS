@@ -2,7 +2,7 @@
 variable		SIMNUM string "2"
 variable        RUNNUMBER equal 500000
 variable        TEMP equal 1000.0
-variable        SCALE index 1.002 1.004 1.006 1.008 1.01 1.012 1.014 1.016 1.018 1.02
+variable        SCALE index 1 1.001 1.002 1.003 1.004 1.005 1.006 1.007 1.008 1.009
 
 #----------------Initialize Simulation---------------
 label		volLoop
@@ -88,9 +88,9 @@ unfix		 avepresssq
 thermo 100
 thermo_style custom step vol lx ly lz press
 reset_timestep 0
-shell echo ${loopNum} > loopNum${SIMNUM}.txt
+shell echo ${loopNum} > loopNum${SIMNUM}${SCALE}.txt
 run 		${RUNNUMBER}
 
 #return back to beginning and ramp up SCALE variable
-if              "SCALE < 1.02" then "next SCALE" "jump SELF volLoop" "print 'working on ${SCALE} scaled volume'" else "print 'last volume'"
+if              "SCALE < 1.009" then "next SCALE" "jump SELF volLoop" "print 'working on ${SCALE} scaled volume'" else "print 'last volume'"
 

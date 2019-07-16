@@ -90,7 +90,7 @@ unfix		 avepresssq
 thermo 100
 thermo_style custom step vol lx ly lz press
 reset_timestep 0
-shell echo ${loopNum} > loopNum${SIMNUM}.txt
+shell echo -e  ${loopNum} \n > loopNum${SIMNUM}.txt
 run 		${RUNNUMBER}
 
 #return back to beginning and ramp up SCALE variable

@@ -11,10 +11,10 @@ import numpy as np
 
 
 tempInFile = 'in.bulkCuNi'
-lmpsCMD = 'lmp_daily -in' #change this depending if running on cluster or locally
+lmpsCMD = 'lammps.q' #change this depending if running on cluster or locally
 
 #create necessary data files
-for i in range(2, 7):
+for i in range(2, 15):
     #i is an argument representing "num" in the writeData file - number of atoms along each axis
     datCMD = 'python writeData.py ' + str(i)
     subprocess.run(datCMD, shell = True)
@@ -23,7 +23,7 @@ for i in range(2, 7):
 #BOTTOMFILE is constant - only change in "in" file is SIMNUM variable
 BOTTOMFILE = "bottomBMin"
 
-for simnum in range(2,7):
+for simnum in range(2,15):
 
     NEWFILENAME = "in.bulkCuNi" + str(simnum)
 
@@ -36,7 +36,7 @@ for simnum in range(2,7):
 
 
 #run multiple LAMMPS simulations in sequence
-for i in range(2, 7): 
+for i in range(2, 15): 
     #run the appropriate lammps input file
     inFile = tempInFile + str(i)
     simCMD = lmpsCMD + ' ' + inFile
