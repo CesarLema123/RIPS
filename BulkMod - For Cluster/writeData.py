@@ -1,32 +1,25 @@
 #!/usr/bin/python3.6
-#from numpy.random import random,normal
-import sys
+from numpy.random import random,normal
 
 # random([size]) -> numpy array 1 x size with elements in [0.0,1.0)
 # normal( mu , sigma , size ) ->    np array 1 x size of elements from a gaussian distrobution
 #                                   with mean mu and standard deviation sigma
 
-#use terminal option after calling this file to specify number of atoms along each axis
-if (len(sys.argv) > 1):
-    num = int(sys.argv[1])
-else:
-    print("Invalid number of arguments")
-    exit()
 
 
-FILE = "data.CuNi" + str(num)
+FILE = "data.CuNi"
 HEADER = "Nickle Copper Simulation"
 
 STYLE = "atomic" 
 LATTICETYPE = "fcc"
 INITTEMP = 0 # kelvin (set via random inital velocities
 
-NUMX = num    # number of atoms in the x direction
-NUMY = num
-NUMZ = num
+NUMX = 10    # number of atoms in the x direction
+NUMY = 10 
+NUMZ = 10
 
 AX,AY,AZ = 4.6,4.6,4.6  # The lattice constant in the 3 directions
-CONCENTRATIONS = lambda a: 1 if a < 0.4 else 2 # A function which takes in a random value in [0,1) and outputs
+CONCENTRATIONS = lambda a: 1 if a < -1.0 else 2 # A function which takes in a random value in [0,1) and outputs
                                                 # an atom number
 XLO, XHI = -0.02, (NUMX-1)*AX + 0.02
 YLO, YHI = -0.02, (NUMY-1)*AY + 0.02
@@ -35,11 +28,11 @@ ZLO, ZHI = -0.02, (NUMZ-1)*AZ + 0.02
 
 
 
-def getNumAtoms(latticeType = "fcc",numX = 10 ,numY = 10 ,numZ = 10):
-    if latticeType == "fcc":
+def getNumAtoms(latticeType = "fcc",numX,numY,numZ):
+    if latticeType = "fcc":
         numAtoms = NUMX*NUMY*NUMZ + (NUMX-1)*(NUMY-1)*(NUMZ) + (NUMX-1)*(NUMY)*(NUMZ-1) + (NUMX)*(NUMY-1)*(NUMZ-1)
-    elif latticeType == "bcc":
-        numAtoms = "none" 
+    elif latticeType = "bcc":
+        numAtoms = 
     else:
         return
     return numAtoms
