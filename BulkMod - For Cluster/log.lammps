@@ -1,0 +1,17 @@
+LAMMPS (8 Feb 2019)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:87)
+  using 1 OpenMP thread(s) per MPI task
+# ---------------- Define Variables ---------------
+variable		SIMNUM string "6"
+variable        RUNNUMBER equal 500000
+variable        TEMP equal 1000.0
+variable        SCALE index 1.002 1.004 1.006 1.008 1.01 1.012 1.014 1.016 1.018 1.02
+
+#----------------Initialize Simulation---------------
+label		volLoop
+clear
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:87)
+  using 1 OpenMP thread(s) per MPI task
+
+log 		log.bulkMod${SIMNUM} #naming log file
+log 		log.bulkMod6 
