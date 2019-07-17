@@ -1,0 +1,97 @@
+# ---------------- Define Variables ---------------
+variable		SIMNUM string "11"
+variable        RUNNUMBER equal 500000
+variable        TEMP equal 1000.0
+variable        SCALE index 1 1.001 1.002 1.003 1.004 1.005 1.006 1.007 1.008 1.009
+
+#----------------Initialize Simulation---------------
+label		volLoop
+clear
+
+log 		log.bulkMod${SIMNUM} #naming log file
+
+units 		metal
+dimension 	3
+boundary 	p p p
+atom_style 	atomic
+
+
+#--------------Create Atom----------------------------
+
+read_data	data.CuNi${SIMNUM} #append num for atoms or time
+
+
+#---------------Define Interatomic Potential----------
+
+pair_style eam/alloy
+pair_coeff * * CuNi.eam.alloy Ni Cu
+neighbor .05 bin
+neigh_modify delay 10 check yes
+
+#---------------Define Settings--------------
+
+
+#---------------Specify Volume------------------------
+
+change_box all x scale ${SCALE} y scale ${SCALE} z scale ${SCALE}
+
+#---------------Run Minimization----------------------
+
+reset_timestep 0
+timestep 0.0001
+thermo          100
+thermo_style    custom step temp pe etotal press lx ly lz 
+log		log.loop${SIMNUM}_${SCALE}
+
+
+min_style cg # use conjugate gradient method
+minimize 1.0e-4 1.0e-6 100 100000
+
+
+reset_timestep 0
+
+
+#------ Make variables which I can use to check the pressure and temperature--------
+compute         my_temp all temp
+compute         mypress all pressure my_temp
+variable        glpress equal "c_mypress"
+
+fix             avepress all ave/time 1 100 100 c_mypress mode scalar ave one start 1000 #file ave.press
+variable        presssq equal "v_glpress * v_glpress"
+fix             avepresssq all ave/time 1 100 100 v_presssq mode scalar ave one start 1000 #file ave.presssq
+variable        variance equal  "f_avepresssq - f_avepress*f_avepress"
+
+
+#---------------SPECIFYING ENSEMBLE----------------------
+fix 1 all nvt temp ${TEMP} ${TEMP} 1.0
+
+
+#----------------Run Simulation------------------------
+# Do a short run to have data to average.
+thermo          100
+thermo_style    custom step temp pe etotal press lx ly lz v_variance
+
+run 4000
+
+
+# Begin lopping until the variance in the pressure is below a given value
+
+variable        loopNum loop 1000
+
+label           loop
+if              "${variance} > 1000" then "run 2000" "next loopNum" "jump SELF loop" else "print 'continue'"
+
+
+
+unfix		 avepress
+unfix		 avepresssq
+thermo 100
+thermo_style custom step vol lx ly lz press
+reset_timestep 0
+#shell echo ${loopNum} > loopNum${SIMNUM}${SCALE}.txt
+log		log.run${SIMNUM}_${SCALE}
+run 		${RUNNUMBER}
+
+#return back to beginning and ramp up SCALE variable
+if              "SCALE < 1.009" then "next SCALE" "jump SELF volLoop" "print 'working on ${SCALE} scaled volume'" else "print 'last volume'"
+
