@@ -6,6 +6,6 @@ import outputReader as OR
 
 df = OR.LogReader('log.Bulkmod','Step Atoms Temp Press TotEng').getDataframe()
 
-OA.LogAnalyzer(df,100).plotColumn('TotEng')
+OA.LogAnalyzer(df,100).plotColumnAgainstRT('TotEng')
 
 

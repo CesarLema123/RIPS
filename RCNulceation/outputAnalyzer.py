@@ -16,10 +16,22 @@ class LogAnalyzer:
         plt.grid()
         plt.show()
     
-    def plotColumn(self,columnLabel):
+    #plot a specific column of dataframe vs RunTime
+    def plotColumnAgainstRT(self,columnLabel):
         Y = self.df[columnLabel].values.astype(float)
         X = np.linspace(0,self.timestep*len(Y),len(Y))
-        self.generalPlot(X,Y,'Runtime',columnLabel)
+        self.generalPlot(X,Y,'Runtime',columnLabel,columnLabel+' vs. Runtime')
+
+    '''
+    def plotColumnVsColumn(self,firstLabel,secondLabel):
+
+    def plotColumnVsAny(self,Label,X)
+    # not too necessary, can use generalPlot method
+    
+    '''
+
+
+
 
 
 # ---------------------------------------
