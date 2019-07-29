@@ -1,11 +1,7 @@
-LAMMPS (8 Feb 2019)
-OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:87)
-  using 1 OpenMP thread(s) per MPI task
+LAMMPS (5 Jun 2019)
 # Changing Volume to measure bulk modulus
 
 #----------------Initialize Simulation---------------
 clear
-OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:87)
-  using 1 OpenMP thread(s) per MPI task
 
 log log.Bulkmod

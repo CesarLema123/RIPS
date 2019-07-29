@@ -35,7 +35,7 @@ base_atoms = np.array([[0.0, 0.0, 0.0],
 
 # Size of the system cell in lattice units
 #    assuming an cubic cell starting at the origin
-system_size = 6
+system_size = 5
 
 #PERCENT COMPOSITION of Ni [2]
 cPercent = .4

@@ -42,7 +42,7 @@ timestep 0.001 #pico
 thermo 100
 
 #THERMO_STYLE STYLE ARGS
-thermo_style custom step atoms temp press 
+thermo_style custom step atoms temp press etotal 
 
 #THERMO_MODIFY KEYWORD VALUE ...
 #thermo_modify 
@@ -54,6 +54,7 @@ thermo_style custom step atoms temp press
 
 dump 2 all custom 10 pos.XYZ id x y z
 dump 1 all atom 10 viz.atom
+#dump 3 all 
 dump_modify 1 first yes
 
 run 1000
@@ -69,7 +70,7 @@ fix_modify   2 temp mobile
 #FIX ID GROUP-ID STYLE ARGS  
 #fix 1 all nvt temp 1600 1600 1 drag 0.4 
 #fix constBox all deform 10 x scale 1 y scale 1 z scale 1
-run 10000                         #run to bring system to constant temperature
+run 10000                        #run to bring system to constant temperature
 
 #unfix constBox
 unfix 1

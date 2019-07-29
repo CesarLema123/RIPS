@@ -30,10 +30,14 @@ class LogAnalyzer:
     
     '''
 
+    '''
+    def spatialCorrelationFunction(self):
 
-
-
-
+    def pairDistribuationFunction(self):
+    
+    '''
+    
+    
 # ---------------------------------------
 # USAGE EXAMPLE
 
