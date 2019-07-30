@@ -17,7 +17,7 @@ def equilEng(numBins,logFileName):
     aveEng = np.zeros(numBins)
     for i in range(numBins)
         start = i*binSize
-        aveEng[i] = np.sum(engArray[start:(start + binSize)])/binSize #averaging the energy in each of the bins
+        aveEng[i] = np.sum(engArray[start:(start + binSize-1)])/binSize #averaging the energy in each of the bins
     eng = np.average(aveEng)
     err = np.std(aveEng)
     return eng 
@@ -35,7 +35,7 @@ def equilEnth(numBins,logFileName):
     aveEnth = np.zeros(numBins)
     for i in range(numBins)
         start = i*binSize
-        aveEng[i] = np.sum(enthArray[start:(start + binSize)])/binSize
+        aveEng[i] = np.sum(enthArray[start:(start + binSize-1)])/binSize
     enth = np.average(aveEnth)
     err = np.std(aveEnth)
     return enth
@@ -63,12 +63,12 @@ def calcCV(numTemps = 10):
     CV = np.zeros(numDeriv)
     numBins = 10 
     for i in range(numTemps):
-        logFileName = #???
-        energy[i] = equilEng(numBins,logFileName)
+        logFileName = "log.data"
+        [energy[i],errEng[i]] = equilEng(numBins,logFileName)
         temperature[i] = calcTemp(logFileName)
     for j in range(numDeriv):
         CV[j] = (energy[j+1]-energy[j])/(temperature[j+1]-temperature[j])
-    return CV
+    return [CV,errEng]
 
 #--------------------------------------------------------
 
@@ -82,12 +82,12 @@ def calcCP(numTemps = 10):
     CV = np.zeros(numDeriv)
     numBins = 10
     for i in range(numTemps):
-        logFileName = #???
-        enthalpy[i] = equilEnth(numBins,logFileName)
+        logFileName = "log.data"
+        [enthalpy[i],errEnth[i]] = equilEnth(numBins,logFileName)
         temperature[i] = calcTemp(logFileName)
     for j in range(numDeriv):
         CP[j] = (enthalpy[j+1]-enthalpy[j])/(temperature[j+1]-temperature[j])
-    return CP
+    return [CP,errEnth]
 
 
 

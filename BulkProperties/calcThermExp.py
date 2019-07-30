@@ -17,9 +17,10 @@ def equilVol(numBins,logFileName):
     aveVol = np.zeros(numBins)
     for i in range(numBins):
         start = i*binSize
-        aveVol[i] = np.sum(volArray[start:(start + binSize)])/binSize #averaging the pressure in each of the bins
+        aveVol[i] = np.sum(volArray[start:(start + binSize-1)])/binSize #averaging the pressure in each of the bins, the =1 is to ensure that there is no correlation between bins. 
     vol = np.average(aveVol)
-    return press
+    err = np.std(aveVol)
+    return [vol, err]
 
 #-------------------------------------------------------------------------
 
@@ -37,6 +38,7 @@ def thermExp(numTemp)
     """
     this function calculates the coefficient of (volumetric) thermal expansion. Inputted is the number of different temperatures the simulation will run at.
     """
+    volErr = np.zeros([numTemp])
     volume = np.zeros([numTemp]) #initialising 
     temperature = np.zeros([numTemp])
     numDeriv = numTemp - 1 #there is one less derivative calculated because you need two values to approx dV/dT
@@ -44,12 +46,12 @@ def thermExp(numTemp)
     dvdt = np.zeros(numDeriv)
     numBins = 10
     for i in range(numTemp)
-        logFileName = #??
-        volume[i] = equilVol(numBins,logFileName)
+        logFileName = "log.data"
+        [volume[i],volErr[i]] = equilVol(numBins,logFileName)
         temperature[i] = calcTemp(logFileName)
     for j in range(numDeriv)
-        dvdt[i] = (volume[i+1]-volume[i])/(temperature[i+1]-temperature[i])
-        CTE[i] = dvdt[i]/volume[i]
-    return CTE
+        dvdt[j] = (volume[j+1]-volume[j])/(temperature[j+1]-temperature[j])
+        CTE[j] = dvdt[j]/volume[j]
+    return [CTE,volErr]
 
 
