@@ -1,4 +1,4 @@
-Crystalline Al atoms - written for EnCodeVentor tutorial
+CuNi atom datafile for lammps scripts 
 
 4 atoms
 2 atom types
@@ -9,6 +9,6 @@ Crystalline Al atoms - written for EnCodeVentor tutorial
 Atoms
 
 1 1 0.0 0.0 0.0
-2 1 2.023 2.023 0.0
-3 2 2.023 0.0 2.023
+2 2 2.023 2.023 0.0
+3 1 2.023 0.0 2.023
 4 1 0.0 2.023 2.023

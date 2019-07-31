@@ -20,7 +20,7 @@ class FCC:
                                    [0.0, 0.5, 0.5]])*self.latticeParameter
 
 class AtomDataFileGenerator:
-    def __init__(self, filename='atom2', latticeType='FCC', alloy='CuNi', systemSize=1, atomTypes=2, alloyCompPercent = 0):
+    def __init__(self, filename='alloyData', latticeType='FCC', alloy='CuNi', systemSize=1, atomTypes=2, alloyCompPercent = 0):
         # FILE SETUP
         self.filename = filename+'.data'
         self.systemSize = systemSize        # SYSTEMSIZE CREATES (basis*systemSize)^3 box of atoms
