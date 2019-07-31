@@ -7,7 +7,7 @@ import csv
 sh = os.system # I am running this on a bash terminal
 
    
-class simulation(pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib/AwkFiles",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.63,numAtomTypes = 2,numAtoms = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.ema.alloy",inTemplate = "in.Template"):
+class simulation(pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib/AwkFiles",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.63,numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.ema.alloy",inTemplate = "in.Template"):
     def __init__(self):
         self.pythonLib = pythonLib
         self.awkLib = awkLib
@@ -16,7 +16,7 @@ class simulation(pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib
         self.alloy = alloy
         self.latticeConst = latticeConst
         self.numAtomTypes = numAtomTypes
-        self.numAtoms = numAtoms
+        self.systemSizes = systemSizes
         self.temperatures = temperatures
         self.pressures = pressures
         self.lengths = lengths
@@ -28,48 +28,48 @@ class simulation(pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib
         self.inTemplate = inTemplate
         return 
 
-    def setSimParams(self,_pythonLib = "",_awkLib = "",_lammps = "",_alloy = "",_latticeConst = 0.0,_numAtomTypes = 0,_runTimes = [],_numAtoms = [],_temperatures = [],_pressures = [],_lengths = [],_concPrecents = [],_timeStep = 0.0,_simType = "",_fileName = "", _potentialFile = "",_inTemplate = ""):
-        if _pythonLib:
-            self.pythonLib = _pythonLib
-        if _awkLib:
-            self.awkLib = _awkLib
-        if _lammps:
-            self.lammps = _lammps
-        if _alloy:
-            self.alloy = _alloy
-        if _latticeConst:
-            self.latticeConst = _latticeConst
-        if _numAtomTypes:
-            self.numAtomTypes = _numAtomTypes
-        if any(_runTimes):
-            self.runTimes = _runTimes
-        if any(_numAtoms):
-            self.numAtoms = _numAtoms
-        if any(_temperatures):
-            self.temperatures = _temperatures
-        if any(_pressures):
-            self.pressures = _pressures
-        if any(_lengths):
-            self.lengths = _lengths
-        if any(_concPrecents):
-            self.concPrecents = _concPrecents
-        if _timeStep:
-            self.timeStep = _timeStep
-        if _simType:
-            self.simType = _simType
-        if _inTemplate:
-            self.inTemplate = _inTemplate
-        if _fileName:
-            self.fileName = _fileName
-        if _potentialFile:
-            self.potentialFile = _potentialFile
+    def setSimParams(self,pythonLib = "",awkLib = "",lammps = "",alloy = "",latticeConst = 0.0,numAtomTypes = 0,runTimes = [],systemSizes = [],temperatures = [],pressures = [],lengths = [],concPrecents = [],timeStep = 0.0,simType = "",fileName = "", potentialFile = "",inTemplate = ""):
+        if pythonLib:
+            self.pythonLib = pythonLib
+        if awkLib:
+            self.awkLib = awkLib
+        if lammps:
+            self.lammps = lammps
+        if alloy:
+            self.alloy = alloy
+        if latticeConst:
+            self.latticeConst = latticeConst
+        if numAtomTypes:
+            self.numAtomTypes = numAtomTypes
+        if any(runTimes):
+            self.runTimes = runTimes
+        if any(systemSizes):
+            self.systemSizes = systemSizes
+        if any(temperatures):
+            self.temperatures = temperatures
+        if any(pressures):
+            self.pressures = pressures
+        if any(lengths):
+            self.lengths = lengths
+        if any(concPrecents):
+            self.concPrecents = concPrecents
+        if timeStep:
+            self.timeStep = timeStep
+        if simType:
+            self.simType = simType
+        if inTemplate:
+            self.inTemplate = inTemplate
+        if fileName:
+            self.fileName = fileName
+        if potentialFile:
+            self.potentialFile = potentialFile
         return 0
 
-    def getWorkDir(self,time,nAtoms,temp,pv,concPercent):
+    def getWorkDir(self,time,size,temp,pv,concPercent):
         if self.simType == "npt":
-            return "Out/RunTime"+str(time)+"NumAtoms"+str(nAtoms)+"Conc"+str(concPercent)+"Temp"+str(temp)+"Press"+str(round(pv,2))
+            return "Out/RunTime"+str(time)+"Size"+str(size)+"Conc"+str(concPercent)+"Temp"+str(temp)+"Press"+str(round(pv,2))
         elif self.simType == "nvt":
-            return "Out/RunTime"+str(time)+"NumAtoms"+str(nAtoms)+"Conc"+str(concPercent)+"Temp"+str(temp)+"Length"+str(round(pv,2))
+            return "Out/RunTime"+str(time)+"Size"+str(size)+"Conc"+str(concPercent)+"Temp"+str(temp)+"Length"+str(round(pv,2))
         else:
             print("Unknown sim type.")
             return 1
@@ -105,18 +105,18 @@ class simulation(pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib
         cwd = os.getcwd()
         sh("mkdir Out")
         for time in self.runTimes:
-            for nAtoms in self.numAtoms:
+            for size in self.systemSizes:
                 for temp in self.temperatures:
                     for var in vOrP:
                         for concPercent in self.concPrecents:
-                            wd = self.getWorkDir(time,nAtoms,temp,var,concPercent)
+                            wd = self.getWorkDir(time,size,temp,var,concPercent)
                             sh("mkdir " + wd) 
                             self.cpTmp(wd)
                             os.chdir(wd)
                             # write the input file and the data file
                             inFile = inF.inFile(fileName = self.fileName, readFile = self.inTemplate,runTime = self.runTime,timeStep = self.timeStep)
                             inFile.writeInFile(options = ["TEMPERATURE equal " + str(temp),varString + " equal " +str(var),"RANDOM equal " + str(randint(1000000,9999999))])
-                            dataFile = dataF.AtomDataFileGenerator(filename = self.fileName,latticeType = self.latticeType,alloy = self.alloy,latticeCosnt = self.latticeConst,systemSize = self.numAtoms, atomTypes = self.numAtomTypes, alloyCompPercent = concPercent)
+                            dataFile = dataF.AtomDataFileGenerator(filename = self.fileName,latticeType = self.latticeType,alloy = self.alloy,latticeCosnt = self.latticeConst,systemSize = size, atomTypes = self.numAtomTypes, alloyCompPercent = concPercent)
                             dataFile.createDataFile()
                             self.runLammps()
                             os.chdir(cwd)
@@ -132,11 +132,11 @@ class simulation(pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib
             return 1
         cwd = os.getcwd()
         for time in self.runTimes:
-            for nAtoms in self.numAtoms:
+            for size in self.systemSizes:
                 for temp in self.temperatures:
                     for var in vOrP:
                         for concPercent in self.concPrecents:
-                            wd = self.getWorkDir(time,nAtoms,temp,var,concPercent)
+                            wd = self.getWorkDir(time,size,temp,var,concPercent)
                             os.chdir(wd)
                             sh("awk -f " + self.awkLib + "/awkReadLog log.run > log.data")
                             try:
@@ -164,11 +164,11 @@ class simulation(pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib
         i = 0
         cwd = os.getcwd()
         for time in self.runTimes:
-            for nAtoms in self.numAtoms:
+            for size in self.systemSizes:
                 for temp in self.temperatures:
                     for var in vOrP:
                         for concPercent in self.concPrecents:
-                            wd = self.getWorkDir(time,nAtoms,temp,var,concPercent)
+                            wd = self.getWorkDir(time,size,temp,var,concPercent)
                             os.chdir(wd)
                             try:
                                 if i == 0:
@@ -202,11 +202,11 @@ class simulation(pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib
         i = 0
         cwd = os.getcwd()
         for time in self.runTimes:
-            for nAtoms in self.numAtoms:
+            for size in self.systemSizes:
                 for temp in self.temperatures:
                     for var in vOrP:
                         for concPercent in self.concPrecents:
-                            wd = self.getWorkDir(time,nAtoms,temp,var,concPercent)
+                            wd = self.getWorkDir(time,size,temp,var,concPercent)
                             os.chdir(wd)
                             try:
                                 if i == 0:
@@ -283,13 +283,13 @@ class simulation(pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib
             return 1
         cwd = os.getcwd()
         for time in self.runTimes:
-            for nAtoms in self.numAtoms:
+            for size in self.systemSizes:
                 for temp in self.temperatures:
                     for var in vOrP:
                         for concPercent in self.concPrecents:
-                            wd = self.getWorkDir(time,nAtoms,temp,var,concPercent)
+                            wd = self.getWorkDir(time,size,temp,var,concPercent)
                             os.chdir(wd)
-                            print("Time: %d, N: %d, T: %0.2f, %s: %0.4f, C: %d" %(time,nAtoms,temp,"P" if self.simType == "npt" else "V",var,concPercent*10))
+                            print("Time: %d, N: %d, T: %0.2f, %s: %0.4f, C: %d" %(time,size,temp,"P" if self.simType == "npt" else "V",var,concPercent*10))
                             qplot(logFile) # A function from utils which gives a 
                             os.chdir(cwd)
         return 0
