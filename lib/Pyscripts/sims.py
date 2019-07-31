@@ -1,4 +1,5 @@
 from utils import *
+from random import randint
 import dataFileGenerator as dataF
 import inFiles as inF
 import numpy as np
