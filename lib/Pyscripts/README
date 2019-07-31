@@ -29,6 +29,45 @@ Description of classes aviable:
         createDataFile() [create a new data file locally with atom postion data]  ****	
 
 
+sims.py
+
+    Class:
+        simulation [specify simulation parameters, run simulations, plot thermodynmamic data from sims, compute specific properties]
+       
+    constructor:
+        simulation(pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib/AwkFiles",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.63,numAtomTypes = 2,numAtoms = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.ema.alloy",inTemplate = "in.Template")
+
+    instance vars:
+        pythonLib - string - path to PyScripts
+        awkLib - string - path to AwkFiles
+        lammps - string - command line lammps executable ["lmp -in" or "lammps.q"]
+        runTimes - list[int] - Simulation run times in inFile's units
+        alloy - string - Name of alloy to use for latticeConst or "Custom" to use latticeConst given
+        latticeConst - float - value passed for latticeConst to AtomDataFileGenerator if alloy is "Custom"
+        numAtomTypes - int - Number of atom types for the simulation
+        systemSizes - list[int] - list giving the range of sizes (number of unit lattice cells per side of cube) to use
+        temperatrues - list[round(float,4)] 
+        pressures - list[round(float,4)] - only used if simType is "npt"
+        lengths - list[round(float,4)] - side of box to make simulation, only use if simType is "nvt"
+        concPrescents - list[round(float,4)] - concentrations of first element to use in simulations
+        simType - string - "npt" or "nvt" for now
+        fileName - string
+        potentialFile - string - name of the potential file to use for simulations
+        inTemplate - string - name of in file to use to build simulation in files
+    
+    methods:
+        setSimParams() -> None - Change any parameters mentioned above. Unspecified parameters are left unchanged
+        inFile() -> string - returns name of lammps input file be made
+        dataFile() -> string -name of lammps atom data file to be made
+        runsims() -> None - runs simulations ranging over specified parameters, storing the results in dir in Out/
+        cleanOutput() -> None - Uses awk to shorten output files from lammps simulations
+        recordData() -> None - Writes thermodynamic data of simulations (space seperated with header)
+        getData() -> pandas.DataFrame - returns thermodynamic fata of simulations
+        calcBulkModT(thermoDF = None) -> bulkMod,dbulkMod,V,dV - computes the bulkmodulus at constant temp and uncertainties at different volumes from a pandas DataFrame given by getThermoStats (see utils.py) or from simulation data if thermoDf is None (assumes simulation parameters only very volume and nvt)
+        calcThermExp(thermoDF = None) -> thermExpCoeff,dthermExpCoeff,T,dT - like bulkmod (assumes constant pressure)
+        calcHeatCapV(thermoDf = None) -> heatCap,dheatCap,T,dT - like bulkmod (assumes constant pressure)
+        simQPlot(logFile) -> None - Plot variables in logFile against simulation time in each simulation. Which variable chosen interactively.
+
 
 
 
