@@ -6,7 +6,7 @@ import dataFileGenerator as DFG
         AtomDataFileGenerator [Generate data file for atom positions of alloy with varaibel lattice type and composition]
     
     constructor:
-        AtomDataFileGenerator(filename='atom2.data', latticeType='FCC', alloy='CuNi', systemSize=1, atomTypes=2, alloyCompPercent = 0)
+        AtomDataFileGenerator(filename='atom2.data', latticeType='FCC', alloy='CuNi', systemSize=1, atomTypes=2, alloyCompPercent = 0, customLatticeParameter=None)
     
     instance vars:
         filename
@@ -33,7 +33,7 @@ import dataFileGenerator as DFG
 '''
 
 
-generator = DFG.AtomDataFileGenerator('testDataFile',systemSize=10,alloyCompPercent=.4)
+generator = DFG.AtomDataFileGenerator('testDataFile',systemSize=6,alloy='custom',alloyCompPercent=.4,customLatticeConst=2)
 generator.createDataFile()
 print(generator.getNumAtoms())
 print(generator.getActualCompPercent())

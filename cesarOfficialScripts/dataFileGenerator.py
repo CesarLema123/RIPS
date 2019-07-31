@@ -33,10 +33,10 @@ class AtomDataFileGenerator:
         # BOX INFO
         self.latticeType = latticeType          # CAN MAKE THIS INTO A INPUT PARAMETER, WHITH DIFFERENT CLASSSES FOR EACH LATTICETYPE
         if self.latticeType == 'FCC':           # THIS MAKES MORE SENSE IF WE HAVE MULTIPLE LATTICE TYPES
-            if customLatticeConst != None:         # Specify a custom alloy with any lattice parameter
-                self.lattice = FCC('custom',customLatticeConst)
-            else:
+            if customLatticeConst is None:         # Specify a custom alloy with any lattice parameter
                 self.lattice = FCC(alloy)
+            else:
+                self.lattice = FCC('custom',customLatticeConst)
         else:                                   # conditional for more lattice types options
             self.lattice = FCC(alloy)
         
