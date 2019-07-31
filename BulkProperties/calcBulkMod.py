@@ -17,7 +17,7 @@ def equilPres(numBins,logFileName):
     avePress = np.zeros(numBins)
     for i in range(numBins):
         start = i*binSize
-        avePress[i] = np.sum(pressArray[start:(start + binSize-1)])/binSize #averaging the pressure in each of the bins
+        avePress[i] = np.average(pressArray[start:(start + binSize-1)]) #averaging the pressure in each of the bins
     press = np.average(avePress)
     err = np.std(avePress)
     return [press,err]
