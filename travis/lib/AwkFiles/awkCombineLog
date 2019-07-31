@@ -1,0 +1,1 @@
+BEGIN{i=1;prevStep=-1}{if (i==1){print $0}; if ($1 != "Step" && $1 != prevStep){print $0;prevStep=$1};i++}
