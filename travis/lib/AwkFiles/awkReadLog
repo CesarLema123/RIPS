@@ -1,5 +1,0 @@
-BEGIN{read=0}
-{if ($1=="Loop") {read=0}
-if (read==1) {print $0}
-if ($1=="Step") { print $0;read=1}
-}
