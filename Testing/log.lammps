@@ -1,0 +1,72 @@
+LAMMPS (8 Feb 2019)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:87)
+  using 1 OpenMP thread(s) per MPI task
+# ALL RUNTIME,INFILE,DATAFILE
+# npt TEMPERATURE PRESSURE RANDOM
+# -------------------- SPECIFY ANY VARIABLES WHICH MIGHT BE GIVEN FROM CMD LATER --------------------
+
+# -------------------- COMPUTE DIFF COEFF FOR CuNi AT A RANGE OF CONCENTRATIONS AND TEMPERATURES --------------------
+
+# -------------------- INITIALIZING THE CONFIGURATION --------------------------
+
+clear
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:87)
+  using 1 OpenMP thread(s) per MPI task
+units 			metal
+dimension 		3
+boundary 		p p p
+atom_style 		atomic
+#atom_modify
+
+# --------------------- CREATE ATOMS-----------------------
+read_data		data.6
+  orthogonal box = (0 0 0) to (21.6 21.6 21.6)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  864 atoms
+  reading velocities ...
+  864 velocities
+
+# ------------ DEFINE INTERATOMIC POTENTIAL ----------------
+
+pair_style 		eam/alloy
+pair_coeff 		* * CuNi.eam.alloy Ni Cu
+Reading potential file CuNi.eam.alloy with DATE: 2014-07-11
+neighbor 		.05 bin
+neigh_modify 		delay 10 check yes
+
+
+
+thermo			100
+thermo_style		custom step etotal vol temp press
+timestep		0.0005
+variable		Dt equal 0.0005
+
+
+# -------------------- SET UP COMPUTES AND FIX AVE/TIME --------------------
+# AVERAGE AND STANDARD DEVIATION
+
+
+# -------------------- SET UP THERMO STYLES AND DUMPS --------------------
+
+variable		dampT equal "v_Dt * v_kT"
+variable 		dampP equal "v_Dt * v_kP"
+
+variable 		kT equal 100
+variable 		kP equal 10000
+
+
+# Note: for npt ensemble, use nph to (Nose-Hoover) barostat and time step and Langevin for Thermostating
+#	for nvt ensemble, use nve for time stepping, Langevin for thermostating, and deform for volume control
+
+fix 			1 all nph iso 0.0 0.0 ${dampP} drag 2.0
+fix 			1 all nph iso 0.0 0.0 5 drag 2.0
+fix			2 all langevin 300 300 ${dampT} 74827633 zero yes
+fix			2 all langevin 300 300 0.05 74827633 zero yes
+
+thermo			200
+#thermo_style		custom step etotal v_varAveEnergy v_energySTD temp v_varAveTemp v_tempSTD vol v_varAveVolume v_volumeSTD press v_varAvePress v_pressSTD
+thermo_style		custom step etotal temp press vol
+
+
+log			log.drag6

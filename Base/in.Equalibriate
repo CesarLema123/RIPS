@@ -1,0 +1,224 @@
+
+
+
+
+# ----------------- INITIALIZING SIMULATION --------------------------
+
+
+clear
+units 			metal
+dimension 		3
+boundary 		p p p
+atom_style 		atomic
+
+
+# --------------------- CREATE ATOMS-----------------------
+read_data		data.CuNi
+
+# ------------ DEFINE INTERATOMIC POTENTIAL ----------------
+
+pair_style 		eam/alloy
+pair_coeff 		* * CuNi.eam.alloy Ni Cu  
+neighbor 		.05 bin
+neigh_modify 		delay 10 check yes
+
+
+# ------------- DEFINE INITIAL SETTINGS ----------------
+
+
+reset_timestep 		0
+thermo 			500
+thermo_style    	custom step temp pe etotal press lx ly lz
+timestep 		.001
+
+
+
+# -------------- GLOBAL VARIABLES ---------------
+
+
+# These can either be changed here or commented out and given in the command line
+
+variable		TEMP equal 1000.0
+variable		PRESS equal 0.0
+variable		XPRESS equal 1000.0
+
+
+
+
+
+
+# --------------------- VARIABLES DERIVED FROM COMMANDLINE ARGS --------------
+
+
+variable		tempError equal 10.0
+variable		pressError equal 300.0
+variable		tempMax equal "v_TEMP + v_tempError"
+variable		tempMin equal "v_TEMP - v_tempError"
+variable		pressMax equal "v_PRESS + v_pressError"
+variable		pressMin equal "v_PRESS - v_pressError"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ------------------ RUN MINIMIZATION OF INITIAL CONFIGURATION -------------------
+
+print 			'Minimizing the Energy'
+
+reset_timestep		0
+thermo			1000
+thermo_style		custom step temp press vol
+
+min_style 		cg 
+minimize 		1.0e-4 1.0e-6 100 100000 
+
+
+
+
+
+
+
+
+
+
+# --------------------- DEFINING TEMPERATURE AND PRESS VARIABLES FOR EQUALIBRIATING ------------------------
+
+reset_timestep		0
+thermo			1000
+thermo_style		custom step temp press vol
+
+variable		timeStep equal 0.001
+variable		tempDampStep index 10 30 50 100 150 200 300 400 500 1000 1500 2000 3000 5000 10000
+variable		pressDampStep index 100 300 500 1000 1500 2000 3000 4000 5000 10000 15000 20000 30000 40000 50000 100000
+
+
+variable 		Temp equal temp
+variable 		Press equal press
+variable		tempSq equal "v_Temp^2"
+variable		pressSq equal "v_Press^2"
+fix 			aveTemp all ave/time 10 100 1000 v_Temp mode scalar start 1000 ave running
+fix			aveTempSq all ave/time 10 100 1000 v_tempSq mode scalar start 1000 ave running
+fix 			avePress all ave/time 10 100 1000 v_Press mode scalar start 1000 ave running
+fix 			avePressSq all ave/time 10 100 1000 v_pressSq mode scalar start 1000 ave running
+variable		tempSTD equal "sqrt(f_aveTempSq - f_aveTemp^2)"
+variable		pressSTD equal "sqrt(f_avePressSq - f_avePress^2)"
+variable		varAveTemp equal "f_aveTemp"
+variable		varAvePress equal "f_avePress"
+
+
+
+
+
+
+
+
+# ------------------ LOOP FOR EQUALIBRIATING TO NPT ENSEMBLE ------------------------------
+
+	
+log			log.loop
+label 			loop1
+variable		loopNum loop 200
+variable		dampT equal "v_timeStep * v_tempDampStep"
+variable		dampP equal "v_timeStep * v_pressDampStep"
+
+fix			1 all npt temp ${TEMP} ${TEMP} ${dampT} iso ${PRESS} ${PRESS} ${dampP}
+thermo			1000
+thermo_style		custom step temp f_aveTemp v_tempSTD press f_avePress v_pressSTD 
+run 			5000
+
+if "${loopNum} == 5" then "jump SELF break1"
+if "${loopNum} < 5" then "next loopNum" "jump SELF loop1"
+if "${tempSTD} > 50 && ${tempDampStep} < 10000" then "next tempDampStep"
+if "${pressSTD} > 2000 && ${pressDampStep} < 100000" then "next pressDampStep"
+if "${varAveTemp} > ${tempMax} || ${varAveTemp} < ${tempMin} || ${tempSTD} > 2000" then "next loopNum" "jump SELF loop1"
+if "${varAvePress} > ${pressMax} || ${varAvePress} < ${pressMin} || ${pressSTD} > 2000" then "next loopNum" "jump SELF loop1"
+if "${loopNum} < 15" then "next loopNum" "jump SELF loop1"
+label break1
+
+shell 			echo ${loopNum} > dump.loopNum
+
+
+
+
+
+
+
+
+
+
+# -------------- VARIABLE CLEANUP ------------------------------
+
+unfix			aveTemp
+unfix			avePress
+unfix			aveTempSq
+unfix			avePressSq
+variable		tempSTD delete
+variable		pressSTD delete
+variable		tempSq delete
+variable		pressSq delete	
+
+
+
+
+
+# ----------------- CONSTAIN STRAIN SIM -----------------------
+
+
+
+compute 		strain all pressure thermo_temp
+variable		xStrain equal "c_strain[1]"
+variable		yStrain equal "c_strain[2]"
+variable		zStrain equal "c_strain[3]"
+variable		xyStrain equal "c_strain[4]"
+variable		xzStrain equal "c_strain[5]"
+variable		yzStrain equal "c_strain[6]"
+fix			aveXStrain all ave/time 10 100 1000 v_xStrain mode scalar start 1000 ave one
+fix			aveYStrain all ave/time 10 100 1000 v_yStrain mode scalar start 1000 ave one
+
+# ----------------- THIS DOES NOT WORK AT ALL !!!!!! --------------------
+thermo			1000
+thermo_style		custom step temp lx ly lz pxx pyy pzz pxy pxz pyz 
+
+reset_timestep		0
+unfix			1
+fix 			2 all nve
+fix 			3 all langevin ${TEMP} ${TEMP} ${dampT} 736352 zero yes
+fix 			4 all press/berendsen x ${XPRESS} ${XPRESS} 1.0 y ${PRESS} ${PRESS} 1.0 z ${PRESS} ${PRESS} 1.0 couple yz
+
+
+log 			log.run
+
+run 			1000000 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,176 @@
+# ALL RUNTIME
+# nve LENGTH
+# nvt LENGTH TEMPERATURE RANDOM
+# npt TEMPERATURE PRESSURE RANDOM
+# nph PRESSURE
+
+
+
+# -------------------- SPECIFY ANY VARIABLES WHICH MIGHT BE GIVEN FROM CMD LATER --------------------  
+
+# -------------------- COMPUTE DIFF COEFF FOR CuNi AT A RANGE OF CONCENTRATIONS AND TEMPERATURES -------------------- 
+
+
+# nve variables
+
+#variable		pressErr equal 1
+#variable		tempErr equal 1
+
+
+
+# nvt variables
+
+variable		pressErr equal 1
+variable 		energyErr equal 1
+variable 		aveTempErr equal 1
+variable		maxTempErr equal "v_TEMPERATURE + v_aveTempErr"
+variable		minTempErr equal "v_TEMPERATURE - v_aveTempErr"
+
+
+
+
+# npt variables
+
+#variable		volumeErr equal 1
+#variable		energyErr equal 1
+#variable		aveTempErr equal 1
+#variable		maxTempErr equal "v_TEMPERATURE + v_aveTempErr"
+#variable		minTempErr equal "v_TEMPERATURE - v_aveTempErr"
+#variable		avePressErr equal 1
+#variable		maxPressErr equal "v_PRESSURE + v_avePressErr"
+#variable		minPressErr equal "v_PRESSURE - v_avePressErr"
+
+
+# -------------------- INITIALIZING THE CONFIGURATION --------------------------
+
+clear
+units 			metal
+dimension 		3
+boundary 		p p p
+atom_style 		atomic
+#atom_modify 
+
+# --------------------- CREATE ATOMS-----------------------
+read_data		data.CuNi
+
+# ------------ DEFINE INTERATOMIC POTENTIAL ----------------
+
+pair_style 		eam/alloy
+pair_coeff 		* * CuNi.eam.alloy Ni Cu  
+neighbor 		.05 bin
+neigh_modify 		delay 10 check yes
+
+
+
+thermo			100
+thermo_style		custom step etotal vol temp press 
+timestep		0.0001
+variable		Dt equal 0.0001
+
+
+
+reset_timestep		0
+
+
+
+# -------------------- SET UP COMPUTES AND FIX AVE/TIME -------------------- 
+# AVERAGE AND STANDARD DEVIATION 
+# TEMPERATURE 
+variable 		TEMP equal temp
+fix			aveTemp all ave/time 10 100 1000 v_TEMP mode scalar start 1000 ave one
+variable		varAveTemp equal "f_aveTemp"
+# Comment out in nvt or npt
+#variable		tempSq equal "v_TEMP^2"
+#fix			aveTempSq all ave/time 10 100 1000 v_tempSq mode scalar start 1000 ave one
+#variable		tempSTD equal "sqrt(f_aveTempSq - f_aveTemp^2)"
+
+# PRESSURE
+variable		PRESS equal press
+fix 			avePress all ave/time 10 100 1000 v_PRESS mode scalar start 1000 ave one
+variable		varAvePress equal "f_avePress"
+# Comment out in npt or nph
+variable		pressSq equal "v_PRESS^2"
+fix 			avePressSq all ave/time 10 100 1000 v_pressSq mode scalar start 1000 ave one
+variable 		pressSTD equal "sqrt(f_avePressSq - f_avePress^2)"
+
+# ENERGY
+variable		ENERGY equal etotal
+fix			aveEnergy all ave/time 10 100 1000 v_ENERGY mode scalar start 1000 ave one
+variable 		varAveEnergy equal "f_aveEnergy"
+# Comment out in nve or nph
+variable		energySq equal "v_ENERGY^2"
+fix			aveEnergySq all ave/time 10 100 1000 v_energySq mode scalar start 1000 ave one
+variable		energySTD equal "sqrt(f_aveEnergySq - f_aveEnergy^2)"
+
+# VOLUME
+variable		VOLUME equal vol
+fix			aveVolume all ave/time 10 100 1000 v_VOLUME mode scalar start 1000 ave one
+variable 		varAveVolume equal "f_aveVolume"
+# Comment out in nve or nvt
+#variable		volumeSq equal "v_VOLUME^2"
+#fix			aveVolumeSq all ave/time 10 100 1000 v_volumeSq mode scalar start ave one
+#variable		volumeSTD equal "sqrt(f_aveVolumeSq - f_aveVolume^2)"
+
+
+
+
+# -------------------- SET UP THERMO STYLES AND DUMPS -------------------- 
+
+variable		dampT equal "v_Dt * v_kT"
+#variable 		dampP equal "v_Dt * v_kP"
+
+variable 		kT equal 100
+#variable 		kP equal 1000
+
+fix			1 all nve
+#fix			1 all npt temp ${TEMPERATURE} ${TEMPERATURE} ${dampT}  aniso 0.0 0.0 ${dampP}
+#fix			1 all nph aniso 0.0 0.0 ${dampP}
+fix			2 all langevin ${TEMPERATURE} ${TEMPERATURE} ${dampT} ${RANDOM} zero yes
+fix 			3 all deform 100 x final 0.0 ${LENGTH} y final 0.0 ${LENGTH} z final 0.0 ${LENGTH}
+
+thermo			1000
+
+# nve thermo_style
+#thermo_style		custom step etotal v_varAveEnergy temp v_varAveTemp v_tempSTD vol v_varAveVolume press v_varAvePress v_pressSTD 
+
+# nvt thermo_style  
+thermo_style		custom step energy v_varAveEnergy v_energySTD temp v_varAveTemp vol v_varAveVolume press v_varAvePress v_pressSTD
+
+# npt thermo_style 
+#thermo_style		custom step energy v_varAveEnergy v_energySTD temp v_varAveTemp vol v_varAveVolume v_volumeSTD press v_varAvePress
+
+log			log.loop
+dump			1 all xyz 5000 dump.xyz 
+
+
+
+label loop
+
+
+run 			5000
+
+
+# nve if statement
+
+#if "${tempSTD} > ${tempErr} || ${pressSTD} > ${pressErr}" then "jump in.CuNiDiff loop"
+
+
+# nvt if statement
+
+if "${energySTD} > ${energyErr} || ${pressSTD} > ${pressErr} || ${varAveTemp} > ${maxTempErr} || ${varAveTemp} < ${minTempErr}" then "jump in.CuNiDiff loop"
+
+# npt if statement
+
+#if "{energySTD} > ${energyErr} || ${volumeSTD} > ${volumeErr} || ${varAveTemp} > ${maxTempErr} || ${varAveTemp} < ${minTempErr} || ${varAvePress} > ${maxPressErr} || ${varAvePress} < ${minPressErr}" then "jump in.CuNiDiff loop"
+
+
+
+
+
+thermo 			1000
+thermo_style		custom step energy v_varAveEnergy temp v_varAveTemp vol v_varAveVolume press v_varAvePress
+reset_timestep		0
+
+log			log.run
+run 			${RUNTIME}
+
