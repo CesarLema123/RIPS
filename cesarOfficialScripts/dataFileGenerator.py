@@ -1,6 +1,6 @@
 import numpy as np
 
-AlloyLatticeConsts = {'CuNi': 4.046,'Default': 1}  # MAKE THIS MORE UPDATABLE W/OUT HAVING TO MANUALLY CHNAGE
+AlloyLatticeConsts = {'CuNi': 3.63,'custom': 'UserDefined'}  # MAKE THIS MORE UPDATABLE W/OUT HAVING TO MANUALLY CHNAGE
 
 ''' CLASS FOR ANOTHER LATTICE TYPE
 class BCC:
@@ -9,8 +9,11 @@ class BCC:
 '''
 
 class FCC:
-    def __init__(self,alloy='CuNi'):
-        self.latticeParameter = AlloyLatticeConsts[alloy]   # should check if alloy is in alloylattice const list first, before setting
+    def __init__(self,alloy='CuNi',customLatticeConst=1):
+        if alloy == 'custom':
+            self.latticeParameter = customLatticeConst
+        else:
+            self.latticeParameter = AlloyLatticeConsts[alloy]   # should check if alloy is in alloylattice const list first, before setting
         self.basis = np.array([[1.0, 0.0, 0.0],
                                [0.0, 1.0, 0.0],
                                [0.0, 0.0, 1.0]])*self.latticeParameter
@@ -20,19 +23,21 @@ class FCC:
                                    [0.0, 0.5, 0.5]])*self.latticeParameter
 
 class AtomDataFileGenerator:
-    def __init__(self, filename='atom2', latticeType='FCC', alloy='CuNi', systemSize=1, atomTypes=2, alloyCompPercent = 0):
+    def __init__(self, filename='atom2', latticeType='FCC', alloy='CuNi', systemSize=1, atomTypes=2, alloyCompPercent = 0, customLatticeConst=None):
         # FILE SETUP
-        self.filename = filename+'.data'
+        self.filename = 'data.'+filename
         self.systemSize = systemSize        # SYSTEMSIZE CREATES (basis*systemSize)^3 box of atoms
         self.atomTypes = atomTypes
         self.alloy = alloy
 
         # BOX INFO
-
         self.latticeType = latticeType          # CAN MAKE THIS INTO A INPUT PARAMETER, WHITH DIFFERENT CLASSSES FOR EACH LATTICETYPE
         if self.latticeType == 'FCC':           # THIS MAKES MORE SENSE IF WE HAVE MULTIPLE LATTICE TYPES
-            self.lattice = FCC(alloy)
-        else:
+            if customLatticeConst != None:         # Specify a custom alloy with any lattice parameter
+                self.lattice = FCC('custom',customLatticeConst)
+            else:
+                self.lattice = FCC(alloy)
+        else:                                   # conditional for more lattice types options
             self.lattice = FCC(alloy)
         
         #PERCENT COMPOSITION FOR BINARY ATOMDATA PRODUCTION
@@ -47,7 +52,7 @@ class AtomDataFileGenerator:
         return 4*self.systemSize**3
     
     def setFilename(self,newFilename):
-        self.filename = newFilename+'.data'
+        self.filename = 'data.'+newFilename
     
     def setSystemSize(self,newSize):
         self.systemSize = newSize

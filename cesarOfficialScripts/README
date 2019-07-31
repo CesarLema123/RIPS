@@ -4,13 +4,13 @@ Description of classes aviable:
         AtomDataFileGenerator [Generate data file for atom positions of alloy with varaibel lattice type and composition]
     
     constructor:
-        AtomDataFileGenerator(filename='atom2.data', latticeType='FCC', alloy='CuNi', systemSize=1, atomTypes=2, alloyCompPercent = 0)
+        AtomDataFileGenerator(filename='atom2.data', latticeType='FCC', alloy='CuNi', systemSize=1, atomTypes=2, alloyCompPercent = 0, customLatticeConst=None)
     
     instance vars:
         filename
         systemSize
         atomTypes
-        alloy
+        alloy 
         
         latticeType
         lattice (object)
