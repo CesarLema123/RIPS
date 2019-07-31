@@ -8,8 +8,8 @@ import csv
 sh = os.system # I am running this on a bash terminal
 
    
-class simulation(pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib/AwkFiles",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.63,numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.ema.alloy",inTemplate = "in.Template"):
-    def __init__(self):
+class simulation():
+    def __init__(self,pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib/AwkFiles",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.63,numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.ema.alloy",inTemplate = "in.Template"):
         self.pythonLib = pythonLib
         self.awkLib = awkLib
         self.lammps = lammps
