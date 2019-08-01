@@ -17,7 +17,7 @@ def equilEng(numBins,logFileName):
     aveEng = np.zeros(numBins)
     for i in range(numBins)
         start = i*binSize
-        aveEng[i] = np.sum(engArray[start:(start + binSize-1)])/binSize #averaging the energy in each of the bins
+        aveEng[i] = np.average(engArray[start:(start + binSize-1)]) #averaging the energy in each of the bins
     eng = np.average(aveEng)
     err = np.std(aveEng)
     return eng 

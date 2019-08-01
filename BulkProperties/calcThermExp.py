@@ -17,7 +17,7 @@ def equilVol(numBins,logFileName):
     aveVol = np.zeros(numBins)
     for i in range(numBins):
         start = i*binSize
-        aveVol[i] = np.sum(volArray[start:(start + binSize-1)])/binSize #averaging the pressure in each of the bins, the =1 is to ensure that there is no correlation between bins. 
+        aveVol[i] = np.average(volArray[start:(start + binSize-1)]) #averaging the pressure in each of the bins, the =1 is to ensure that there is no correlation between bins. 
     vol = np.average(aveVol)
     err = np.std(aveVol)
     return [vol, err]
