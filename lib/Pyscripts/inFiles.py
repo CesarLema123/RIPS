@@ -1,4 +1,4 @@
-from randm import randomint
+from random import randomint
 
 class inFile:
     def __init__(self,fileName = "CuNi",readFile = "in.Template",runTime = 1000,timeStep = 0.0001):
