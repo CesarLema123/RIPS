@@ -7,7 +7,7 @@ variable DATAFILE string data.CuNi
 variable RUNTIME equal 1000000
 variable TEMPERATURE equal 300
 variable LENGTH equal 14.4
-variable RANDOM equal 5196413
+variable RANDOM equal 3467815
 # ALL RUNTIME,INFILE,DATAFILE
 # nve LENGTH
 # nvt LENGTH TEMPERATURE RANDOM
@@ -146,7 +146,7 @@ fix			2 all langevin ${TEMPERATURE} ${TEMPERATURE} ${dampT} ${RANDOM} zero yes
 fix			2 all langevin 300 ${TEMPERATURE} ${dampT} ${RANDOM} zero yes
 fix			2 all langevin 300 300 ${dampT} ${RANDOM} zero yes
 fix			2 all langevin 300 300 0.01 ${RANDOM} zero yes
-fix			2 all langevin 300 300 0.01 5196413 zero yes
+fix			2 all langevin 300 300 0.01 3467815 zero yes
 fix 			3 all deform 10000 x final 0.0 ${LENGTH} y final 0.0 ${LENGTH} z final 0.0 ${LENGTH}
 fix 			3 all deform 10000 x final 0.0 14.4 y final 0.0 ${LENGTH} z final 0.0 ${LENGTH}
 fix 			3 all deform 10000 x final 0.0 14.4 y final 0.0 14.4 z final 0.0 ${LENGTH}

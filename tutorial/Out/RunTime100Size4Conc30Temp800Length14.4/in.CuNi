@@ -4,7 +4,7 @@ variable DATAFILE string data.CuNi
 variable RUNTIME equal 1000000
 variable TEMPERATURE equal 800
 variable LENGTH equal 14.4
-variable RANDOM equal 6417371
+variable RANDOM equal 9860621
 # ALL RUNTIME,INFILE,DATAFILE
 # nve LENGTH
 # nvt LENGTH TEMPERATURE RANDOM
@@ -84,34 +84,34 @@ reset_timestep		0
 # AVERAGE AND STANDARD DEVIATION 
 # TEMPERATURE 
 variable 		TEMP equal temp
-fix			aveTemp all ave/time 10 100 1000 v_TEMP mode scalar start 1000 ave running
+fix			aveTemp all ave/time 10 100 1000 v_TEMP mode scalar start 1000 ave one
 variable		varAveTemp equal "f_aveTemp"
 variable		tempSq equal "v_TEMP^2"
-fix			aveTempSq all ave/time 10 100 1000 v_tempSq mode scalar start 1000 ave running
+fix			aveTempSq all ave/time 10 100 1000 v_tempSq mode scalar start 1000 ave one
 variable		tempSTD equal "sqrt(f_aveTempSq - f_aveTemp^2)"
 
 # PRESSURE
 variable		PRESS equal press
-fix 			avePress all ave/time 10 100 1000 v_PRESS mode scalar start 1000 ave running
+fix 			avePress all ave/time 10 100 1000 v_PRESS mode scalar start 1000 ave one
 variable		varAvePress equal "f_avePress"
 variable		pressSq equal "v_PRESS^2"
-fix 			avePressSq all ave/time 10 100 1000 v_pressSq mode scalar start 1000 ave running
+fix 			avePressSq all ave/time 10 100 1000 v_pressSq mode scalar start 1000 ave one
 variable 		pressSTD equal "sqrt(f_avePressSq - f_avePress^2)"
 
 # ENERGY
 variable		ENERGY equal etotal
-fix			aveEnergy all ave/time 10 100 1000 v_ENERGY mode scalar start 1000 ave running
+fix			aveEnergy all ave/time 10 100 1000 v_ENERGY mode scalar start 1000 ave one
 variable 		varAveEnergy equal "f_aveEnergy"
 variable		energySq equal "v_ENERGY^2"
-fix			aveEnergySq all ave/time 10 100 1000 v_energySq mode scalar start 1000 ave running
+fix			aveEnergySq all ave/time 10 100 1000 v_energySq mode scalar start 1000 ave one
 variable		energySTD equal "sqrt(f_aveEnergySq - f_aveEnergy^2)"
 
 # VOLUME
 variable		VOLUME equal vol
-fix			aveVolume all ave/time 10 100 1000 v_VOLUME mode scalar start 1000 ave running
+fix			aveVolume all ave/time 10 100 1000 v_VOLUME mode scalar start 1000 ave one
 variable 		varAveVolume equal "f_aveVolume"
 variable		volumeSq equal "v_VOLUME^2"
-fix			aveVolumeSq all ave/time 10 100 1000 v_volumeSq mode scalar start 1000 ave running 
+fix			aveVolumeSq all ave/time 10 100 1000 v_volumeSq mode scalar start 1000 ave one 
 variable		volumeSTD equal "sqrt(abs(f_aveVolumeSq - f_aveVolume^2))"
 
 
