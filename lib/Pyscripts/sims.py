@@ -64,7 +64,7 @@ class simulation():
             self.fileName = fileName
         if potentialFile:
             self.potentialFile = potentialFile
-        return 0
+        return 
 
     def getWorkDir(self,time,size,temp,pv,concPercent):
         if self.simType == "npt":
@@ -147,7 +147,7 @@ class simulation():
                             sh("awk -f " + self.awkLib + "/awkFixElementId dump.xyz > dump.pos")
                             sh("rm -f log.run log.temp dump.xyz" + " " + self.potentialFile + " " + self.inTemplate)
                             os.chdir(cwd)
-        return 0
+        return 
     
     
     def recordData(self):
@@ -183,7 +183,7 @@ class simulation():
                                 pass
                             os.chdir(cwd)
         w.close()
-        return 0
+        return 
     
      
     def getData(self):
