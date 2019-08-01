@@ -92,7 +92,6 @@ class simulation():
         sh(self.lammps + " " + self.inFile())
         return 0
 
-    def writeData
     def runSims(self):
         if self.simType == "npt":
             vOrP = self.pressures
