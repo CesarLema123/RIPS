@@ -9,9 +9,8 @@ sh = os.system # I am running this on a bash terminal
 
    
 class simulation():
-    def __init__(self,pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib/AwkFiles",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.63,latticeType = "FCC",numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.eam.alloy",inTemplate = "in.Template"):
-        self.pythonLib = pythonLib
-        self.awkLib = awkLib
+    def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.63,latticeType = "FCC",numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.eam.alloy",inTemplate = "in.Template"):
+        self.lib = lib
         self.lammps = lammps
         self.runTimes = runTimes
         self.alloy = alloy
@@ -30,11 +29,9 @@ class simulation():
         self.inTemplate = inTemplate
         return 
 
-    def setSimParams(self,pythonLib = "",awkLib = "",lammps = "",alloy = "",latticeConst = 0.0,latticeType = "",numAtomTypes = 0,runTimes = [],systemSizes = [],temperatures = [],pressures = [],lengths = [],concPercents = [],timeStep = 0.0,simType = "",fileName = "", potentialFile = "",inTemplate = ""):
-        if pythonLib:
-            self.pythonLib = pythonLib
-        if awkLib:
-            self.awkLib = awkLib
+    def setSimParams(self,lib = "",lammps = "",alloy = "",latticeConst = 0.0,latticeType = "",numAtomTypes = 0,runTimes = [],systemSizes = [],temperatures = [],pressures = [],lengths = [],concPercents = [],timeStep = 0.0,simType = "",fileName = "", potentialFile = "",inTemplate = ""):
+        if lib:
+            self.lib = lib
         if lammps:
             self.lammps = lammps
         if alloy:
@@ -90,6 +87,11 @@ class simulation():
     def dataFile(self):
         return "data." + self.fileName
 
+    def pythonLib(self):
+        return self.lib+"/PyScripts"
+
+    def awkLib(self):
+        return self.lib+"/AwkFiles"
 
     def runLammps(self):
         sh(self.lammps + " " + self.inFile())
@@ -141,13 +143,13 @@ class simulation():
                         for concPercent in self.concPercents:
                             wd = self.getWorkDir(time,size,temp,var,concPercent)
                             os.chdir(wd)
-                            sh("awk -f " + self.awkLib + "/awkReadLog log.run > log.data")
+                            sh("awk -f " + self.awkLib() + "/awkReadLog log.run > log.data")
                             try:
-                                sh("awk -f " + self.awkLib + "/awkReadLog log.loop > log.temp")
-                                sh("awk -f " + self.awkLib + "/awkCombineLog log.temp > log.loop")
+                                sh("awk -f " + self.awkLib() + "/awkReadLog log.loop > log.temp")
+                                sh("awk -f " + self.awkLib() + "/awkCombineLog log.temp > log.loop")
                             except:
                                 pass
-                            sh("awk -f " + self.awkLib + "/awkFixElementId dump.xyz > dump.pos")
+                            sh("awk -f " + self.awkLib() + "/awkFixElementId dump.xyz > dump.pos")
                             sh("rm -f log.run log.temp dump.xyz" + " " + self.potentialFile + " " + self.inTemplate)
                             os.chdir(cwd)
         return 
