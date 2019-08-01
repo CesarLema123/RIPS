@@ -7,7 +7,7 @@ sim.setSimParams(pythonLib = "/home/IPAMNET/tleadbetter/git-RIPS/RIPS/lib/PyScri
 sim.runSims()
 sim.cleanOutput()
 y,dy,x,dx = sim.calcHeatCapV() #calcThermoExp() calcBulkModT()
-plt.errorbar(x,y, yerr = dy,xerr = dx)
+plt.errorbar(x,y, yerr = dy,xerr = dx,fmt = "o")
 plt.show()
 print("All Done")
 

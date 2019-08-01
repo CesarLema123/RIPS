@@ -164,7 +164,7 @@ class simulation():
         else:
             print("Unknown simulation type.")
             return 1
-        i = 0
+        header = ""
         cwd = os.getcwd()
         for time in self.runTimes:
             for size in self.systemSizes:
@@ -174,11 +174,10 @@ class simulation():
                             wd = self.getWorkDir(time,size,temp,var,concPercent)
                             os.chdir(wd)
                             try:
-                                if i == 0:
+                                if not header:
                                     data,header = getThermoStats("log.data")
                                     writer.writerow(header)
                                     writer.writerow(data)
-                                    i = 1
                                 else:
                                     data = getThermoStats("log.data")[0]
                                     writer.writerow(data)
@@ -200,9 +199,8 @@ class simulation():
         else:
             print("Unknown simulation type.")
             return 1
-        w = open(self.thermoDataFile,mode = "w")
         df = []
-        i = 0
+        header = ""
         cwd = os.getcwd()
         for time in self.runTimes:
             for size in self.systemSizes:
@@ -212,17 +210,15 @@ class simulation():
                             wd = self.getWorkDir(time,size,temp,var,concPercent)
                             os.chdir(wd)
                             try:
-                                if i == 0:
+                                if not header:
                                     data,header = getThermoStats("log.data")
                                     df.append(data)
-                                    i = 1
                                 else:
                                     data = getThermoStats("log.data")[0]
                                     df.append(data)
                             except:
                                 pass
                             os.chdir(cwd)
-        w.close()
         return pd.DataFrame(df,columns = header)
 
     def calcBulkModT(self,thermoDF = None):
@@ -266,7 +262,7 @@ class simulation():
 
     def calcHeatCapV(self,thermoDF = None):
         if type(thermoDF) == type(None):
-            thermoDF = self.getData(simType)
+            thermoDF = self.getData()
         thermoDf.sort_values("Temp Ave")
         T = list(thermoDF["Temp Ave"])
         dT = list(thermoDF["Temp Stdm"])
