@@ -9,19 +9,20 @@ sh = os.system # I am running this on a bash terminal
 
    
 class simulation():
-    def __init__(self,pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib/AwkFiles",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.63,numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.ema.alloy",inTemplate = "in.Template"):
+    def __init__(self,pythonLib = "$HOME/RIPS/lib/PyScripts",awkLib = "$HOME/RIPS/lib/AwkFiles",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.63,latticeType = "FCC",numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.eam.alloy",inTemplate = "in.Template"):
         self.pythonLib = pythonLib
         self.awkLib = awkLib
         self.lammps = lammps
         self.runTimes = runTimes
         self.alloy = alloy
         self.latticeConst = latticeConst
+        self.latticeType = latticeType
         self.numAtomTypes = numAtomTypes
         self.systemSizes = systemSizes
         self.temperatures = temperatures
         self.pressures = pressures
         self.lengths = lengths
-        self.concPrecents = concPercents
+        self.concPercents = concPercents
         self.timeStep = timeStep
         self.simType = simType
         self.fileName = fileName
@@ -29,7 +30,7 @@ class simulation():
         self.inTemplate = inTemplate
         return 
 
-    def setSimParams(self,pythonLib = "",awkLib = "",lammps = "",alloy = "",latticeConst = 0.0,numAtomTypes = 0,runTimes = [],systemSizes = [],temperatures = [],pressures = [],lengths = [],concPrecents = [],timeStep = 0.0,simType = "",fileName = "", potentialFile = "",inTemplate = ""):
+    def setSimParams(self,pythonLib = "",awkLib = "",lammps = "",alloy = "",latticeConst = 0.0,latticeType = "",numAtomTypes = 0,runTimes = [],systemSizes = [],temperatures = [],pressures = [],lengths = [],concPercents = [],timeStep = 0.0,simType = "",fileName = "", potentialFile = "",inTemplate = ""):
         if pythonLib:
             self.pythonLib = pythonLib
         if awkLib:
@@ -40,6 +41,8 @@ class simulation():
             self.alloy = alloy
         if latticeConst:
             self.latticeConst = latticeConst
+        if latticeType:
+            self.latticeType = latticeType
         if numAtomTypes:
             self.numAtomTypes = numAtomTypes
         if any(runTimes):
@@ -52,8 +55,8 @@ class simulation():
             self.pressures = pressures
         if any(lengths):
             self.lengths = lengths
-        if any(concPrecents):
-            self.concPrecents = concPrecents
+        if any(concPercents):
+            self.concPercents = concPercents
         if timeStep:
             self.timeStep = timeStep
         if simType:
@@ -108,15 +111,15 @@ class simulation():
             for size in self.systemSizes:
                 for temp in self.temperatures:
                     for var in vOrP:
-                        for concPercent in self.concPrecents:
+                        for concPercent in self.concPercents:
                             wd = self.getWorkDir(time,size,temp,var,concPercent)
                             sh("mkdir " + wd) 
                             self.cpTmp(wd)
                             os.chdir(wd)
                             # write the input file and the data file
-                            inFile = inF.inFile(fileName = self.fileName, readFile = self.inTemplate,runTime = self.runTime,timeStep = self.timeStep)
+                            inFile = inF.inFile(fileName = self.fileName, readFile = self.inTemplate,runTime = time,timeStep = self.timeStep)
                             inFile.writeInFile(options = ["TEMPERATURE equal " + str(temp),varString + " equal " +str(var),"RANDOM equal " + str(randint(1000000,9999999))])
-                            dataFile = dataF.AtomDataFileGenerator(filename = self.fileName,latticeType = self.latticeType,alloy = self.alloy,latticeCosnt = self.latticeConst,systemSize = size, atomTypes = self.numAtomTypes, alloyCompPercent = concPercent)
+                            dataFile = dataF.AtomDataFileGenerator(filename = self.fileName,latticeType = self.latticeType,alloy = self.alloy,customLatticeConst = self.latticeConst,systemSize = size, atomTypes = self.numAtomTypes, alloyCompPercent = concPercent)
                             dataFile.createDataFile()
                             self.runLammps()
                             os.chdir(cwd)
@@ -135,7 +138,7 @@ class simulation():
             for size in self.systemSizes:
                 for temp in self.temperatures:
                     for var in vOrP:
-                        for concPercent in self.concPrecents:
+                        for concPercent in self.concPercents:
                             wd = self.getWorkDir(time,size,temp,var,concPercent)
                             os.chdir(wd)
                             sh("awk -f " + self.awkLib + "/awkReadLog log.run > log.data")
@@ -167,7 +170,7 @@ class simulation():
             for size in self.systemSizes:
                 for temp in self.temperatures:
                     for var in vOrP:
-                        for concPercent in self.concPrecents:
+                        for concPercent in self.concPercents:
                             wd = self.getWorkDir(time,size,temp,var,concPercent)
                             os.chdir(wd)
                             try:
@@ -205,7 +208,7 @@ class simulation():
             for size in self.systemSizes:
                 for temp in self.temperatures:
                     for var in vOrP:
-                        for concPercent in self.concPrecents:
+                        for concPercent in self.concPercents:
                             wd = self.getWorkDir(time,size,temp,var,concPercent)
                             os.chdir(wd)
                             try:
@@ -286,10 +289,10 @@ class simulation():
             for size in self.systemSizes:
                 for temp in self.temperatures:
                     for var in vOrP:
-                        for concPercent in self.concPrecents:
+                        for concPercent in self.concPercents:
                             wd = self.getWorkDir(time,size,temp,var,concPercent)
                             os.chdir(wd)
                             print("Time: %d, N: %d, T: %0.2f, %s: %0.4f, C: %d" %(time,size,temp,"P" if self.simType == "npt" else "V",var,concPercent*10))
                             qplot(logFile) # A function from utils which gives a 
                             os.chdir(cwd)
-        return 0
+        return 
