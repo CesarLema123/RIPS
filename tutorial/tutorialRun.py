@@ -16,8 +16,8 @@ sim.cleanOutput()
 #plt.errorbar(nT, tE, xerr = dnT, yerr = dtE, fmt = "o")
 
 #uncomment below to calculate Bulk Modulus
-latC = [x in range(3.61,3.66,0.01)]
-sim.setSimParams(lib = "/home/IPAMNET/tleadbetter/git-RIPS/RIPS/lib",temperatures = [900,],concPercents = [30,],pressures = [0,],lengths = [3.63*4],runTimes = [100,],inTemplate = "in.NVT", alloy = "custom",latticeConst = latC,timeStep = 0.0001, simType = "nvt",systemSizes = [4,])
+length = [4*x in range(3.55,3.66,0.01)]
+sim.setSimParams(lib = "/home/IPAMNET/tleadbetter/git-RIPS/RIPS/lib",temperatures = [900,],concPercents = [30,],pressures = [0,],lengths = length,runTimes = [100,],inTemplate = "in.NVT", alloy = "custom",latticeConst = 3.6,timeStep = 0.0001, simType = "nvt",systemSizes = [4,])
 bM,dbM,nV,dnV = sim.calcBulkModT()
 plt.errorbar(nV, bM, xerr = dnV, yerr = dbM, fmt = "o")
 
