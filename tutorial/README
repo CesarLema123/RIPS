@@ -1,2 +1,24 @@
-Before running the tutorial, please add the PyScripts folder to PYTHONPATH
+Before running the tutorial, please add the PyScripts folder to the PYTHONPATH variable i.e. in a command line:
+export PYTHONPATH=${PYTHONPATH}:<filepath-to-Pyscripts>
+where you replace <filepath-to-Pyscripts> with the correct filepath.
 
+You can vim (or use some other code editor) into the tutorialRun.py file and comment/uncomment the marked lines 
+depending on what bulk property you'd like to compute. Note that in sim.setSimParams(), you can set any of the following variables:
+        lib             - string                -  path to lib folder
+        lammps          - string                -  command line lammps executable ["lmp -in" or "lammps.q"]
+        runTimes        - list[int]             - Simulation run times in inFile's units
+        alloy           - string                - Name of alloy to use for latticeConst or "Custom" to use latticeConst given
+        latticeConst    - float                 - value passed for latticeConst to AtomDataFileGenerator if alloy is "Custom"
+        latticeType     - string                - "FCC" or "BCC" 
+        numAtomTypes    - int                   - Number of atom types for the simulation
+        systemSizes     - list[int]             - list giving the range of sizes (number of unit lattice cells per side of cube) to use
+        temperatures    - list[round(float,4)]  - list giving the range of temperatures to use
+        pressures       - list[round(float,4)]  - only used if simType is "npt"
+        lengths         - list[round(float,4)]  - side of box to make simulation, only use if simType is "nvt"
+        concPrescents   - list[round(float,4)]  - concentrations of first element to use in simulations
+        simType         - string                - "npt" or "nvt" for now
+        fileName        - string                - desired file name used in "in._____" and "data.______" 
+        potentialFile   - string                - name of the potential file to use for simulations
+        inTemplate      - string                - name of in file to use to build simulation in files
+
+Then simply run tutorialRun.py. A plot of the desired bulk property will appear!
