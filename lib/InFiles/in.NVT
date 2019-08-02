@@ -133,7 +133,7 @@ fix			2 all langevin ${TEMPERATURE} ${TEMPERATURE} ${dampT} ${RANDOM} zero yes
 fix 			3 all deform 10000 x final 0.0 ${LENGTH} y final 0.0 ${LENGTH} z final 0.0 ${LENGTH}
 
 thermo			5000
-thermo_style		custom step etotal v_varAveEnergy v_energySTD temp v_varAveTemp v_tempSTD vol v_varAveVolume v_volumeSTD press v_varAvePress v_pressSTD
+thermo_style		custom step etotal v_varAveEnergy v_energySTD enthalpy v_varAveEnthalpy v_enthalpySTD temp v_varAveTemp v_tempSTD vol v_varAveVolume v_volumeSTD press v_varAvePress v_pressSTD
 
 
 
@@ -182,7 +182,7 @@ if "$(abs(v_saveEnergySTD - v_energySTD)) > ${energyErr} || $(abs(v_pressSTD - v
 compute			MSD all msd com yes
 
 thermo 			5000
-thermo_style		custom step etotal v_varAveEnergy v_energySTD temp v_varAveTemp v_tempSTD vol v_varAveVolume v_volumeSTD press v_varAvePress v_pressSTD c_MSD[4]
+thermo_style		custom step etotal v_varAveEnergy v_energySTD enthalpy v_varAveEnthalpy v_enthalpySTD temp v_varAveTemp v_tempSTD vol v_varAveVolume v_volumeSTD press v_varAvePress v_pressSTD
 
 log			log.run
 run 			${RUNTIME}

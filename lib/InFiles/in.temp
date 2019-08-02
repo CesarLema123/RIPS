@@ -3,7 +3,13 @@
 # nvt LENGTH TEMPERATURE RANDOM
 # npt TEMPERATURE PRESSURE RANDOM
 # nph PRESSURE
-
+variable RUNTIME equal 1
+variable INFILE string "in.temp"
+variable DATAFILE string "data.temp"
+variable TIMESTEP equal 0.0001
+variable TEMPERATURE equal 100
+variable PRESSURE equal 0
+variable RANDOM equal 7584736
 
 
 # -------------------- SPECIFY ANY VARIABLES WHICH MIGHT BE GIVEN FROM CMD LATER --------------------  
