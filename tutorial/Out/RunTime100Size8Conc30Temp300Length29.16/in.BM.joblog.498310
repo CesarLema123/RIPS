@@ -1,0 +1,35 @@
+qqapp= lammps parallel
+qr.mpi was sourced
+UGE job for in.BM built Thu Aug  1 10:14:59 PDT 2019
+
+  in.BM directory:
+    /u/home/r/ripshrl2/BM010819/Out/RunTime100Size8Conc30Temp300Length29.16
+  Submitted to UGE:
+    Job 498310, queue: pod_smp_campus.q, sub: 08/01/2019 10:15:02.948
+  'scratch' directory (on each node):
+    /work/498310.1.pod_smp_campus.q
+  in.BM 4-way parallel job configuration:
+    Master:  4 x n7441
+
+in.BM started on:   n7441
+in.BM started at:   Thu Aug 1 10:15:18 PDT 2019
+
+
+The 'gcc/4.9.3' module is being loaded
+
+Currently Loaded Modulefiles:
+  1) gcc/4.9.3                     4) python/2.7.13_shared
+  2) hdf5/1.8.18-shared            5) intel/18.0.2
+  3) xz/5.2.3                      6) lammps/12Dec18-intel-18.0.2
+PATH=/u/local/apps/lammps/lammps-12Dec18/intel-18.0.2/bin:/u/local/compilers/intel/18.0.2/parallel_studio_xe_2018.2.046/bin:/u/local/compilers/intel/18.0.2/compilers_and_libraries_2018.2.199/linux/mpi/intel64/bin:/u/local/compilers/intel/18.0.2/compilers_and_libraries_2018.2.199/linux/bin/intel64:/u/local/compilers/intel/18.0.2/clck/2018.3/bin/intel64:/u/local/compilers/intel/18.0.2/itac/2018.2.020/intel64/bin:/u/local/compilers/intel/18.0.2/inspector_2018.2.0.551023/bin64:/u/local/compilers/intel/18.0.2/vtune_amplifier_2018.2.0.551022/bin64:/u/local/compilers/intel/18.0.2/advisor_2018.2.0.551025/bin64:/u/local/apps/python/2.7.13-shared/bin:/u/local/apps/xz/5.2.3/bin:/u/local/apps/hdf5/1.8.18/gcc-4.4.7-shared/bin:/u/local/compilers/gcc/4.9.3/bin:/bin:/usr/bin:/sys/local/bin:/usr/local/bin:/u/local/bin:/work/498310.1.pod_smp_campus.q:/usr/local/bin:/bin:/usr/bin
+ 
+/usr/bin/time -v /u/local/compilers/intel/18.0.2/compilers_and_libraries_2018.2.199/linux/mpi/intel64/bin/mpirun -genvlist OMP_NUM_THREADS,MKL_NUM_THREADS -n 4 /u/local/apps/lammps/lammps-12Dec18/intel-18.0.2/bin/lmp_hoffman2 < in.BM >& in.BM.output.498310
+ 
+ 
+in.BM finished at:  Thu Aug 1 11:16:36 PDT 2019
+qqapp= lammps parallel
+End of qr.lammps
+
+Scratch files on n7441 in /work/498310.1.pod_smp_campus.q deleted:
+total 4
+-rw-r--r-- 1 ripshrl2 cratsch 15 Aug  1 10:15 nodefile

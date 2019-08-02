@@ -184,7 +184,7 @@ def dForwDif(X,dX,Y,dY):
         DX = X[i+1] - X[i]
         DY = Y[i+1] - Y[i]
         dYdX[i] = DY/DX
-        ddYdX[i] = dYdX[i]*sqrt((dY[i+1]/DY)**2 + (dY[i]/DY)**2 + (dX[i+1]/DX)**2 + (dX[i]/DX)**2)
+        ddYdX[i] = dYdX[i]*np.sqrt((dY[i+1]/DY)**2 + (dY[i]/DY)**2 + (dX[i+1]/DX)**2 + (dX[i]/DX)**2)
         nX[i] = (X[i+1] + X[i])/2
     return dYdX,ddYdX,nX
     

@@ -1,11 +1,12 @@
 import sims
+import matplotlib.pyplot as plt
 sim = sims.simulation()
-print(dir(sim))
 
-sim.setSimParams(lib = "/home/IPAMNET/tleadbetter/git-RIPS/RIPS/lib",temperatures = list(x for x in range(100,101,100)),concPercents = [30,],pressures = [0,],lengths = [3.6*4,],runTimes = [100,],inTemplate = "in.NVT", alloy = "custom",latticeConst = 3.6,timeStep = 0.0001, simType = "nvt",systemSizes = [4,])
+length = [8*3.63*x/1000 for x in range(995,1006,1)]
+sim.setSimParams(lib = "$HOME/git-RIPS/RIPS/lib",systemSizes = [8,],temperatures = [300,], lengths = length,simType = "nvt",fileName = "temp",inTemplate = "in.NVT",concPercents = [30,],lammps = "lmp_daily -in")
 
-sim.runSims()
-sim.cleanOutput()
+#sim.runSims()
+#sim.cleanOutput()
 
 #uncomment below to calculate Heat Capacity
 #dEdT,ddEdT,nT,dnT = sim.calcHeatCapV()
@@ -16,8 +17,8 @@ sim.cleanOutput()
 #plt.errorbar(nT, tE, xerr = dnT, yerr = dtE, fmt = "o")
 
 #uncomment below to calculate Bulk Modulus
-length = [4*x in range(3.55,3.66,0.01)]
-sim.setSimParams(lib = "/home/IPAMNET/tleadbetter/git-RIPS/RIPS/lib",temperatures = [900,],concPercents = [30,],pressures = [0,],lengths = length,runTimes = [100,],inTemplate = "in.NVT", alloy = "custom",latticeConst = 3.6,timeStep = 0.0001, simType = "nvt",systemSizes = [4,])
+
+
 bM,dbM,nV,dnV = sim.calcBulkModT()
 plt.errorbar(nV, bM, xerr = dnV, yerr = dbM, fmt = "o")
 
