@@ -9,8 +9,12 @@ sh = os.system # I am running this on a bash terminal
 
    
 class simulation():
+   """
+   The simulation class is meant to hold all of the parameters one would vary across a lammps md simulation in the npt or nvt ensemble.
+   It is also capable to running the simulations.
+   """
     def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.63,latticeType = "FCC",numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.eam.alloy",inTemplate = "in.Template"):
-        self.lib = lib
+        self.lib = lib 
         self.lammps = lammps
         self.runTimes = runTimes
         self.alloy = alloy
@@ -30,7 +34,10 @@ class simulation():
         return 
 
     def setSimParams(self,lib = "",lammps = "",alloy = "",latticeConst = 0.0,latticeType = "",numAtomTypes = 0,runTimes = [],systemSizes = [],temperatures = [],pressures = [],lengths = [],concPercents = [],timeStep = 0.0,simType = "",fileName = "", potentialFile = "",inTemplate = ""):
-        if lib:
+        """
+        Change any of the initial parameters. Any unspecifies paramters are automatically unchanged.
+        """
+         if lib:
             self.lib = lib
         if lammps:
             self.lammps = lammps
@@ -67,18 +74,25 @@ class simulation():
         return 
 
     def getWorkDir(self,time,size,temp,pv,concPercent):
+        """
+        This function writes the name of the directory in which the simulation will be run and output. 
+        The naming is preference and can be changed.
+        """
         if self.simType == "npt":
             return "Out/RunTime"+str(time)+"Size"+str(size)+"Conc"+str(concPercent)+"Temp"+str(temp)+"Press"+str(round(pv,2))
         elif self.simType == "nvt":
             return "Out/RunTime"+str(time)+"Size"+str(size)+"Conc"+str(concPercent)+"Temp"+str(temp)+"Length"+str(round(pv,2))
         else:
             print("Unknown sim type.")
-            return 1
+            return 
     
     def cpTmp(self,wd):
+        """
+        This function copies the inFile and potential file to the directory in which the simulation wil be run.
+        """
         sh("cp " + self.inTemplate + " " + wd)
         sh("cp " + self.potentialFile + " " + wd)
-        return 0
+        return 
     
    
     def inFile(self):
