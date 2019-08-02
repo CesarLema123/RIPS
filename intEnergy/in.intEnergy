@@ -16,7 +16,7 @@ atom_style atomic
 #region simR block 0 8.092 0 4.046 0 4.046 #use change_box to reshape sim box  
 #region solidBase block 0 4.046 0 4.046 0 4.046 #create_box reshapes sim box to fit new atoms
 #create_box 2 solidBase
-read_data atom.data group solAtoms 
+read_data data.atoms group solAtoms 
 #read_data atom.data add append
 #group baseAtoms region solidBase
 

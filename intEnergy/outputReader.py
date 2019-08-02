@@ -105,6 +105,8 @@ class LogReader:
 #USAGE EXAMPLE FOR GETTING DATA FRAME FROM FILENAME AND THERMO SPACE SEPERATED LIST OF THERMO COMMANDS
 #USE FILE PATH IF FILE IS NOT LOCAL
 
+'''
 #filename='log.Bulkmod',thermoLabels='Step Atoms Temp Press TotEng'
 reader = LogReader('log.Bulkmod','Step Atoms Temp Press TotEng')
 print(reader.getDataframe())
+'''

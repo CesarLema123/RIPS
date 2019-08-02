@@ -105,6 +105,7 @@ class AtomDataFileGenerator:
             fdata.write('{} {} xlo xhi\n'.format(0.0, self.systemSize*self.lattice.latticeParameter))
             fdata.write('{} {} ylo yhi\n'.format(0.0, self.systemSize*self.lattice.latticeParameter))
             fdata.write('{} {} zlo zhi\n'.format(0.0, self.systemSize*self.lattice.latticeParameter))
+            fdata.write('0.0 0.0 0.0 xy xz yz\n') # allows simulation box to tilt
             fdata.write('\n')
             # -------- Atom Positions -----------#
             fdata.write('Atoms\n\n')

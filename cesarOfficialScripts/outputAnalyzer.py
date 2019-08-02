@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #collection of methods that analyze dataframe data
-class LogAnalyzer:
+class DataFrameAnalyzer:
     def __init__(self,dataframe):
         self.df = dataframe
 
@@ -19,6 +19,8 @@ class LogAnalyzer:
         Y = self.df[columnLabel].values
         X = np.linspace(0,self.timestep*len(Y),len(Y))
         self.generalPlot(X,Y,'Runtime','Total Energy',)
+
+    
 
 
 # ---------------------------------------

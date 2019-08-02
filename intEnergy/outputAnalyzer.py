@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #collection of methods that analyze dataframe data
-class LogAnalyzer:
+class DataFrameAnalyzer:
     def __init__(self,dataframe,timestep=1):
         self.df = dataframe
         self.timestep = timestep
@@ -36,6 +36,14 @@ class LogAnalyzer:
     def pairDistribuationFunction(self):
     
     '''
+
+    #RETURN A LIST WITH VALUES, FOR A SPECIFIED DF COLUMN ,WHERE IT REMAINED RELATIVELY CONSTANT OVER A GOOD RUNTIME RANGE
+    def getConstValueList(self,columnLabel):
+        yData = np.array(self.df[columnLabel].tolist())   # GET COLUMN DATA AS TARGET NDARRAY
+
+        binSize = yData.shape()
+
+
     
     
 # ---------------------------------------
