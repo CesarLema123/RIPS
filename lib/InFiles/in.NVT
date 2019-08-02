@@ -106,7 +106,13 @@ variable		volumeSq equal "v_VOLUME^2"
 fix			aveVolumeSq all ave/time 10 100 1000 v_volumeSq mode scalar start 1000 ave one 
 variable		volumeSTD equal "sqrt(abs(f_aveVolumeSq - f_aveVolume^2))"
 
-
+# ENTHALPY
+variable                ENTH equal enthalpy
+fix                     aveEnthalpy all ave/time 10 100 1000 v_ENTH mode scalar start 1000 ave one
+variable                varAveEnthalpy equal "f_aveEnthalpy"
+variable                enthalpySq equal "v_ENTH^2"
+fix                     aveEnthalpySq all ave/time 10 100 1000 v_enthalpySq mode scalar start 1000 ave one
+variable                enthalpySTD equal "sqrt(f_aveEnthalpySq - f_aveEnthalpy^2)"
 
 
 # -------------------- SET UP THERMO STYLES AND DUMPS -------------------- 

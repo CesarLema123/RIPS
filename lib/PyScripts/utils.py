@@ -159,7 +159,8 @@ def forwDif(X,Y):
     """
     This script computes and approximate derivative using a forward difference method.
     If X,Y are lists of length N then the output is two lists of N-1 corresponding t
-    the approximate derivative and their corresponding X coordinates
+    the approximate derivative and their corresponding X coordinates which are taken to be
+    the mid points between each adjacent pair.
     """
     N = len(X)
     dYdX,nX = [0.0]*(N-1),[0.0]*(N-1)
@@ -170,7 +171,12 @@ def forwDif(X,Y):
 
 def dForwDif(X,dX,Y,dY):
     """
-    Like forwDif function but returns the uncertainty values as well
+    This script computes and approximate derivative using a forward difference method.
+    If X,Y are lists of length N to be used in for computing the derivate and dX and dY are their uncertainties.
+    The output is three lists of N-1 corresponding to
+    the approximate derivative, the uncertainty associated with the forward difference given the errors,
+    and their corresponding X coordinates which are taken to be
+    the mid points between each adjacent pair.
     """
     N = len(X)
     dYdX,ddYdX,nX = [0.0]*(N-1),[0.0]*(N-1),[0.0]*(N-1) # confusing labels but ddYdX is the error in the derivative
