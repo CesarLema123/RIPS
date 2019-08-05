@@ -25,10 +25,12 @@ alloyDG = DFG.AtomDataFileGenerator('atoms',systemSize=5,alloyCompPercent=.5)
 #alloyDG = DFG.AtomDataFileGenerator('atoms',systemSize=10,alloy='custom',alloyCompPercent=.5,customLatticeConst=1.815)
 
 alloyDG.createDataFile()             # method creates and add data file locally
+print(alloyDG.getActualCompPercent())
 print(" ************ created datafile sucessfully ************* ")
 
 #alloyDG.setSystemSize(4) #update size of atom box [1*latticeConst => 4*latticeConst]
 #alloyDG.createDataFile()
+
 
 #-----------------------------------------
 

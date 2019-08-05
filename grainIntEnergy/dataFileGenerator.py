@@ -29,6 +29,7 @@ class AtomDataFileGenerator:
         self.systemSize = systemSize        # SYSTEMSIZE CREATES (basis*systemSize)^3 box of atoms
         self.atomTypes = atomTypes
         self.alloy = alloy
+        self.fileMade = False
 
         # BOX INFO
         self.latticeType = latticeType          # CAN MAKE THIS INTO A INPUT PARAMETER, WHITH DIFFERENT CLASSSES FOR EACH LATTICETYPE
@@ -43,10 +44,15 @@ class AtomDataFileGenerator:
         #PERCENT COMPOSITION FOR BINARY ATOMDATA PRODUCTION
         self.compPercent = alloyCompPercent         # compPercent affects number of 2 atoms created, up to user which elem is 1 or 2
         self.compCounter = 0
+        
     
     # METHODS FOR UPDATING FILE AND ATOM VARIABLES
     def getActualCompPercent(self):
-        return float(self.compCounter/self.getNumAtoms())
+        if self.fileMade:
+            return float(self.compCounter/self.getNumAtoms())
+        else:
+            # edit code to raise an error instead of print
+            print('*********** ERROR: DATAFILE NOT CREATED YET, CALL METHOD createDataFile() **********')
 
     def getNumAtoms(self):
         return 4*self.systemSize**3
@@ -112,6 +118,8 @@ class AtomDataFileGenerator:
  
             for i,pos in enumerate(positions):
                 fdata.write('{} {} {} {} {}\n'.format(i+1,str(self.generateAtomType()),*pos))
+
+            self.fileMade = True
                  
 
 
