@@ -250,10 +250,10 @@ class simulation():
                             os.chdir(cwd)
         return pd.DataFrame(df,columns = header)
 
-    def getForwDif(self,X,Y):
+    def getForwDif(self,A,B):
         """
-        This function computes the derivative of thermo variable Y with respect to X
-        using the forward difference method. X and Y shoud be strings any of Volume Energy Press or Temp.
+        This function computes the derivative of thermo variable B with respect to A
+        using the forward difference method. A and B shoud be strings any of Volume Energy Press or Temp.
         The output are generated using utils.getThermoStats and utils.dForwDif and are:
         X - list of averages of independent variable in sims
         dX - the uncertainties in X
@@ -265,11 +265,11 @@ class simulation():
         """
         varDict = {"Energy": ["Energy Ave","Energy Stdm"],"Volume": ["Volume Ave","Volume Stdm"],"Press": ["Press Ave","Press Stdm"],"Temp":["Temp Ave","Temp Stdm"]}
         thermoDF = self.getData()
-        thermoDf = thermoDF.sort_values(varDict[X][0])
-        X = np.array(thermoDF[varDict[X][0]])
-        dX = np.array(thermoDF[varDict[X][1]])
-        Y = np.array(thermoDF[varDict[Y][0]])
-        dY = np.array(thermoDF[varDict[Y][1]])
+        thermoDf = thermoDF.sort_values(varDict[A][0])
+        X = np.array(thermoDF[varDict[A][0]])
+        dX = np.array(thermoDF[varDict[A][1]])
+        Y = np.array(thermoDF[varDict[B][0]])
+        dY = np.array(thermoDF[varDict[B][1]])
         dYdX,ddYdX,midX = utils.dForwDif(X,dX,Y,dY)
         return X,dX,Y,dY,dYdX,ddYdX,midX
 
