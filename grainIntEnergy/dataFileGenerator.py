@@ -29,7 +29,7 @@ class AtomDataFileGenerator:
         self.systemSize = systemSize        # SYSTEMSIZE CREATES (basis*systemSize)^3 box of atoms
         self.atomTypes = atomTypes
         self.alloy = alloy
-        self.fileMade = False
+        self.fileCreated = False
 
         # BOX INFO
         self.latticeType = latticeType          # CAN MAKE THIS INTO A INPUT PARAMETER, WHITH DIFFERENT CLASSSES FOR EACH LATTICETYPE
@@ -48,7 +48,7 @@ class AtomDataFileGenerator:
     
     # METHODS FOR UPDATING FILE AND ATOM VARIABLES
     def getActualCompPercent(self):
-        if self.fileMade:
+        if self.fileCreated:
             return float(self.compCounter/self.getNumAtoms())
         else:
             # edit code to raise an error instead of print
@@ -86,6 +86,14 @@ class AtomDataFileGenerator:
     
     # RETURN ATOM TYPE BASED ON DESIRED COMPOSITION, 1 = Ni, 2 = Cu
     def generateAtomType(self):
+        compRand = np.random.random(1)[0]
+        if compRand < self.compPercent:
+            self.compCounter+=1
+            return(2)
+        else:
+            return(1)
+        
+        ''' Original Implementation
         compMax = 4*(self.systemSize**3)*self.compPercent
         compBias = .70       # FIX THIS, NO HARD CODED NUMBERS
         
@@ -95,6 +103,7 @@ class AtomDataFileGenerator:
             return(2)
         else:
             return(1)
+        '''
 
     # WRITE LAMMPS DATAFILE
     def createDataFile(self):
@@ -119,7 +128,7 @@ class AtomDataFileGenerator:
             for i,pos in enumerate(positions):
                 fdata.write('{} {} {} {} {}\n'.format(i+1,str(self.generateAtomType()),*pos))
 
-            self.fileMade = True
+            self.fileCreated = True
                  
 
 
