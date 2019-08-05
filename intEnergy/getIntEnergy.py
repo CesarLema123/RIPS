@@ -87,14 +87,13 @@ for i in range(21):
 
 lmp.minimize('1e-2 1e-2 10000 10000')
 
-
+For Fun/cool visualization
 lmp.run(200)
 
 for i in range(21):
     lmp.minimize('1e-4 1e-4 10000 10000')
     lmp.displace_atoms('liquidAtoms','move', -1*latConst, 0, 0)
     lmp.run(10)
-
     
 #lmp.delete_atoms('region solBase')
 

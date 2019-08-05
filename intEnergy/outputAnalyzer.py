@@ -37,12 +37,48 @@ class DataFrameAnalyzer:
     
     '''
 
+    '''
     #RETURN A LIST WITH VALUES, FOR A SPECIFIED DF COLUMN ,WHERE IT REMAINED RELATIVELY CONSTANT OVER A GOOD RUNTIME RANGE
     def getConstValueList(self,columnLabel):
         yData = np.array(self.df[columnLabel].tolist())   # GET COLUMN DATA AS TARGET NDARRAY
 
         binSize = yData.shape()
 
+
+    # have to find a decent way to find max Error (and alittle, but its fine rn,the min Range value)
+    def getConstValueList(df,columnLabel,maxError=2,minRange=10):
+        #thermo data is outputedevrey timestepInterval
+        
+        yData = np.array(df[columnLabel].tolist()).astype(float)   # GET COLUMN DATA AS TARGET NDARRAY
+        #plt.plot(yData)
+        yGradient = np.gradient(yData)     # timestep is conserved
+        plt.plot(yGradient[20:])
+        yGGradient = np.gradient(yGradient)   # timestep is conserved
+        plt.plot(yGGradient[20:])
+        
+        constValueRanges= []
+        lowRange, uppRange = -1, -1    # -1 means var is not set
+            
+            
+        for ind in range(yGGradient.shape[0]):
+            #print(ind,' ',yGGradient[ind], " low: ",lowRange," upp: ",uppRange,' cond: ',(uppRange == -1) and abs(yGradient[ind]) < maxError)
+            if lowRange != -1 and abs(yGGradient[ind]) < maxError:  # if lowRange is set, then can set uppRnge
+                uppRange = ind
+                if ind == (yGGradient.shape[0]-1):
+                    constValueRanges.append([lowRange,uppRange])
+            elif lowRange != -1 and uppRange != -1:
+                if abs(uppRange-lowRange) > minRange and np.mean(yGradient[lowRange:uppRange])<maxError:
+                    #print(ind,' ',yGradient[ind], " low: ",lowRange," upp: ",uppRange)
+                    constValueRanges.append([lowRange,uppRange])
+                lowRange = -1
+                uppRange = -1
+            
+            
+            if (uppRange == -1):       # if uppRange is not set then can set lowRange
+                lowRange = ind
+
+        return constValueRanges
+        '''
 
     
     
