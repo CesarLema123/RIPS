@@ -1,0 +1,104 @@
+# Changing Volume to measure bulk modulus
+
+#----------------Initialize Simulation---------------
+clear
+
+log log.bulk
+
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+#atom_modify map array
+
+#--------------Create Atom----------------------------
+
+#read_data       data.Ni-Cu #testing 14 atoms
+#read_data	data.Ni-Cu2 #testing 28 atoms
+#read_data       data.Ni-Cu3 #testing 14 atoms on latticle points
+read_data	atom.data
+
+#---------------Define Interatomic Potential----------
+
+pair_style eam/alloy
+pair_coeff * * CuNi.eam.alloy Ni Cu
+neighbor .05 bin
+neigh_modify delay 10 check yes
+
+#set type 1 type/fraction 2 .5 1023
+#---------------Define Settings--------------
+
+#COMPUTE ID GROUP-ID 
+#compute peAll all pe
+#compute pe all reduce sum c_pepa
+compute atomPos all property/atom x y z
+
+#---------------Run Minimization----------------------
+
+reset_timestep 0
+timestep 0.001 #pico
+
+#THERMO N
+thermo 100
+
+#THERMO_STYLE STYLE ARGS
+thermo_style custom step atoms temp press etotal 
+
+#THERMO_MODIFY KEYWORD VALUE ...
+#thermo_modify 
+
+#MIN_STYLE STYLE
+#min_style cg
+#MINIMIZE ETOL FTOL MAXITER MAXEVAL
+#minimize 1e-25 1e-25 500 1000
+
+dump 2 all custom 10 pos.XYZ id x y z
+dump 1 all atom 10 viz.atom
+#dump 3 all 
+dump_modify 1 first yes
+
+run 1000
+
+
+compute	     mobile all temp
+velocity     all create 1.0 482748 temp mobile
+fix	     1 all nve
+fix	     2 all temp/rescale 200 1.0 1.0 0.02 1.0
+fix_modify   2 temp mobile
+
+#velocity all scale 1600  #mom yes rot no
+#FIX ID GROUP-ID STYLE ARGS  
+#fix 1 all nvt temp 1600 1600 1 drag 0.4 
+#fix constBox all deform 10 x scale 1 y scale 1 z scale 1
+run 10000                        #run to bring system to constant temperature
+
+#unfix constBox
+unfix 1
+unfix 2
+
+# Set temperature and run simulation 
+
+#VELOCITY GROUP-ID STYLE ARGS KEYWORD VALUE
+#velocity all scale 400  mom yes rot no
+#fix scaleBox all deform 1 x scale 1.1 y scale 1.1 z scale 1.1
+#fix scaleBox all deform 1 x scale 1 y scale 1 z scale 1
+#run 100
+#unfix scaleBox
+
+fix 1 all nvt temp 800 800 1 drag 0.4
+
+run 10000
+#unfix 1
+
+
+print "All Done"
+
+
+
+
+
+
+
+
+
+

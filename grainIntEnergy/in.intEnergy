@@ -1,0 +1,38 @@
+# lammps input file for finding internal energy
+# Setup simulation and run using python
+
+#-------------- INITIALIZE SIMULATION-----------------
+clear
+
+log log.intEnergy
+
+units metal
+dimension 3
+boundary p p p
+atom_style atomic 
+#atom_modify map array
+
+#----------------- CREATE ATOMS ------------------------
+#region simR block 0 8.092 0 4.046 0 4.046 #use change_box to reshape sim box  
+#region solidBase block 0 4.046 0 4.046 0 4.046 #create_box reshapes sim box to fit new atoms
+#create_box 2 solidBase
+read_data data.atoms group solAtoms 
+#read_data atom.data add append
+#group baseAtoms region solidBase
+
+
+# --------- DEFINE INTERATOMIC POTENTIAL ---------
+
+pair_style eam/alloy
+pair_coeff * * CuNi.eam.alloy Ni Cu
+neighbor .05 bin
+neigh_modify delay 10 check yes
+
+# -------------- DEFFINE SETTINGS ----------------
+
+#COMPUTES (do in Pylammps)
+
+#---------------------- RUN ------------------------
+
+#MINIMIZATION/RUN (do in pylammps)
+
