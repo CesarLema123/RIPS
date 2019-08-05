@@ -1,8 +1,8 @@
-LAMMPS (18 Jun 2019)
+LAMMPS (2 Aug 2019)
 # lammps input file for finding internal energy
 # Setup simulation and run using python
 
 #-------------- INITIALIZE SIMULATION-----------------
 clear
 
-log log.intEnergy
+log log.concIntEnergy

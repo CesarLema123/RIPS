@@ -80,8 +80,16 @@ class AtomDataFileGenerator:
     
     # RETURN ATOM TYPE BASED ON DESIRED COMPOSITION, 1 = Ni, 2 = Cu
     def generateAtomType(self):
+        compRand = np.random.random(1)[0]
+        if compRand < self.compPercent:
+            self.compCounter+=1
+            return(2)
+        else:
+            return(1)
+
+        ''' CESAR'S FUNCTION FOR THIS
         compMax = 4*(self.systemSize**3)*self.compPercent
-        compBias = .70       # FIX THIS, NO HARD CODED NUMBERS
+        compBias = self.compPercent       # FIX THIS, NO HARD CODED NUMBERS
         
         compRand = np.random.random(1)[0]
         if compRand > compBias and self.compCounter <= compMax:
@@ -89,7 +97,7 @@ class AtomDataFileGenerator:
             return(2)
         else:
             return(1)
-
+        '''
     # WRITE LAMMPS DATAFILE
     def createDataFile(self):
         positions = self.generatePositionList()
