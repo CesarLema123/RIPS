@@ -14,7 +14,7 @@ from ovito.vis import *
 
 class Consts:
     def __init__(self):
-        self.filename = "pos.XYZ"    #file should be in same directory
+        self.filename = 'mixed.XYZ'    #file should be in same directory
 
 # --------------------- code --------------------------------
 

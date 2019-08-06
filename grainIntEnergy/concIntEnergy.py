@@ -65,8 +65,45 @@ print(lmp.system)
 # Post Processing Pure Conc1
 thermo_labels = 'Step Atoms Temp Volume Press PotEng TotEng'
 
-df = OR.LogReader('log.concIntEnergy',thermo_labels).getDataframe()
-OA.DataFrameAnalyzer(df,100).plotColumnAgainstRT('TotEng', 'pureConc1') 
+dfConc1 = OR.LogReader('log.Conc1',thermo_labels).getDataframe()
+OA.DataFrameAnalyzer(dfConc1,100).plotColumnAgainstRT('TotEng', fileName = 'pureConc1') 
+
+
+#---------Run Pure Conc2 Simulation---------------
+lmp.delete_atoms('group', 'all')
+print('-------------pure conc2--------------')
+# check for what the sim region looks like
+print(lmp.system)
+
+lmp.log('log.Conc2')
+lmp.read_data('data.conc2','add', 'append')
+lmp.read_data('data.conc2', 'add', 'append', 'shift', LAT_CONST*SYS_SIZE, 0, 0, 'group', 'conc2Atoms')
+
+
+# Data Output Pure Conc2
+lmp.reset_timestep(0)
+lmp.timestep(0.001)
+lmp.thermo(100)
+lmp.thermo_style('custom step atoms temp vol press pe etotal')
+
+lmp.dump(2,'all','custom',10,'conc2.XYZ','id','type','x','y','z')
+
+# Run Pure Conc2
+print('\n',lmp.groups)
+
+lmp.fix(0, 'all', 'nve')
+lmp.fix(1, 'all', 'langevin', TEMP, TEMP, 0.1, 761, 'zero', 'yes')
+lmp.run(10000)
+
+print(lmp.system)
+
+
+# Post Processing Pure Conc2
+thermo_labels = 'Step Atoms Temp Volume Press PotEng TotEng'
+
+dfConc2 = OR.LogReader('log.Conc2',thermo_labels).getDataframe()
+OA.DataFrameAnalyzer(dfConc2,100).plotColumnAgainstRT('TotEng', fileName = 'pureConc2')
+
 
 
 #---------Run Mixed Concentrations Simulation---------------
@@ -86,7 +123,7 @@ lmp.timestep(0.001)
 lmp.thermo(100)
 lmp.thermo_style('custom step atoms temp vol press pe etotal')
 
-lmp.dump(2,'all','custom',10,'mixed.XYZ','id','type','x','y','z')
+lmp.dump(3,'all','custom',10,'mixed.XYZ','id','type','x','y','z')
 
 # Run Mixed
 print('\n',lmp.groups)
@@ -101,13 +138,23 @@ print(lmp.system)
 # Post Processing Mixed 
 thermo_labels = 'Step Atoms Temp Volume Press PotEng TotEng'
 
-df = OR.LogReader('log.concIntEnergy',thermo_labels).getDataframe()
-OA.DataFrameAnalyzer(df,100).plotColumnAgainstRT('TotEng', 'mixedConc') #CHANGE SECOND ARGUMENT TO DESIRED FILENAME FOR PLOT
+dfMixed = OR.LogReader('log.mixedConc',thermo_labels).getDataframe()
+OA.DataFrameAnalyzer(dfMixed,100).plotColumnAgainstRT('TotEng', fileName = 'mixedConc') 
+
+#----------Post Processing for concInterfaceEng-------------
+raw_data = {
+        'Step': dfMixed['Step'].values,
+        'TotEng1': dfConc1['TotEng'].values,
+        'TotEng2': dfConc2['TotEng'].values,
+        'TotEngMix': dfMixed['TotEng'].values}
+combineDF = pd.DataFrame(raw_data, columns = ['Step', 'TotEng1', 'TotEng2', 'TotEngMix'])
+print(combineDF.head())
+OA.DataFrameAnalyzer(combineDF,100).concInterfaceEng()
 
 
 # --------- VISIUALIZATION ---------------------
 # OPEN OVITO AND VISUALIZE POS.XYZ DATA
-#appDirectory = '~/Downloads/ovito-2.9.0-x86_64/bin/ovitos'
-#os.system(appDirectory + ' -g ' + 'vis.py')
+appDirectory = '~/Downloads/ovito-2.9.0-x86_64/bin/ovitos'
+os.system(appDirectory + ' -g ' + 'vis.py')
 
 

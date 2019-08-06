@@ -14,14 +14,30 @@ class DataFrameAnalyzer:
         plt.ylabel(ylabel)
         #plt.legend(loc='upper left')
         plt.grid()
-        #plt.show()
         plt.savefig(fname, format='png')
+        plt.clf()
     
     #plot a specific column of dataframe vs RunTime
     def plotColumnAgainstRT(self,columnLabel,fileName):
         Y = self.df[columnLabel].values.astype(float)
         X = np.linspace(0,self.timestep*len(Y),len(Y))
         self.generalPlot(X,Y,'Runtime',columnLabel,columnLabel+' vs. Runtime', fname = fileName)
+
+    def concInterfaceEng(self):
+        TE1 = self.df['TotEng1'].values
+        TE2 = self.df['TotEng2'].values
+        TEM = self.df['TotEngMix'].values
+        midIndex = (len(TE1) - 1)//2
+        numTerms = len(TE1[midIndex:])
+        print(numTerms)
+        print(midIndex)
+        print(np.sum(TE1[midIndex:]))
+        avgTE1 = np.sum(TE1[midIndex:])/numTerms
+        avgTE2 = np.sum(TE2[midIndex:])/numTerms
+        avgTEM = np.sum(TEM[midIndex:])/numTerms
+        intEng = avgTEM - 0.5*(avgTE1 + avgTE2)
+        return intEng
+
 
     '''
     def plotColumnVsColumn(self,firstLabel,secondLabel):
