@@ -87,7 +87,7 @@ for i in range(21):
 
 lmp.minimize('1e-2 1e-2 10000 10000')
 
-For Fun/cool visualization
+#For Fun/cool visualization
 lmp.run(200)
 
 for i in range(21):
