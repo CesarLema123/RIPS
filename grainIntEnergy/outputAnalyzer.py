@@ -7,20 +7,21 @@ class DataFrameAnalyzer:
         self.df = dataframe
         self.timestep = timestep
 
-    def generalPlot(self,X,Y,xlabel='',ylabel='',title=''):
+    def generalPlot(self,X,Y,xlabel='',ylabel='',title='',fname='figure'):
         plt.plot(X,Y)
         plt.title(title)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         #plt.legend(loc='upper left')
         plt.grid()
-        plt.show()
+        #plt.show()
+        plt.savefig(fname, format='png')
     
     #plot a specific column of dataframe vs RunTime
-    def plotColumnAgainstRT(self,columnLabel):
+    def plotColumnAgainstRT(self,columnLabel,fileName):
         Y = self.df[columnLabel].values.astype(float)
         X = np.linspace(0,self.timestep*len(Y),len(Y))
-        self.generalPlot(X,Y,'Runtime',columnLabel,columnLabel+' vs. Runtime')
+        self.generalPlot(X,Y,'Runtime',columnLabel,columnLabel+' vs. Runtime', fname = fileName)
 
     '''
     def plotColumnVsColumn(self,firstLabel,secondLabel):

@@ -4,8 +4,6 @@
 #-------------- INITIALIZE SIMULATION-----------------
 clear
 
-log log.concIntEnergy
-
 units metal
 dimension 3
 boundary p p p

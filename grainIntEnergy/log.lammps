@@ -5,4 +5,42 @@ LAMMPS (2 Aug 2019)
 #-------------- INITIALIZE SIMULATION-----------------
 clear
 
-log log.concIntEnergy
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+#atom_modify map array
+
+#----------------- CREATE ATOMS ------------------------
+#region simR block 0 8.092 0 4.046 0 4.046 #use change_box to reshape sim box
+#region solidBase block 0 4.046 0 4.046 0 4.046 #create_box reshapes sim box to fit new atoms
+#create_box 2 solidBase
+read_data data.conc1 group conc1Atoms
+  triclinic box = (0 0 0) to (14.52 14.52 14.52) with tilt (0 0 0)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  256 atoms
+  read_data CPU = 0.000359667 secs
+#read_data data.conc3 add append group conc3Atoms
+#read_data atom.data add append
+#group baseAtoms region solidBase
+
+
+# --------- DEFINE INTERATOMIC POTENTIAL ---------
+
+pair_style eam/alloy
+pair_coeff * * CuNi.eam.alloy Ni Cu
+Reading potential file CuNi.eam.alloy with DATE: 2014-07-11
+neighbor .05 bin
+neigh_modify delay 10 check yes
+
+# -------------- DEFFINE SETTINGS ----------------
+
+#COMPUTES (do in Pylammps)
+
+#---------------------- RUN ------------------------
+
+#MINIMIZATION/RUN (do in pylammps)
+
+info system
+log log.Conc1
