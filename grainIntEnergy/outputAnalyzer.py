@@ -24,14 +24,11 @@ class DataFrameAnalyzer:
         self.generalPlot(X,Y,'Runtime',columnLabel,columnLabel+' vs. Runtime', fname = fileName)
 
     def concInterfaceEng(self):
-        TE1 = self.df['TotEng1'].values
-        TE2 = self.df['TotEng2'].values
-        TEM = self.df['TotEngMix'].values
+        TE1 = self.df['TotEng1'].values.astype(float)
+        TE2 = self.df['TotEng2'].values.astype(float)
+        TEM = self.df['TotEngMix'].values.astype(float)
         midIndex = (len(TE1) - 1)//2
         numTerms = len(TE1[midIndex:])
-        print(numTerms)
-        print(midIndex)
-        print(np.sum(TE1[midIndex:]))
         avgTE1 = np.sum(TE1[midIndex:])/numTerms
         avgTE2 = np.sum(TE2[midIndex:])/numTerms
         avgTEM = np.sum(TEM[midIndex:])/numTerms

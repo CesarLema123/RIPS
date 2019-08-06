@@ -20,7 +20,7 @@ read_data data.conc1 group conc1Atoms
   1 by 1 by 1 MPI processor grid
   reading atoms ...
   256 atoms
-  read_data CPU = 0.000429356 secs
+  read_data CPU = 0.000423274 secs
 #read_data data.conc3 add append group conc3Atoms
 #read_data atom.data add append
 #group baseAtoms region solidBase

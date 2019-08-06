@@ -149,8 +149,8 @@ raw_data = {
         'TotEngMix': dfMixed['TotEng'].values}
 combineDF = pd.DataFrame(raw_data, columns = ['Step', 'TotEng1', 'TotEng2', 'TotEngMix'])
 print(combineDF.head())
-OA.DataFrameAnalyzer(combineDF,100).concInterfaceEng()
-
+intEng = OA.DataFrameAnalyzer(combineDF,100).concInterfaceEng()
+print('The interfacial energy in eV is: ', intEng)
 
 # --------- VISIUALIZATION ---------------------
 # OPEN OVITO AND VISUALIZE POS.XYZ DATA
