@@ -161,9 +161,10 @@ class GrainBdry(simulation):
         """
         This function returns the path to the directory in which a simulation will be run.
         """
-        x = orientation
-        orientStr = str(
+        orientStr = "%d%d%d-%d%d%d-%d%d%d" %(orientation)
         return "Out/RunTime" + str(int(time)) + "Size" + str(int(size)) + "Temp" + str(int(temp)) + "Conc" + str(int(concPercent))
+
+
     def runGBSims(self):
         cwd = os.getcwd()
         sh("mkdir Out")
