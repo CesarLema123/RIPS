@@ -1,6 +1,6 @@
 # This is the file which will be used to check that the system has converged to the right thermodynamic boundary conditions
 
-variable loopExit equal 10
+variable loopExit equal 3
 variable i loop ${loopExit}
 
 
