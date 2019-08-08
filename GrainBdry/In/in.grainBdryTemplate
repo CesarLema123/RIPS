@@ -1,13 +1,13 @@
-variable 	TEMPERATURE equal 300
-variable 	RANDOM equal 387623
-variable	TIMESTEP equal 0.001
-variable 	A equal 3.6 	# lattice spacing (A)
-variable 	SYSTEMSIZE equal 6
-variable	RUNTIME equal 1000
-variable	CONC equal 30
+#variable 	TEMPERATURE equal 300
+#variable 	RANDOM equal 387623
+#variable	TIMESTEP equal 0.001
+#variable 	A equal 3.6 	# lattice spacing (A)
+#variable 	SYSTEMSIZE equal 6
+#variable	RUNTIME equal 1000
+#variable	CONC equal 30
 
 
-
+# variable which must be included above are TEMPERATURE RANDOM TIMESTEP A SYSTEMSIZE RUNTIME CONC
 # These vairables do not have to be changed with every simulation
 
 
