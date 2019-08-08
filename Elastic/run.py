@@ -2,6 +2,6 @@
 
 import sims
 sim = sims.elastic(systemSizes = [14,],temperatures = [300,],inTemplate = "in.elasticTemplate",timeStep = 0.0005)
-sim.setParams(lib = "$HOME/git-RIPS/RIPS/lib",alloy = "custom", runTimes = [10,])
+sim.setSimParams(lib = "$HOME/RIPS070819/RIPS/lib",alloy = "custom", runTimes = [10,])
 sim.runElasticSims()
 
