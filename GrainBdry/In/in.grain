@@ -1,0 +1,164 @@
+variable 	TEMPERATURE equal 300
+variable 	RANDOM equal 387623
+variable	TIMESTEP equal 0.001
+variable 	A equal 3.6 	# lattice spacing (A)
+variable 	SYSTEMSIZE equal 6
+variable	RUNTIME equal 1000
+variable	CONC equal 30
+
+
+
+# These vairables do not have to be changed with every simulation
+
+
+variable	MINIMIZE equal 0 # Set this to 1 if you would like to run a minimization step before the convergence step. 0 if not.
+variable	NEVERY equal 10 
+variable	NREPEAT equal 100 
+variable	NFREQ equal $(v_NEVERY*v_NREPEAT)
+variable	NLOOP equal 10*${NFREQ} 
+variable	TRACKGRAIN equal 0 # Set to 1 to dump data for use in matlab grain tracking code.
+
+
+units		metal
+
+# GENERATE ATOMS, POSITIONS, AND VELOCITIES
+
+dimension 	3
+boundary	p p p
+atom_style 	atomic
+
+
+region		wholeSim block 0 $(2*v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE)
+region 		tilt block $(v_A*v_SYSTEMSIZE) $(2*v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE)
+create_box 	2 wholeSim 
+
+pair_style	eam/alloy
+pair_coeff	* * CuNi.eam.alloy Ni Cu
+
+
+lattice 	fcc ${A} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+create_atoms	1 region wholeSim
+delete_atoms	porosity wholeSim $(v_CONC/100) ${RANDOM}
+create_atoms	2 region wholeSim
+
+delete_atoms 	region tilt
+
+
+lattice		fcc ${A} orient x ${SYSTEMSIZE} 0 -1 orient y 0 1 0 orient z 1 0 ${SYSTEMSIZE}
+create_atoms 	1 region tilt
+delete_atoms	porosity tilt $(v_CONC/100) $(v_RANDOM + 1)
+create_atoms	2 region tilt
+group		Ni type 1
+group 		Cu type 2
+delete_atoms  	overlap 0.2 Cu Ni 
+
+group		tilt region tilt
+group		Ni delete
+group 		Cu delete
+group		Ni type 1
+group 		Cu type 2
+
+velocity 	all create ${TEMPERATURE} ${RANDOM}
+
+neighbor	0.3 bin
+timestep	${TIMESTEP}
+reset_timestep	0
+
+# RUN SYSTEM CONVERGENCE
+
+
+log		log.convGB
+include 	initConv.mod
+include 	convergence.mod
+include 	exitConv.mod
+
+if "${TRACKGRAIN} == 1" then "jump in.grain track" else "jump in.grain break"
+
+
+# DO THIS IF TRACKING THE GRAIN BAOUNDARY
+label		track
+compute 	cna all cna/atom $(0.8536*v_A)
+compute 	centro all centro/atom fcc
+dump		3 all custom 1000 dump.bdry x y z c_cna c_centro 
+
+
+# CONTINUE THE REGULAR SCRIPT
+
+label		break
+
+dump 		1 all xyz 1000 dump.xyz
+dump 		2 tilt xyz 1000 dump.xyzTilt
+
+# RUN THE SIMULATION
+
+include 	initConv.mod
+include		energyAtom.mod
+
+log		log.runGB
+run 		${RUNTIME}
+
+# GET THE FINAL ENERGY OF THE SYSTEM WITH A GRAIN BOUNDARY
+
+variable 	PEg equal $(v_varAvePe)
+variable	dPEg equal $(v_peSTD)
+
+include 	exitConv.mod
+include 	exitEnergyAtom.mod
+
+# RESTARTING THE SIMULATION TO RUN WITH NO TILT
+
+undump 		1
+undump		2
+if "${TRACKGRAIN} == 1" then "undump 3"
+
+
+delete_atoms	region wholeSim
+lattice		fcc ${A} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+
+create_atoms	1 region wholeSim
+delete_atoms	porosity wholeSim $(v_CONC/100) $(v_RANDOM + 4)
+create_atoms	2 region wholeSim
+
+group		Ni delete
+group 		Cu delete
+group		Ni type 1
+group 		Cu type 2
+
+delete_atoms	overlap 0.1 Cu Ni
+
+group		Ni delete
+group 		Cu delete
+group		Ni type 1
+group 		Cu type 2
+
+velocity 	all create ${TEMPERATURE} ${RANDOM}
+
+
+# RUNNING CONVERGENCE CHECKING
+
+log.conv
+include 	initConv.mod
+include 	convergence.mod
+include 	exitConv.mod
+
+# RUN THE SIMULATION
+
+include 	initConv.mod
+include		energyAtom.mod
+
+log		log.run
+run 		${RUNTIME}
+
+# GET THE FINAL ENERGY OF THE SYSTEM WITH A GRAIN BOUNDARY
+
+variable 	PE equal $(v_varAvePe)
+variable	dPE equal $(v_peSTD)
+log		log.results
+print "The energy per atom no tilt: 			${PE} +/- ${dPE}"
+print "The energy per atom with tilt:			${PEg} +/- ${dPEg}"
+print "The energy per atom due to the interface:	$(v_PEg - v_PE) +/- $(sqrt(v_dPE^2 + v_dPEg^2))"
+
+
+
+
+
