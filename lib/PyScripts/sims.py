@@ -127,10 +127,10 @@ class elastic(simulation):
     This class is meant to run simulations to get the elastic constants over a range of temperatures and 
     concentrations
     """
-    def __init__(self,lengths = [],pressures = [],runTimes = [1,],systemSizes = [10,],temperatures = [1,] + [x for x in range(100,2501,100),concPercents = [x for x in range(0,101,10),fileName = "elastic",inTemplate = "in.elastic",timeStep = 0.001):
+    def __init__(self,lengths = [],pressures = [],runTimes = [1,],systemSizes = [10,],temperatures = [1,] + [x for x in range(100,2501,100)],concPercents = [x for x in range(0,101,10)],fileName = "elastic",inTemplate = "in.elastic",timeStep = 0.001):
         self.lengths = lengths
         self.pressures = pressures
-        self runTimes = runTimes
+        self.runTimes = runTimes
         self.systemSizes = systemSizes
         self.temperatures = temperatures
         self.concPercents = concPercents
