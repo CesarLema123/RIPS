@@ -33,7 +33,7 @@ class inFile:
         writer.write("variable INFILE string " + self.inFile() + "\n")
         writer.write("variable DATAFILE string " + self.dataFile() + "\n")
         writer.write("variable RUNTIME equal " + simSteps + "\n")
-        writer.write("variable TIMESTEP equal " + str(self.timeStep))
+        writer.write("variable TIMESTEP equal " + str(self.timeStep)+"\n")
         for opt in options:
             writer.write("variable " + opt + "\n")
         for line in reader:
