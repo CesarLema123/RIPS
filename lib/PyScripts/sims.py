@@ -122,6 +122,62 @@ class simulation():
 
 
 
+
+
+
+class GrainBdry(simulation):
+    """
+    This class is meant to run simulations to get the energy due to an interface between two misaligned crystal structures for a range of temperatures and concentrations of CuNi
+    """
+    def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [10,],alloy = "custom",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [14,],temperatures = [1,]+[x for x in range(100,2501,100)],pressures = [],lengths = [],concPercents = [x for x in range(0,101,10)],timeStep = 0.0005,simType = "",fileName = "grainBdry",potentialFile = "CuNi.eam.alloy",inTemplate = "in.grainBdryTemplate",copyDir = "./In"):
+        self.lib = lib 
+        self.lammps = lammps
+        self.runTimes = runTimes
+        self.alloy = alloy
+        self.latticeConst = latticeConst
+        self.latticeType = latticeType
+        self.numAtomTypes = numAtomTypes
+        self.systemSizes = systemSizes
+        self.temperatures = temperatures
+        self.pressures = pressures
+        self.lengths = lengths
+        self.concPercents = concPercents
+        self.timeStep = timeStep
+        self.simType = simType
+        self.fileName = fileName
+        self.potentialFile = potentialFile
+        self.inTemplate = inTemplate
+        self.copyDir = copyDir
+        return 
+
+    def getWorkDir(self,time,size,temp,concPercent):
+        """
+        This function returns the path to the directory in which a simulation will be run.
+        """
+        return "Out/RunTime" + str(int(time)) + "Size" + str(int(size)) + "Temp" + str(int(temp)) + "Conc" + str(int(concPercent))
+    def runGBSims(self):
+        cwd = os.getcwd()
+        sh("mkdir Out")
+        for time in self.runTimes:
+            for size in self.systemSizes:
+                for temp in self.temperatures:
+                    for conc in self.concPercents:
+                        wd = self.getWorkDir(time,size,temp,conc)
+                        sh("mkdir " + wd)
+                        self.cpTemplate(wd)
+                        os.chdir(wd)
+                        inFile = inF.inFile(fileName = self.fileName,readFile = self.inTemplate,runTime=time,timeStep = self.timeStep)
+                        inFile.writeInFile(options = ["TEMPERATURE equal " + str(temp),"RANDOM equal " + str(randint(1000000,99999999)),"CONC equal " + str(conc),"A equal " + str(self.latticeConst),"SYSTEMSIZE equal " + str(size)])
+                        self.runLammps()
+                        os.chdir(cwd)
+        return
+
+    def dataFile(self): # This override the simulation method becasue the grainbdry sim does not use a data file
+        return
+
+
+
+
 class elastic(simulation):
     """
     This class is meant to run simulations to get the elastic constants over a range of temperatures and 
@@ -187,8 +243,7 @@ class bulkProp(simulation):
     """
     This class allows one to run simulations in NVT or NPT to compute the bulk properties of a material.
     """
-    def __init__(self):
-        return
+    pass
 
     def setBulkMod(self,latticeConst = ""):
         """
