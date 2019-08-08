@@ -44,11 +44,6 @@ def readDump(fileName):
     return df
 
 
-
-
-
-
-
 def readLog(fileName,runNum = 1):
     """
     fileName is the name of the log file to be read.
@@ -57,47 +52,74 @@ def readLog(fileName,runNum = 1):
     search = "Step"
     n = 1
     f = open(fileName)
-    df = {}
-    EOF = False
-    while True:
-        try:
-            line = f.readline()
-        except:
-            break
-        if search in line:
+    data = []
+    header = ""
+    for line in f:
+        if header:
+            try:
+                d = list(float(x) for x in line.split())
+                data.append(d)
+            except:
+                break
+        elif search in line:
             if n == runNum:
-                keys = line.split()
-                for key in keys:
-                    df[key] = []
-                while True:
-                    try:
-                        line = f.readline()
-                    except:
-                        EOF = True
-                        break
-                    try:
-                        values = list(float(x) for x in line.split())
-                    except:
-                        break
-                    for i in range(len(keys)):
-                        df[keys[i]].append(values[i])
+                header = line
             else:
-                n += 1
-        else:
-            pass
-        if len(df.keys()) > 0 or EOF:
-            break
-    df = pd.DataFrame(df)
+                n+=1
+    df = pd.DataFrame(data,columns = [x for x in header.split()])
     f.close()
     return df
 
 
-
-
+def fixAtomIdCuNi(readFile,writeFile):
+    r = open(readFile)
+    w = open(writeFile,mode = "w")
+    for line in r:
+        if line[0] == "1":
+            line = "Ni" + line[1:]
+        elif line[0] == "2":
+            line = "Cu" + line[1:]
+        w.write(line)
+    r.close()
+    w.close()
 
 def readLogPD(fileName):
     df = pd.read_csv(fileName,sep = "\s+")
     return df
+
+def prepForMatLab(readFile,writeFile):
+    """
+    This function takes in the lammps atom data output for grain tracking and makes
+    new files containing only the data for each timestep. These can then be inputted into
+    the matlab grain tracking code.
+    """
+    r = open(readFile)
+    f = open(readFile)
+    timestep = ""
+    getTime = False
+    search = "ITEM: TIMESTEP"
+    for line in r:
+        if getTime:
+            timestep = line.split()[0]
+            getTime = False
+            f.close()
+            f = open(writeFile + "_" + timestep + ".cfg",mode = "w")
+            f.write(search + "\n")
+            f.write(line)
+        elif search in line:
+            getTime = True
+        else:
+            f.write(line)
+    return
+        
+
+
+
+
+
+
+
+
 
 
 
@@ -105,7 +127,7 @@ def getThermoStats(fileName):
     """
     This Function reads a cut log file and outputs the average, standard deviation and standard deviaton of the mean for each thermodynamic variable
     """
-    df = pd.read_csv(str(fileName),sep = "\s+") 
+    df = readLog(fileName)
 
     N = len(df["Step"])
     nBins = 20
