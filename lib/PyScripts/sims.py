@@ -2,6 +2,7 @@ import utils
 from random import randint
 import dataFileGenerator as dataF
 import inFiles as inF
+import pandas as pd
 import numpy as np
 import os
 import csv
