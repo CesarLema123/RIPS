@@ -96,12 +96,12 @@ variable pxy0 equal $(v_varAvePxy)
 variable pxz0 equal $(v_varAvePxz)
 variable pyz0 equal $(v_varAvePyz)
 
-variable dpxx0 equal $(v_pxxSTD)
-variable dpyy0 equal $(v_pyySTD)
-variable dpzz0 equal $(v_pzzSTD)
-variable dpxy0 equal $(v_pxySTD)
-variable dpxz0 equal $(v_pxzSTD)
-variable dpyz0 equal $(v_pyzSTD)
+variable dpxx0 equal $(v_pxxSTD)/sqrt(${RUNTIME}/${nevery}) # Using standard deviation of the mean as our uncertainty
+variable dpyy0 equal $(v_pyySTD)/sqrt(${RUNTIME}/${nevery})
+variable dpzz0 equal $(v_pzzSTD)/sqrt(${RUNTIME}/${nevery})
+variable dpxy0 equal $(v_pxySTD)/sqrt(${RUNTIME}/${nevery})
+variable dpxz0 equal $(v_pxzSTD)/sqrt(${RUNTIME}/${nevery})
+variable dpyz0 equal $(v_pyzSTD)/sqrt(${RUNTIME}/${nevery})
 
 variable tmp equal lx
 variable lx0 equal ${tmp}

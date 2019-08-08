@@ -58,12 +58,12 @@ variable pxy1 equal v_varAvePxy
 variable pxz1 equal v_varAvePxz
 variable pyz1 equal v_varAvePyz
 
-variable dpxx1 equal v_pxxSTD
-variable dpyy1 equal v_pyySTD
-variable dpzz1 equal v_pzzSTD
-variable dpxy1 equal v_pxySTD
-variable dpxz1 equal v_pxzSTD
-variable dpyz1 equal v_pyzSTD
+variable dpxx1 equal v_pxxSTD/sqrt(${RUNTIME}/${nevery})  # Using error based on standard deviation of the mean rather than standard deviation
+variable dpyy1 equal v_pyySTD/sqrt(${RUNTIME}/${nevery})
+variable dpzz1 equal v_pzzSTD/sqrt(${RUNTIME}/${nevery})
+variable dpxy1 equal v_pxySTD/sqrt(${RUNTIME}/${nevery})
+variable dpxz1 equal v_pxzSTD/sqrt(${RUNTIME}/${nevery})
+variable dpyz1 equal v_pyzSTD/sqrt(${RUNTIME}/${nevery})
 
 
 

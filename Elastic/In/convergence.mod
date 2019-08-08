@@ -12,7 +12,7 @@ variable pxzErr equal 0.05
 variable pyzErr equal 0.05
 
 variable tempErr equal 0.01
-variable energyErr equal 0.01
+variable energyErr equal 0.05
 
 variable energySTD1 equal 0.0
 variable pxxSTD1 equal 0.0
