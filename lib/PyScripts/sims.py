@@ -127,17 +127,27 @@ class elastic(simulation):
     This class is meant to run simulations to get the elastic constants over a range of temperatures and 
     concentrations
     """
-    def __init__(self,lengths = [],pressures = [],runTimes = [1,],systemSizes = [10,],temperatures = [1,] + [x for x in range(100,2501,100)],concPercents = [x for x in range(0,101,10)],fileName = "elastic",inTemplate = "in.elastic",timeStep = 0.001):
-        self.lengths = lengths
-        self.pressures = pressures
+    def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [1,],alloy = "CuNi",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [14,],temperatures = [1,]+[x for x in range(100,2501,100)],pressures = [],lengths = [],concPercents = [x for xx in range(0,101,10)],timeStep = 0.0005,simType = "",fileName = "elastic",potentialFile = "CuNi.eam.alloy",inTemplate = "in.elasticTemplate",copyDir = "./In"):
+        self.lib = lib 
+        self.lammps = lammps
         self.runTimes = runTimes
+        self.alloy = alloy
+        self.latticeConst = latticeConst
+        self.latticeType = latticeType
+        self.numAtomTypes = numAtomTypes
         self.systemSizes = systemSizes
         self.temperatures = temperatures
+        self.pressures = pressures
+        self.lengths = lengths
         self.concPercents = concPercents
-        self.fileName = fileName
-        self.inTemplate = inTemplate
         self.timeStep = timeStep
-        return
+        self.simType = simType
+        self.fileName = fileName
+        self.potentialFile = potentialFile
+        self.inTemplate = inTemplate
+        self.copyDir = copyDir
+        return 
+
 
     def getWorkDir(self,time,size,temp,concPercent):
         """
