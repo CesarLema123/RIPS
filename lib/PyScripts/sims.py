@@ -129,7 +129,7 @@ class GrainBdry(simulation):
     """
     This class is meant to run simulations to get the energy due to an interface between two misaligned crystal structures for a range of temperatures and concentrations of CuNi
     """
-    def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [10,],alloy = "custom",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [14,],temperatures = [1,]+[x for x in range(100,2501,100)],pressures = [],lengths = [],concPercents = [x for x in range(0,101,10)],timeStep = 0.0005,simType = "",fileName = "grainBdry",potentialFile = "CuNi.eam.alloy",inTemplate = "in.grainBdryTemplate",copyDir = "./In"):
+    def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [10,],alloy = "custom",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [14,],temperatures = [1,]+[x for x in range(100,2501,100)],pressures = [],lengths = [],concPercents = [x for x in range(0,101,10)],orientations = [[1,0,0,0,1,0,0,0,1],],timeStep = 0.0005,simType = "",fileName = "grainBdry",potentialFile = "CuNi.eam.alloy",inTemplate = "in.grainBdryTemplate",copyDir = "./In"):
         self.lib = lib 
         self.lammps = lammps
         self.runTimes = runTimes
@@ -142,6 +142,7 @@ class GrainBdry(simulation):
         self.pressures = pressures
         self.lengths = lengths
         self.concPercents = concPercents
+        self.orientations = orientations
         self.timeStep = timeStep
         self.simType = simType
         self.fileName = fileName
@@ -150,10 +151,18 @@ class GrainBdry(simulation):
         self.copyDir = copyDir
         return 
 
-    def getWorkDir(self,time,size,temp,concPercent):
+    def setOrientations(self,orientations):
+        self.orientations = orientations
+        return
+
+    
+
+    def getWorkDir(self,time,size,temp,concPercent,orientation):
         """
         This function returns the path to the directory in which a simulation will be run.
         """
+        x = orientation
+        orientStr = str(
         return "Out/RunTime" + str(int(time)) + "Size" + str(int(size)) + "Temp" + str(int(temp)) + "Conc" + str(int(concPercent))
     def runGBSims(self):
         cwd = os.getcwd()
@@ -351,7 +360,7 @@ class bulkProp(simulation):
 ##    
 
 
-    def recordData(self,thermoDataFile = "thermoData"):
+    def recordData(self,thermoDataFile = "thermoData",dataFile = "log.data"):
         """
         Record the averanges, standard deviations, and standard deviations of the mean for the energy, temperature, pressure, and volume of each simualtion
         in the current directory in a file specified in the input. Defualt is thermoDataFile = \"thermoData\"
@@ -370,11 +379,11 @@ class bulkProp(simulation):
                             os.chdir(wd)
                             try:
                                 if not header:
-                                    data,header = utils.getThermoStats("log.data") # automatically uses log.data as this is the data file after cleanOutput is run
+                                    data,header = utils.getThermoStats(dataFile) # automatically uses log.data as this is the data file after cleanOutput is run
                                     writer.writerow(header)
                                     writer.writerow(data)
                                 else:
-                                    data = utils.getThermoStats("log.data")[0]
+                                    data = utils.getThermoStats(dataFile)[0]
                                     writer.writerow(data)
                             except:
                                 pass
@@ -383,7 +392,7 @@ class bulkProp(simulation):
         return 
     
      
-    def getData(self):
+    def getData(self,dataFile = "log.data"):
         """
         Makes a pandas dataframeof the the averanges, standard deviations, and standard deviations of the mean for the
         energy, temperature, pressure, and volume of each simualtion.
@@ -401,10 +410,10 @@ class bulkProp(simulation):
                             os.chdir(wd)
                             try:
                                 if not header:
-                                    data,header = utils.getThermoStats("log.data")
+                                    data,header = utils.getThermoStats(dataFile)
                                     df.append(data)
                                 else:
-                                    data = utils.getThermoStats("log.data")[0]
+                                    data = utils.getThermoStats(dataFile)[0]
                                     df.append(data)
                             except:
                                 pass
