@@ -1,4 +1,5 @@
 import utils
+import pandas as pd
 from random import randint
 import dataFileGenerator as dataF
 import inFiles as inF
@@ -13,7 +14,7 @@ class simulation():
     The simulation class is meant to hold all of the parameters one would vary across a lammps md simulation in the npt or nvt ensemble.
     It is also capable to running the simulations.
     """
-    def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.63,latticeType = "FCC",numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.eam.alloy",inTemplate = "in.Template",copyDir = "./Base"):
+    def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.63,latticeType = "FCC",numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.eam.alloy",inTemplate = "in.Template"):
         self.lib = lib 
         self.lammps = lammps
         self.runTimes = runTimes
@@ -31,10 +32,9 @@ class simulation():
         self.fileName = fileName
         self.potentialFile = potentialFile
         self.inTemplate = inTemplate
-        self.copyDir = copyDir
         return 
 
-    def setSimParams(self,lib = "",lammps = "",alloy = "",latticeConst = 0.0,latticeType = "",numAtomTypes = 0,runTimes = [],systemSizes = [],temperatures = [],pressures = [],lengths = [],concPercents = [],timeStep = 0.0,simType = "",fileName = "", potentialFile = "",inTemplate = "",copyDir = ""):
+    def setSimParams(self,lib = "",lammps = "",alloy = "",latticeConst = 0.0,latticeType = "",numAtomTypes = 0,runTimes = [],systemSizes = [],temperatures = [],pressures = [],lengths = [],concPercents = [],timeStep = 0.0,simType = "",fileName = "", potentialFile = "",inTemplate = ""):
         """
         Change any of the initial parameters. Any unspecifies paramters are automatically unchanged.
         """
@@ -72,19 +72,27 @@ class simulation():
             self.fileName = fileName
         if potentialFile:
             self.potentialFile = potentialFile
-        if copyDir:
-            self.copyDir = copyDir
         return 
 
-
-
-
-
+    def getWorkDir(self,time,size,temp,pv,concPercent):
+        """
+        This function writes the name of the directory in which the simulation will be run and output. 
+        The naming is preference and can be changed.
+        """
+        if self.simType == "npt":
+            return "Out/RunTime"+str(time)+"Size"+str(size)+"Conc"+str(concPercent)+"Temp"+str(temp)+"Press"+str(round(pv,2))
+        elif self.simType == "nvt":
+            return "Out/RunTime"+str(time)+"Size"+str(size)+"Conc"+str(concPercent)+"Temp"+str(temp)+"Length"+str(round(pv,2))
+        else:
+            print("Unknown sim type.")
+            return 
+    
     def cpTemplate(self,wd):
         """
-        This function copies all of the files in copyDir to the working directory.
+        This function copies the inFile and potential file to the directory in which the simulation wil be run.
         """
-        sh("cp " + self.copyDir + "/* " + wd)
+        sh("cp " + self.inTemplate + " " + wd)
+        sh("cp " + self.potentialFile + " " + wd)
         return 
     
    
@@ -120,98 +128,6 @@ class simulation():
         sh(self.lammps + " " + self.inFile())
         return 
 
-
-
-class elastic(simulation):
-    """
-    This class is meant to run simulations to get the elastic constants over a range of temperatures and 
-    concentrations
-    """
-    def __init__(self,lengths = [],pressures = [],runTimes = [1,],systemSizes = [10,],temperatures = [1,] + [x for x in range(100,2501,100),concPercents = [x for x in range(0,101,10),fileName = "elastic",inTemplate = "in.elastic",timeStep = 0.001):
-        self.lengths = lengths
-        self.pressures = pressures
-        self runTimes = runTimes
-        self.systemSizes = systemSizes
-        self.temperatures = temperatures
-        self.concPercents = concPercents
-        self.fileName = fileName
-        self.inTemplate = inTemplate
-        self.timeStep = timeStep
-        return
-
-    def getWorkDir(self,time,size,temp,concPercent):
-        """
-        This function returns the path to the directory in which a simulation will be run.
-        """
-        return "Out/RunTime" + str(int(time)) + "Size" + str(int(size)) + "Temp" + str(int(temp)) + "Conc" + str(int(concPercent))
-
-
-
-    def runElasticSims(self):
-        cwd = os.getcwd()
-        sh("mkdir Out")
-        for time in self.runTimes:
-            for size in self.systemSizes:
-                for temp in self.temperatures:
-                    for conc in self.concPercents:
-                        wd = self.getWorkDir(time,size,temp,conc)
-                        sh("mkdir " + wd)
-                        self.cpTemplate(wd)
-                        os.chdir(wd)
-                        inFile = inF.inFile(fileName = self.fileName,readFile = self.inTemplate,runTime=time,timeStep = self.timeStep)
-                        inFile.writeInFile(options = ["TEMPERATURE equal " + str(temp),"RANDOM equal " + str(randint(1000000,99999999))])
-                        dataFile = dataF.AtomDataFileGenerator(filename = self.fileName,latticeType = self.latticeType,alloy = self.alloy,customLatticeConst = self.latticeConst,systemSize = size, atomTypes = self.numAtomTypes, alloyCompPercent = conc)
-                        dataFile.createDataFile()
-                        self.runLammps()
-                        os.chdir(cwd)
-        return
-
-    def getElasticConsts(self):
-        f = open(self.logFile)
-        f.close()
-        return
-
-
-
-class bulkProp(simulation):
-    """
-    This class allows one to run simulations in NVT or NPT to compute the bulk properties of a material.
-    """
-    def __init__(self):
-        return
-
-    def setBulkMod(self,latticeConst = ""):
-        """
-        Automatically set the simulation parameters to compute the bulk modulus give a lattice spacing.
-        """
-        if latticeConst:
-            self.latticeConst = latticeConst
-        self.legnths = [x/1000*self.latticeConst for x in range(995,1006)]
-        self.temperatures = [1,] +  [x for x in range(100,2501,100)]
-        self.concPercents = [x for x in range(0,100,10)]
-        self.runTimes = [10,] # 10 ps chosen arbitrarily
-        self.systemSizes = [10,] #4000 atoms chosen arbitrarily
-        self.fileName = "BulkMod"
-        self.inTemplate = "in.BulkMod"
-        return
-
-
-
-    def getWorkDir(self,time,size,temp,pv,concPercent):
-        """
-        This function writes the name of the directory in which the simulation will be run and output. 
-        The naming is preference and can be changed.
-        """
-        if self.simType == "npt":
-            return "Out/RunTime"+str(time)+"Size"+str(size)+"Conc"+str(concPercent)+"Temp"+str(temp)+"Press"+str(round(pv,2))
-        elif self.simType == "nvt":
-            return "Out/RunTime"+str(time)+"Size"+str(size)+"Conc"+str(concPercent)+"Temp"+str(temp)+"Length"+str(round(pv,2))
-        else:
-            print("Unknown sim type.")
-            return 
-    
-
-
     def getVolOrPress(self):
         """
         Returns either the list of lengths or pressures depending on the simulation type.
@@ -224,7 +140,7 @@ class bulkProp(simulation):
             print("Unknown simulation type")
             return
 
-    def runBulkSims(self):
+    def runSims(self):
         """
         This method runs the lammps simulations over the range of parameters specified in the object.
         """
@@ -249,30 +165,30 @@ class bulkProp(simulation):
                             os.chdir(cwd)
         return 
     
-
-##    def cleanOutput(self):
-##        """
-##        This function cleans up lammps output files so that they can be read by a read csv function and jmol.
-##        """
-##        volOrPress = self.getVolOrPress[0]
-##        cwd = os.getcwd()
-##        for time in self.runTimes:
-##            for size in self.systemSizes:
-##                for temp in self.temperatures:
-##                    for var in volOrPress:
-##                        for concPercent in self.concPercents:
-##                            wd = self.getWorkDir(time,size,temp,var,concPercent)
-##                            os.chdir(wd)
-##                            sh("awk -f " + self.awkLib() + "/awkReadLog log.run > log.data") #Removes everything except for header and data from simulation log files
-##                            try:
-##                                sh("awk -f " + self.awkLib() + "/awkReadLog log.loop > log.temp") #Removes everything except for header and data from simulation log files
-##                                sh("awk -f " + self.awkLib() + "/awkCombineLog log.temp > log.loop") # Removes the extra headers loop files
-##                            except:
-##                                pass
-##                            sh("awk -f " + self.awkLib() + "/awkFixElementId dump.xyz > dump.pos") # Changes the names of the atoms in the dump files to Cu and Ni
-##                            os.chdir(cwd)
-##        return 
-##    
+    def cleanOutput(self):
+        """
+        This function cleans up lammps output files so that they can be read by a read csv function and jmol.
+        """
+        volOrPress = self.getVolOrPress()[0]
+        cwd = os.getcwd()
+        for time in self.runTimes:
+            for size in self.systemSizes:
+                for temp in self.temperatures:
+                    for var in volOrPress:
+                        for concPercent in self.concPercents:
+                            wd = self.getWorkDir(time,size,temp,var,concPercent)
+                            os.chdir(wd)
+                            sh("awk -f " + self.awkLib() + "/awkReadLog log.run > log.data") #Removes everything except for header and data from simulation log files
+                            try:
+                                sh("awk -f " + self.awkLib() + "/awkReadLog log.loop > log.temp") #Removes everything except for header and data from simulation log files
+                                sh("awk -f " + self.awkLib() + "/awkCombineLog log.temp > log.loop") # Removes the extra headers loop files
+                            except:
+                                pass
+                            sh("awk -f " + self.awkLib() + "/awkFixElementId dump.xyz > dump.pos") # Changes the names of the atoms in the dump files to Cu and Ni
+                            sh("rm -f log.run log.temp dump.xyz" + " " + self.potentialFile + " " + self.inTemplate) # delete extraneous files.
+                            os.chdir(cwd)
+        return 
+    
 
 
     def recordData(self,thermoDataFile = "thermoData"):
@@ -337,8 +253,8 @@ class bulkProp(simulation):
 
     def getForwDif(self,A,B):
         """
-        This function computes the derivative of thermo variable B with respect to A
-        using the forward difference method. A and B shoud be strings any of Volume Energy Press or Temp.
+        This function computes the derivative of thermo variable Y with respect to X
+        using the forward difference method. X and Y shoud be strings any of Volume Energy Press or Temp.
         The output are generated using utils.getThermoStats and utils.dForwDif and are:
         X - list of averages of independent variable in sims
         dX - the uncertainties in X
@@ -348,13 +264,13 @@ class bulkProp(simulation):
         ddYdX - the uncertainty in ddYdX
         midX - the midpoint between the values in the X variable
         """
-        varDict = {"Energy": ["Energy Ave","Energy Stdm"],"Enthalpy": ["Enthalpy Ave","Enthalpy Stdm"],"Volume": ["Volume Ave","Volume Stdm"],"Press": ["Press Ave","Press Stdm"],"Temp":["Temp Ave","Temp Stdm"]}
+        #varDict = {"Energy": ["Energy Ave","Energy Std"],"Volume": ["Volume Ave","Volume Std"],"Press": ["Press Ave","Press Std"],"Temp":["Temp Ave","Temp Std"],"Enthalpy":["Enthalpy Ave","Enthalpy Std"]}
         thermoDF = self.getData()
-        thermoDf = thermoDF.sort_values(varDict[A][0])
-        X = np.array(thermoDF[varDict[A][0]])
-        dX = np.array(thermoDF[varDict[A][1]])
-        Y = np.array(thermoDF[varDict[B][0]])
-        dY = np.array(thermoDF[varDict[B][1]])
+        thermoDf = thermoDF.sort_values(A + " Ave")
+        X = list(a for a in thermoDF[A + " Ave"])
+        dX = list(a for a in thermoDF[A + " Std"])
+        Y = list(a for a in thermoDF[B + " Ave"])
+        dY = list(a for a in thermoDF[B + " Std"])
         dYdX,ddYdX,midX = utils.dForwDif(X,dX,Y,dY)
         return X,dX,Y,dY,dYdX,ddYdX,midX
 
@@ -363,9 +279,10 @@ class bulkProp(simulation):
         This code takes a dataframe generated by utils.getThermoStats and computes the bulk modulus of the values.
         """
         V,dV,P,dP,dPdV,ddPdV,midV = self.getForwDif("Volume","Press")
-        bM = np.zeros(midV) #Initializing Bulk Modulus
-        dbM = np.zeros(midV)# Uncertainty in bM
-        dmidV = np.zeros(midV) # Uncertainty in midV
+        N = len(midV)
+        bM = np.zeros(N) #Initializing Bulk Modulus
+        dbM = np.zeros(N)# Uncertainty in bM
+        dmidV = np.zeros(N) # Uncertainty in midV
         for i in range(len(dPdV)):
             bM[i] = -midV[i]*dPdV[i]
             dmidV[i] = (1/2)*np.sqrt(dV[i+1]**2 + dV[i]**2)
@@ -377,9 +294,10 @@ class bulkProp(simulation):
         This code takes a dataframe generated by utils.getThermoStats and computes the thermal expansion coeff of the values.
         """
         T,dT,V,dV,dVdT,ddVdT,midT = self.getForwDif("Temp","Volume")
-        tE = np.zeros(midT)
-        dtE = np.zeros(midT)
-        dmidT = np.zeros(midT)
+        N = len(midT)
+        tE = np.zeros(N)
+        dtE = np.zeros(N)
+        dmidT = np.zeros(N)
         for i in range(len(midT)): # Note that here you need to make a choice for the volume at each point in nT (the midpoints between temperature values. I went with the left hand side volume.
             tE[i] = dVdT[i]/V[i]
             dmidT[i] = (1/2)*np.sqrt(dT[i+1]**2 + dT[i]**2)
@@ -394,15 +312,6 @@ class bulkProp(simulation):
         dmidT = np.array((1/2)*sqrt(dT[i+1]**2 + dT[i]**2) for i in range(len(dT) - 1))
         return dEdT,ddEdT,midT,dmidT
     
-    def calcHeatCapP(self):
-       """
-       This code takes a dataframe generated by utils.getThermoStats and computes the heat capacity of the values for constant pressure.
-       """
-       T,dT,H,dH,dHdT,ddHdT,midT = self.getForwDif("Temp","Enthalpy")
-       dmidT = np.array((1/2)*sqrt(dT[i+1]**2 + dT[i]**2) for i in range(len(dT) - 1))
-       return dHdT,ddHdT,midT,dmidT
-
-
     def simQPlot(self,logFile = "log.data"):
         """
         This function is meant for plotting lammps outputs from the log file over the range of simulations.
