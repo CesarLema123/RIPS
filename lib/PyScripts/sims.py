@@ -259,7 +259,7 @@ class bulkProp(simulation):
     """
     This class allows one to run simulations in NVT or NPT to compute the bulk properties of a material.
     """
-     def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [1,],alloy = "CuNi",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [14,],temperatures = [1,]+[x for x in range(100,2501,100)],pressures = [],lengths = [],concPercents = [x for x in range(0,101,10)],timeStep = 0.0005,simType = "",fileName = "elastic",potentialFile = "CuNi.eam.alloy",inTemplate = "in.elasticTemplate",copyDir = "./In",logFile = "log.run"):
+    def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [1,],alloy = "CuNi",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [14,],temperatures = [1,]+[x for x in range(100,2501,100)],pressures = [],lengths = [],concPercents = [x for x in range(0,101,10)],timeStep = 0.0005,simType = "",fileName = "elastic",potentialFile = "CuNi.eam.alloy",inTemplate = "in.elasticTemplate",copyDir = "./In",logFile = "log.run"):
         self.lib = lib 
         self.lammps = lammps
         self.runTimes = runTimes
