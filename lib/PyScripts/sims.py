@@ -470,9 +470,9 @@ class bulkProp(simulation):
         thermoDF = self.getData()
         thermoDf = thermoDF.sort_values(varDict[A][0])
         X = np.array(thermoDF[varDict[A][0]])
-        dX = np.array(thermoDF[varDict[A][2]])
+        dX = np.array(thermoDF[varDict[A][1]])
         Y = np.array(thermoDF[varDict[B][0]])
-        dY = np.array(thermoDF[varDict[B][2]])
+        dY = np.array(thermoDF[varDict[B][1]])
         dYdX,ddYdX,midX = utils.dForwDif(X,dX,Y,dY)
         return X,dX,Y,dY,dYdX,ddYdX,midX
 
