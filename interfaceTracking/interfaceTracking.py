@@ -25,7 +25,10 @@ class InterfaceEnergySimulation:
 
 
 # Sim = simulation(...)
-systemSize = 6
+#systemSize = 6
+geometry = 'parallelogram'
+xSize, ySize, zSize =  9, 3, 3      # 12, 6 ,6
+
 latConst = 3.63
 dumpFilename = 'pos.XYZ'
 logFilename = 'log.interfaceTracking'
@@ -34,7 +37,7 @@ thermoArgs = 'custom step atoms temp press etotal enthalpy' #since log file labe
 
 #---------Creating Atom position Datafiles ---------------  # Currently DFG class does not work with float systemsizes, maybe fix if have time
 
-DFGenerator = DFG.AtomDataFileGenerator(filename='CuNi_50%', latticeType='FCC', alloy='CuNi', atomTypes=2, alloyCompPercent = .5, systemSize = systemSize)
+DFGenerator = DFG.AtomDataFileGenerator(filename='CuNi_50%', latticeType='FCC', alloy='CuNi', atomTypes=2, alloyCompPercent = .5, geometry = geometry, xSize = xSize, ySize = ySize, zSize = zSize)
 
 #add some method that can go into lammps in file and sets readdata finename in input file
 
@@ -53,17 +56,26 @@ lmp.reset_timestep(0)
 lmp.thermo(10)
 lmp.thermo_style(thermoArgs)
 
+#lmp.log('log.interfaceTracking')
+
 lmp.compute('ptm all ptm/atom default 0.1') #*********
-lmp.dump(2,'all','custom',10,dumpFilename,'type','id','x','y','z','c_ptm[1]')
+lmp.compute('cna all cna/atom',2.15) #********* seems to not be working properly
+lmp.compute('centro all centro/atom 12') #*********
+lmp.dump(2,'all','custom',10,dumpFilename,'type','id','x','y','z','c_ptm[1]','c_centro','c_cna')
+
+dumpLabel = 'id type c_ptm[1] c_ptm[2] c_ptm[3] c_centro' # id first so it works with reader class, time step has to be at 0
+dumpFN = 'atomParameters.data'
+lmp.dump('PTMOutput','all','custom',10,dumpFN,dumpLabel)
+
 lmp.log('log.interfaceTracking')
 # ---------------------- Simulation Execution ----------------------------------
 
-lmp.change_box('all','x','final',-2*latConst,2.5*systemSize*latConst,'y','final',0,systemSize*latConst,'z','final',0,systemSize*latConst)
+lmp.change_box('all','x','final',-2*latConst,2.5*xSize*latConst,'y','final',0,ySize*latConst,'z','final',0,zSize*latConst)
 
-liqBox_xLow = (systemSize)*latConst
-liqBox_xUpp = (2*systemSize)*latConst
+liqBox_xLow = (xSize)*latConst
+liqBox_xUpp = (2*xSize)*latConst
 
-lmp.region('liqRegion','block', liqBox_xLow, liqBox_xUpp,0,systemSize*latConst,0,systemSize*latConst)
+lmp.region('liqRegion','block', liqBox_xLow, liqBox_xUpp,0,ySize*latConst,0,zSize*latConst)
 
 lmp.create_atoms('2','random', DFGenerator.getNumAtoms(),1,'liqRegion')
 lmp.group('liqAtoms region liqRegion')
@@ -71,25 +83,31 @@ lmp.group('liqAtoms region liqRegion')
 lmp.fix('liquify liqAtoms nvt temp 2000 2000 0.1')
 #lmp.fix('1 liqAtoms nve/limit 0.05')
 
-lmp.run(10)
+
 
 #DIVIDING EACH SOL/LIQ REGION INTO 3 SUB-REGIONS'
 solBox_xLow = 0
-solBox_xUpp = systemSize*latConst
+solBox_xUpp = xSize*latConst
+region1Fract = .05
+region2Fract = .15
+region3Fract = .8
 
-lmp.region('liqRegion1','block',liqBox_xLow,liqBox_xLow+(systemSize*latConst)*(1/3),0,systemSize*latConst,0,systemSize*latConst)
+
+lmp.region('liqRegion1','block',liqBox_xLow,liqBox_xLow+(xSize*latConst)*(region3Fract),0,ySize*latConst,0,zSize*latConst)
 lmp.group('liqRegion1Atoms region liqRegion1')
-lmp.region('liqRegion2','block',liqBox_xLow+(systemSize*latConst)*(1/3),liqBox_xLow+(systemSize*latConst)*(2/3),0,systemSize*latConst,0,systemSize*latConst)
+lmp.region('liqRegion2','block',liqBox_xLow+(xSize*latConst)*(region3Fract),liqBox_xLow+(xSize*latConst)*(region3Fract+region2Fract),0,ySize*latConst,0,zSize*latConst)
 lmp.group('liqRegion2Atoms region liqRegion2')
-lmp.region('liqRegion3','block',liqBox_xLow+(systemSize*latConst)*(2/3),liqBox_xUpp,0,systemSize*latConst,0,systemSize*latConst)
+lmp.region('liqRegion3','block',liqBox_xLow+(xSize*latConst)*(region2Fract),liqBox_xUpp,0,ySize*latConst,0,zSize*latConst)
 lmp.group('liqRegion3Atoms region liqRegion3')
 
-lmp.region('solRegion1','block',solBox_xLow,solBox_xUpp*(1/3),0,systemSize*latConst,0,systemSize*latConst)
+lmp.region('solRegion1','block',solBox_xLow,solBox_xUpp*(region1Fract),0,ySize*latConst,0,zSize*latConst)
 lmp.group('solRegion1Atoms region solRegion1')
-lmp.region('solRegion2','block',solBox_xUpp*(1/3),solBox_xUpp*(2/3),0,systemSize*latConst,0,systemSize*latConst)
+lmp.region('solRegion2','block',solBox_xUpp*(region1Fract),solBox_xUpp*(region1Fract+region2Fract),0,ySize*latConst,0,zSize*latConst)
 lmp.group('solRegion2Atoms region solRegion2')
-lmp.region('solRegion3','block',solBox_xUpp*(2/3),solBox_xUpp,0,systemSize*latConst,0,systemSize*latConst)
+lmp.region('solRegion3','block',solBox_xUpp*(region2Fract),solBox_xUpp,0,ySize*latConst,0,zSize*latConst)
 lmp.group('solRegion3Atoms region solRegion3')
+
+lmp.run(10)
 
 lmp.fix('solConstE solRegion3Atoms nve')
 lmp.fix('liqConstE liqRegion1Atoms nve')
@@ -100,7 +118,7 @@ lmp.fix('solNullForce solRegion1Atoms setforce 0 0 0')
 lmp.fix('liqNullForce liqRegion3Atoms setforce 0 0 0') # should create a particle bath instead of this
 
 
-''' delete specified region 
+''' delete specified region
 lmp.run(10)
 lmp.delete_atoms('group solRegion1Atoms')
 lmp.run(10)
@@ -116,16 +134,15 @@ lmp.delete_atoms('group liqRegion3Atoms')
 '''
 
 #lmp.compute('ptm all ptm/atom default 0.1')
-lmp.dump('PTMOutput','all','custom',10,'PTMData.data','type','id','c_ptm[1] c_ptm[2] c_ptm[3] ')
-#print(lmp.runs[0]._asdict().value)
 
+#print(lmp.runs[0]._asdict().value)
 lmp.run(1000)
 
+# getting atom data
 
 
 
 
-'''
 
 
 # ----------- Post Processing -----------------
@@ -133,9 +150,21 @@ lmp.run(1000)
 # import plotter and plot total enrgy vs time
 thermo_labels = 'Step Atoms Temp Press TotEng Enthalpy'
 
-df = OR.LogReader(logFilename,thermo_labels).getDataframe()
-OA.DataFrameAnalyzer(df,100).plotColumnAgainstRT('TotEng')
-OA.DataFrameAnalyzer(df,100).plotColumnAgainstRT('Enthalpy')
+ThermoDF = OR.LogReader(logFilename,thermo_labels).getDataframe()
+LogDF = OR.DumpReader(dumpFN,dumpLabel).getDataframe()     # need id as first dumplabel
+simData = OR.DumpReader(dumpFN,dumpLabel).getNdArray()
+
+atomNum = 100
+atom1Data = np.array([np.array(i) for i in simData[:,atomNum]])
+
+OA.DataFrameAnalyzer(pd.DataFrame(atom1Data,columns=dumpLabel.split()[1:]),10).plotColumnAgainstRT('c_ptm[1]')
+#OA.DataFrameAnalyzer(ThermoDF,10).plotColumnAgainstRT('TotEng')
+#OA.DataFrameAnalyzer(ThermoDF,10).plotColumnAgainstRT('Enthalpy')
+
+
+
+
+
 '''
 
 # --------- VISIUALIZATION ---------------------
@@ -145,7 +174,7 @@ os.system(appDirectory + ' -g ' + 'vis.py')
 
 
 
-
+'''
 
 
 

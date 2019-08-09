@@ -1,6 +1,14 @@
 import pandas as pd
 import numpy as np
 
+'''
+#Notes:
+Merge these two classes into one Reader class, mmake dataExtracter functions work for log and and dump files
+
+
+
+'''
+
 #Class to read dump files, assuming standard format and atoms data is output in row in the same id order
 class DumpReader:
     def __init__(self,filename, outputLabels = ''):
@@ -11,46 +19,45 @@ class DumpReader:
         dataLines = []         # format : [[rowData1], [rowData2], [rowData3], ... ]
         self.idLabels = ['Timestep']      # format : ['Timestep', 'atomID', 'atomID', ... ]
         rowData = []                      # format : [[timestep], [x,y,z], [x,y,z], ... ]
-    
+        
         f = open(self.filename,'r')
-        isFirstRun = True             # used to get column labels when parsing through the first timestep data
+        isFirstRun = True
         isDataLine = False          # when initially set, line in next iteration is a data line
         isTimestepLine = False      # when initially set, line in next iteration is a timestep line
         timestep = 0
         
         for line in f.readlines():
             if line.strip() == 'ITEM: TIMESTEP' or isTimestepLine:
-                if isTimestepLine:           # save data timestep in row of data
+                if isTimestepLine:
                     isTimestepLine = False
                     timestep = int(line.split()[0])
                     rowData.append([timestep])
-                if timestep > 0:                 #assumes simulation starts at 0 timestep, risky
-                    isFirstRun = False
+                    if timestep > 0:                 #assumes simulation starts at 0 timestep
+                        isFirstRun = False
                 else:
                     isTimestepLine = True
-            
-            if isDataLine:                      # get atom data for current timestep
+        
+            if isDataLine:
                 data = line.split()
-                if len(line.split())!= 0 and data[0].isdigit():     #check to make sure line has numceric data
-                    if isFirstRun:          #append labels during first timestep iteration
+                if len(line.split())!= 0 and data[0].isdigit():
+                    if isFirstRun:
                         self.idLabels.append(data[0])   # append label
                     rowData.append(line.split()[1:])
-                else:                      #reached end of current timestep data, add to all data and reset row data
+                else:
                     isDataLine = False
                     dataLines.append(rowData)
                     rowData = []
-            
-            if line.split() == self.outputLabels:       #find header for timestep data
+    
+            if line.split() == self.outputLabels:
                 isDataLine = True
         
         f.close()
         return dataLines
     
-    # User method to get dataframe from log data
+    #User method to get dataframe from log data
     def getDataframe(self):
         return pd.DataFrame(self.dataExtracter(),columns=self.idLabels)
     
-    #User method to get ndarray from dump data
     def getNdArray(self):
         data = self.dataExtracter()
         for row in range(len(data)):
@@ -58,7 +65,6 @@ class DumpReader:
             for col in range(len(data[row])):
                 data[row][col] = np.array(data[row][col]).astype(float)
         return np.array(data)
-
 
 class LogReader:
     def __init__(self,filename,thermoLabels = ''):

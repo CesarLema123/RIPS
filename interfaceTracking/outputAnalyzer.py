@@ -22,9 +22,14 @@ class DataFrameAnalyzer:
         X = np.linspace(0,self.timestep*len(Y),len(Y))
         self.generalPlot(X,Y,'Runtime',columnLabel,columnLabel+' vs. Runtime')
 
-    '''
-    def plotColumnVsColumn(self,firstLabel,secondLabel):
+    
+    def plotColumnVsColumn(self,xLabel,yLabel):
+        Y = self.df[yLabel].values.astype(float)
+        X = self.df[xLabel].values.astype(float)
+        self.generalPlot(X,Y,xLabel,yLabel,yLabel+' vs. '+xLabel)
 
+    
+    '''
     def plotColumnVsAny(self,Label,X)
     # not too necessary, can use generalPlot method
     
