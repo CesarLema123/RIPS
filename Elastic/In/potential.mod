@@ -43,32 +43,32 @@ variable pyz2 equal "c_thermo_press[6]^2"
 
 # Computing Averages and Standard Deviations
 
-fix aveEnergy all ave/time ${nevery} ${nrepeat} ${nfreq} v_energy mode scalar ave window 20
-fix aveEnergySq all ave/time ${nevery} ${nrepeat} ${nfreq} v_energySq mode scalar ave window 20
+fix aveEnergy all ave/time ${nevery} ${nrepeat} ${nfreq} v_energy mode scalar ave running
+fix aveEnergySq all ave/time ${nevery} ${nrepeat} ${nfreq} v_energySq mode scalar ave running
 variable energySTD equal "sqrt(abs(f_aveEnergySq - f_aveEnergy^2))"
 variable varAveEnergy equal f_aveEnergy
 
-fix aveVolume all ave/time ${nevery} ${nrepeat} ${nfreq} v_volume mode scalar ave window 20
-fix aveVolumeSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_volumeSq mode scalar ave window 20
+fix aveVolume all ave/time ${nevery} ${nrepeat} ${nfreq} v_volume mode scalar ave running
+fix aveVolumeSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_volumeSq mode scalar ave running
 variable volumeSTD equal "sqrt(abs(f_aveVolumeSq - f_aveVolume^2))"
 variable varAveVolume equal f_aveVolume
 
-fix avePress all ave/time ${nevery} ${nrepeat} ${nfreq} v_my_press mode scalar ave window 20
-fix avePressSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pressSq mode scalar ave window 20
+fix avePress all ave/time ${nevery} ${nrepeat} ${nfreq} v_my_press mode scalar ave running
+fix avePressSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pressSq mode scalar ave running
 variable pressSTD equal "sqrt(abs(f_avePressSq - f_avePress^2))"
 variable varAvePress equal f_avePress
 
-fix aveTemp all ave/time ${nevery} ${nrepeat} ${nfreq} v_my_temp mode scalar ave window 20
-fix aveTempSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_tempSq mode scalar ave window 20
+fix aveTemp all ave/time ${nevery} ${nrepeat} ${nfreq} v_my_temp mode scalar ave running
+fix aveTempSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_tempSq mode scalar ave running
 variable tempSTD equal "sqrt(abs(f_aveTempSq - f_aveTemp^2))"
 variable varAveTemp equal f_aveTemp
 
-fix avePxx all ave/time ${nevery} ${nrepeat} ${nfreq} v_pxx mode scalar ave window 20
-fix avePyy all ave/time ${nevery} ${nrepeat} ${nfreq} v_pyy mode scalar ave window 20
-fix avePzz all ave/time ${nevery} ${nrepeat} ${nfreq} v_pzz mode scalar ave window 20
-fix avePxy all ave/time ${nevery} ${nrepeat} ${nfreq} v_pxy mode scalar ave window 20
-fix avePxz all ave/time ${nevery} ${nrepeat} ${nfreq} v_pxz mode scalar ave window 20
-fix avePyz all ave/time ${nevery} ${nrepeat} ${nfreq} v_pyz mode scalar ave window 20
+fix avePxx all ave/time ${nevery} ${nrepeat} ${nfreq} v_pxx mode scalar ave running
+fix avePyy all ave/time ${nevery} ${nrepeat} ${nfreq} v_pyy mode scalar ave running
+fix avePzz all ave/time ${nevery} ${nrepeat} ${nfreq} v_pzz mode scalar ave running
+fix avePxy all ave/time ${nevery} ${nrepeat} ${nfreq} v_pxy mode scalar ave running
+fix avePxz all ave/time ${nevery} ${nrepeat} ${nfreq} v_pxz mode scalar ave running
+fix avePyz all ave/time ${nevery} ${nrepeat} ${nfreq} v_pyz mode scalar ave running
 variable varAvePxx equal f_avePxx
 variable varAvePyy equal f_avePyy
 variable varAvePzz equal f_avePzz
@@ -76,12 +76,12 @@ variable varAvePxy equal f_avePxy
 variable varAvePxz equal f_avePxz
 variable varAvePyz equal f_avePyz
 
-fix avePxxSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pxx2 mode scalar ave window 20
-fix avePyySq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pyy2 mode scalar ave window 20
-fix avePzzSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pzz2 mode scalar ave window 20
-fix avePxySq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pxy2 mode scalar ave window 20
-fix avePxzSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pxz2 mode scalar ave window 20
-fix avePyzSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pyz2 mode scalar ave window 20
+fix avePxxSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pxx2 mode scalar ave running
+fix avePyySq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pyy2 mode scalar ave running
+fix avePzzSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pzz2 mode scalar ave running
+fix avePxySq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pxy2 mode scalar ave running
+fix avePxzSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pxz2 mode scalar ave running
+fix avePyzSq all ave/time ${nevery} ${nrepeat} ${nfreq} v_pyz2 mode scalar ave running
 
 variable pxxSTD equal "sqrt(abs(f_avePxxSq - f_avePxx^2))"
 variable pyySTD equal "sqrt(abs(f_avePyySq - f_avePyy^2))"

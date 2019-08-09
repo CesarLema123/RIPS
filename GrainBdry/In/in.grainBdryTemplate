@@ -1,17 +1,25 @@
-#variable 	TEMPERATURE equal 300
-#variable 	RANDOM equal 387623
-#variable	TIMESTEP equal 0.001
-#variable 	A equal 3.6 	# lattice spacing (A)
-#variable 	SYSTEMSIZE equal 6
-#variable	RUNTIME equal 1000
-#variable	CONC equal 30
-
+variable 	TEMPERATURE equal 300
+variable 	RANDOM equal 387623
+variable	TIMESTEP equal 0.001
+variable 	A equal 3.6 	# lattice spacing (A)
+variable 	SYSTEMSIZE equal 8
+variable	RUNTIME equal 1000
+variable	CONC equal 30
+variable	x1 equal 8
+variable	x2 equal 0
+variable	x3 equal 1
+variable	y1 equal 0
+variable	y2 equal 1
+variable	y3 equal 0
+variable	z1 equal -1
+variable	z2 equal 0
+variable	z3 equal 8
 
 # variable which must be included above are TEMPERATURE RANDOM TIMESTEP A SYSTEMSIZE RUNTIME CONC
 # These vairables do not have to be changed with every simulation
 
 
-variable	MINIMIZE equal 0 # Set this to 1 if you would like to run a minimization step before the convergence step. 0 if not.
+#variable	MINIMIZE equal 0 # Set this to 1 if you would like to run a minimization step before the convergence step. 0 if not.
 variable	NEVERY equal 10 
 variable	NREPEAT equal 100 
 variable	NFREQ equal $(v_NEVERY*v_NREPEAT)
@@ -29,7 +37,9 @@ atom_style 	atomic
 
 
 region		wholeSim block 0 $(2*v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE)
-region 		tilt block $(v_A*v_SYSTEMSIZE) $(2*v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE)
+region 		side1 block 0 $(v_A*(v_SYSTEMSIZE)) 0 $(v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE)
+region 		side2 block $(v_A*(v_SYSTEMSIZE)) $(2*v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE)
+region		tilt block $(v_A*v_SYSTEMSIZE-v_A/2) $(2*v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE) 0 $(v_A*v_SYSTEMSIZE) 
 create_box 	2 wholeSim 
 
 pair_style	eam/alloy
@@ -41,16 +51,16 @@ create_atoms	1 region wholeSim
 delete_atoms	porosity wholeSim $(v_CONC/100) ${RANDOM}
 create_atoms	2 region wholeSim
 
-delete_atoms 	region tilt
+delete_atoms 	region side2
 
 
-lattice		fcc ${A} orient x ${SYSTEMSIZE} 0 -1 orient y 0 1 0 orient z 1 0 ${SYSTEMSIZE}
+lattice		fcc ${A} orient x ${x1} ${x2} ${x3} orient y ${y1} ${y2} ${y3} orient z ${z1} ${z2} ${z3}
 create_atoms 	1 region tilt
 delete_atoms	porosity tilt $(v_CONC/100) $(v_RANDOM + 1)
 create_atoms	2 region tilt
 group		Ni type 1
 group 		Cu type 2
-delete_atoms  	overlap 0.2 Cu Ni 
+delete_atoms  	overlap 1 Cu Ni 
 
 group		tilt region tilt
 group		Ni delete
@@ -66,13 +76,20 @@ reset_timestep	0
 
 # RUN SYSTEM CONVERGENCE
 
+#dump 		1 all xyz 1000 dump.xyz
+#dump 		2 tilt xyz 1000 dump.xyzTilt
+
+min_style	cg
+minimize	1e-15 1e-15 1000 10000
+
+reset_timestep	0
 
 log		log.convGB
 include 	initConv.mod
 include 	convergence.mod
 include 	exitConv.mod
 
-if "${TRACKGRAIN} == 1" then "jump in.grain track" else "jump in.grain break"
+if "${TRACKGRAIN} == 1" then "jump in.grainBdryTemplate track" else "jump in.grainBdryTemplate break"
 
 
 # DO THIS IF TRACKING THE GRAIN BAOUNDARY
@@ -153,10 +170,12 @@ run 		${RUNTIME}
 
 variable 	PE equal $(v_varAvePe)
 variable	dPE equal $(v_peSTD)
+variable	Area equal "2.0*f_thermo_ly*f_thermo_lz"
 log		log.results
-print "The energy per atom no tilt: 			${PE} +/- ${dPE}"
-print "The energy per atom with tilt:			${PEg} +/- ${dPEg}"
-print "The energy per atom due to the interface:	$(v_PEg - v_PE) +/- $(sqrt(v_dPE^2 + v_dPEg^2))"
+
+print "The energy per atom no tilt: 				${PE} +/- ${dPE}"
+print "The energy per atom with tilt:				${PEg} +/- ${dPEg}"
+print "The energy per atom per area due to the interface:	$((v_PEg-v_PE)/v_Area) +/- $(sqrt(v_dPE^2 + v_dPEg^2)/Area)"
 
 
 

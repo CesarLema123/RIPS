@@ -174,9 +174,9 @@ variable C12all equal 0.5*(${C12}+${C21})
 variable C13all equal 0.5*(${C13}+${C31})
 variable C23all equal 0.5*(${C23}+${C32})
 
-variable dC12all equal 0.5*(${C12}+${C21})/sqrt(2)
-variable dC13all equal 0.5*(${C13}+${C31})/sqrt(2)
-variable dC23all equal 0.5*(${C23}+${C32})/sqrt(2)
+variable dC12all equal 0.5*(${dC12}+${dC21})/sqrt(2)
+variable dC13all equal 0.5*(${dC13}+${dC31})/sqrt(2)
+variable dC23all equal 0.5*(${dC23}+${dC32})/sqrt(2)
 
 variable C44all equal ${C44}
 variable C55all equal ${C55}
@@ -290,11 +290,11 @@ print "========================================="
 print "Average properties for a cubic crystal"
 print "========================================="
 
-print "Bulk Modulus = $(round(v_bulkmodulus)) +/- $(round(v_dbulkmodulus)) ${cunits}"
-print "Shear Modulus 1 = $(round(v_shearmodulus1)) +/- $(round(v_dshearmodulus1)) ${cunits}"
-print "Shear Modulus 2 = $(round(v_shearmodulus2)) +/- $(round(v_dshearmodulus2)) ${cunits}"
-print "Poisson Ratio = $(round(v_poissonratio)) +/- $(round(v_dpoissonratio))"
-print "Youngs Modulus = $(round(v_youngmodulus)) +/- $(round(v_dyoungmodulus)) ${cunits}"
-print "Lames First Parameter = $(round(v_lameparam)) +/- $(round(v_dlameparam)) ${cunits}"
-print "P-Wave Modulus = $(round(v_pwavemodulus)) +/- $(round(v_dpwavemodulus)) ${cunits}"
+print "Bulk Modulus = $(v_bulkmodulus) +/- $(v_dbulkmodulus) ${cunits}"
+print "Shear Modulus 1 = $(v_shearmodulus1) +/- $(v_dshearmodulus1) ${cunits}"
+print "Shear Modulus 2 = $(v_shearmodulus2) +/- $(v_dshearmodulus2) ${cunits}"
+print "Poisson Ratio = $(v_poissonratio) +/- $(v_dpoissonratio)"
+print "Youngs Modulus = $(v_youngmodulus) +/- $(v_dyoungmodulus) ${cunits}"
+print "Lames First Parameter = $(v_lameparam) +/- $(v_dlameparam) ${cunits}"
+print "P-Wave Modulus = $(v_pwavemodulus) +/- $(v_dpwavemodulus) ${cunits}"
 
