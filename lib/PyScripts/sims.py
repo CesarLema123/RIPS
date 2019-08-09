@@ -416,11 +416,13 @@ class bulkProp(simulation):
                             os.chdir(wd)
                             try:
                                 if not header:
-                                    data,header = utils.getThermoStats(self.logFile) # automatically uses log.data as this is the data file after cleanOutput is run
+                                    #data,header = utils.getThermoStats(self.logFile) # automatically uses log.data as this is the data file after cleanOutput is run
+                                    data,header = utils.getFinalStats(self.logFile)
                                     writer.writerow(header)
                                     writer.writerow(data)
                                 else:
-                                    data = utils.getThermoStats(self.logFile)[0]
+                                    #data = utils.getThermoStats(self.logFile)[0]
+                                    data = utils.getFinalStats(self.logFile)[0]
                                     writer.writerow(data)
                             except:
                                 pass
@@ -447,10 +449,12 @@ class bulkProp(simulation):
                             os.chdir(wd)
                             try:
                                 if not header:
-                                    data,header = utils.getThermoStats(self.logFile)
+                                    #data,header = utils.getThermoStats(self.logFile)
+                                    data,header = utils.getFinalStats(self.logFile)
                                     df.append(data)
                                 else:
-                                    data = utils.getThermoStats(self.logFile)[0]
+                                    #data = utils.getThermoStats(self.logFile)[0]
+                                    data = utils.getFinalStats(self.logFile)[0]
                                     df.append(data)
                             except:
                                 pass
