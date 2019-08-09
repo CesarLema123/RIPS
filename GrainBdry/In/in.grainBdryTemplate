@@ -1,25 +1,24 @@
-variable 	TEMPERATURE equal 300
-variable 	RANDOM equal 387623
-variable	TIMESTEP equal 0.001
-variable 	A equal 3.6 	# lattice spacing (A)
-variable 	SYSTEMSIZE equal 8
-variable	RUNTIME equal 1000
-variable	CONC equal 30
-variable	x1 equal 8
-variable	x2 equal 0
-variable	x3 equal 1
-variable	y1 equal 0
-variable	y2 equal 1
-variable	y3 equal 0
-variable	z1 equal -1
-variable	z2 equal 0
-variable	z3 equal 8
+#variable 	TEMPERATURE equal 300
+#variable 	RANDOM equal 387623
+#variable	TIMESTEP equal 0.001
+#variable 	A equal 3.6 	# lattice spacing (A)
+#variable 	SYSTEMSIZE equal 8
+#variable	RUNTIME equal 1000
+#variable	CONC equal 30
+#variable	x1 equal 8
+#variable	x2 equal 0
+#variable	x3 equal 1
+#variable	y1 equal 0
+#variable	y2 equal 1
+#variable	y3 equal 0
+#variable	z1 equal -1
+#variable	z2 equal 0
+#variable	z3 equal 8
 
 # variable which must be included above are TEMPERATURE RANDOM TIMESTEP A SYSTEMSIZE RUNTIME CONC
 # These vairables do not have to be changed with every simulation
 
 
-#variable	MINIMIZE equal 0 # Set this to 1 if you would like to run a minimization step before the convergence step. 0 if not.
 variable	NEVERY equal 10 
 variable	NREPEAT equal 100 
 variable	NFREQ equal $(v_NEVERY*v_NREPEAT)
@@ -117,7 +116,7 @@ run 		${RUNTIME}
 # GET THE FINAL ENERGY OF THE SYSTEM WITH A GRAIN BOUNDARY
 
 variable 	PEg equal $(v_varAvePe)
-variable	dPEg equal $(v_peSTD)
+variable	dPEg equal $(v_peSTD/sqrt(v_RUNTIME/v_NEVERY)) #Using standard deviation of the mean.
 
 include 	exitConv.mod
 include 	exitEnergyAtom.mod
@@ -169,7 +168,7 @@ run 		${RUNTIME}
 # GET THE FINAL ENERGY OF THE SYSTEM WITH A GRAIN BOUNDARY
 
 variable 	PE equal $(v_varAvePe)
-variable	dPE equal $(v_peSTD)
+variable	dPE equal $(v_peSTD/sqrt(v_RUNTIME/v_NEVERY))
 variable	Area equal "2.0*f_thermo_ly*f_thermo_lz"
 log		log.results
 
