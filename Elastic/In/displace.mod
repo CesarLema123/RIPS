@@ -43,9 +43,9 @@ if "${dir} == 6" then &
    "change_box all xy delta ${delta} remap units box"
 
 # Run MD
-log.convNeg${dir}
+log log.convNeg${dir}
 include convergence.mod
-log.runNeg${dir}
+log log.runNeg${dir}
 include potential.mod
 run ${RUNTIME}
 
