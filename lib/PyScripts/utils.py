@@ -135,21 +135,25 @@ def getThermoStats(fileName):
         nBins -= 1
     lBins = N//nBins
 
-    header = ("Energy Ave","Energy Std","Energy Stdm","Temp Ave","Temp Std","Temp Stdm","Volume Ave","Volume Std","Volume Stdm","Press Ave","Press Std","Press Stdm")
-    thermoVars = ("Energy","Temp","Volume","Press")
-    thermoVarDict = {"Energy":["TotEng","v_varAveEnergy","v_energySTD"],"Temp":["Temp","v_varAveTemp","v_tempSTD"],"Volume":["Volume","v_varAveVolume","v_volumeSTD"],"Press":["Press","v_varAvePress","v_pressSTD"]}
+    header = ("Energy Ave","Energy Std","Energy Stdm","Temp Ave","Temp Std","Temp Stdm","Volume Ave","Volume Std","Volume Stdm","Press Ave","Press Std","Press Stdm","Enthalpy Ave","Enthalpy Std","Enthalpy Stdm")
+    thermoVars = ("Energy","Temp","Volume","Press","Enthalpy")
+    thermoVarDict = {"Energy":["TotEng","v_varAveEnergy","v_energySTD"],"Temp":["Temp","v_varAveTemp","v_tempSTD"],"Volume":["Volume","v_varAveVolume","v_volumeSTD"],"Press":["Press","v_varAvePress","v_pressSTD"],"Enthalpy":["v_varAveEnthalpy","v_enthalpySTD"]}
     data = []
     for var in thermoVars:
-        colNames = thermoVarDict[var]
-        inst,ave,std = list(df[colNames[0]]),list(df[colNames[1]]),list(df[colNames[2]])
-        aveStd = sum(std)/N
-        aveBins = [0.0]*nBins
-        for b in range(nBins):
-            A = sum(ave[b*lBins:(b+1)*lBins])/lBins
-            aveBins[b] = A
-        A = sum(aveBins)/nBins
-        S = np.sqrt(sum((x - A)**2 for x in aveBins)/nBins)
-        data.extend([A,aveStd,S])
+        try:
+            colNames = thermoVarDict[var]
+            inst,ave,std = list(df[colNames[0]]),list(df[colNames[1]]),list(df[colNames[2]])
+            aveStd = sum(std)/N
+            aveBins = [0.0]*nBins
+            for b in range(nBins):
+                A = sum(ave[b*lBins:(b+1)*lBins])/lBins
+                aveBins[b] = A
+            A = sum(aveBins)/nBins
+            S = np.sqrt(sum((x - A)**2 for x in aveBins)/nBins)
+            data.extend([A,aveStd,S])
+        except:
+            print("Column %s not found. Entering zeros for all values." %(var))
+            data.extend([0.0,0.0,0.0])
     return data,header 
 
 
