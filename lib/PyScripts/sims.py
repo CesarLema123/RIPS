@@ -163,8 +163,7 @@ class GrainBdry(simulation):
         This function returns the path to the directory in which a simulation will be run.
         """
         orientStr = "%d%d%d-%d%d%d-%d%d%d" %(orientation)
-        return "Out/RunTime" + str(int(time)) + "Size" + str(int(size)) + "Temp" + str(int(temp)) + "Conc" + str(int(concPercent))
-
+        return "Out/RunTime" + str(int(time)) + "Size" + str(int(size)) + "Temp" + str(int(temp)) + "Conc" + str(int(concPercent) + "Orient" + orientStr)
 
     def runGBSims(self):
         cwd = os.getcwd()
@@ -173,14 +172,18 @@ class GrainBdry(simulation):
             for size in self.systemSizes:
                 for temp in self.temperatures:
                     for conc in self.concPercents:
-                        wd = self.getWorkDir(time,size,temp,conc)
-                        sh("mkdir " + wd)
-                        self.cpTemplate(wd)
-                        os.chdir(wd)
-                        inFile = inF.inFile(fileName = self.fileName,readFile = self.inTemplate,runTime=time,timeStep = self.timeStep)
-                        inFile.writeInFile(options = ["TEMPERATURE equal " + str(temp),"RANDOM equal " + str(randint(1000000,99999999)),"CONC equal " + str(conc),"A equal " + str(self.latticeConst),"SYSTEMSIZE equal " + str(size)])
-                        self.runLammps()
-                        os.chdir(cwd)
+                        for orient in self.orientations:
+                            wd = self.getWorkDir(time,size,temp,conc)
+                            sh("mkdir " + wd)
+                            self.cpTemplate(wd)
+                            os.chdir(wd)
+                            nums = [3,1,2]
+                            lets = ["x","y","z"]
+                            o = ["variable %S%d equal %d" %(lets[i//3],nums[i%3],orient[i]) for i in range(9)]
+                            inFile = inF.inFile(fileName = self.fileName,readFile = self.inTemplate,runTime=time,timeStep = self.timeStep)
+                            inFile.writeInFile(options = ["TEMPERATURE equal " + str(temp),"RANDOM equal " + str(randint(1000000,99999999)),"CONC equal " + str(conc),"A equal " + str(self.latticeConst),"SYSTEMSIZE equal " + str(size)] + o)
+                            self.runLammps()
+                            os.chdir(cwd)
         return
 
     def dataFile(self): # This override the simulation method becasue the grainbdry sim does not use a data file
