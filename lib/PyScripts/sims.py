@@ -162,8 +162,9 @@ class GrainBdry(simulation):
         """
         This function returns the path to the directory in which a simulation will be run.
         """
-        orientStr = "%d%d%d-%d%d%d-%d%d%d" %(orientation)
-        return "Out/RunTime" + str(int(time)) + "Size" + str(int(size)) + "Temp" + str(int(temp)) + "Conc" + str(int(concPercent) + "Orient" + orientStr)
+        o = orientation
+        orientStr = "%d%d%d-%d%d%d-%d%d%d" %(o[0],o[1],o[2],o[3],o[4],o[5],o[6],o[7],o[8])
+        return "Out/RunTime" + str(int(time)) + "Size" + str(int(size)) + "Temp" + str(int(temp)) + "Conc" + str(int(concPercent)) + "Orient" + orientStr
 
     def runGBSims(self):
         cwd = os.getcwd()
@@ -173,13 +174,13 @@ class GrainBdry(simulation):
                 for temp in self.temperatures:
                     for conc in self.concPercents:
                         for orient in self.orientations:
-                            wd = self.getWorkDir(time,size,temp,conc)
+                            wd = self.getWorkDir(time,size,temp,conc,orient)
                             sh("mkdir " + wd)
                             self.cpTemplate(wd)
                             os.chdir(wd)
                             nums = [3,1,2]
                             lets = ["x","y","z"]
-                            o = ["variable %S%d equal %d" %(lets[i//3],nums[i%3],orient[i]) for i in range(9)]
+                            o = ["variable %s%d equal %d" %(lets[i//3],nums[(i+1)%3],orient[i]) for i in range(9)]
                             inFile = inF.inFile(fileName = self.fileName,readFile = self.inTemplate,runTime=time,timeStep = self.timeStep)
                             inFile.writeInFile(options = ["TEMPERATURE equal " + str(temp),"RANDOM equal " + str(randint(1000000,99999999)),"CONC equal " + str(conc),"A equal " + str(self.latticeConst),"SYSTEMSIZE equal " + str(size)] + o)
                             self.runLammps()
