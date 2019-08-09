@@ -137,7 +137,7 @@ def getThermoStats(fileName):
 
     header = ("Energy Ave","Energy Std","Energy Stdm","Temp Ave","Temp Std","Temp Stdm","Volume Ave","Volume Std","Volume Stdm","Press Ave","Press Std","Press Stdm","Enthalpy Ave","Enthalpy Std","Enthalpy Stdm")
     thermoVars = ("Energy","Temp","Volume","Press","Enthalpy")
-    thermoVarDict = {"Energy":["TotEng","v_varAveEnergy","v_energySTD"],"Temp":["Temp","v_varAveTemp","v_tempSTD"],"Volume":["Volume","v_varAveVolume","v_volumeSTD"],"Press":["Press","v_varAvePress","v_pressSTD"],"Enthalpy":["v_varAveEnthalpy","v_enthalpySTD"]}
+    thermoVarDict = {"Energy":["TotEng","v_varAveEnergy","v_energySTD"],"Temp":["Temp","v_varAveTemp","v_tempSTD"],"Volume":["Volume","v_varAveVolume","v_volumeSTD"],"Press":["Press","v_varAvePress","v_pressSTD"],"Enthalpy":["Enthalpy","v_varAveEnthalpy","v_enthalpySTD"]}
     data = []
     for var in thermoVars:
         try:
