@@ -152,7 +152,7 @@ velocity 	all create ${TEMPERATURE} ${RANDOM}
 
 # RUNNING CONVERGENCE CHECKING
 
-log.conv
+log		log.conv
 include 	initConv.mod
 include 	convergence.mod
 include 	exitConv.mod
