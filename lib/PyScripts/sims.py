@@ -180,7 +180,7 @@ class GrainBdry(simulation):
                             os.chdir(wd)
                             nums = [3,1,2]
                             lets = ["x","y","z"]
-                            o = ["variable %s%d equal %d" %(lets[i//3],nums[(i+1)%3],orient[i]) for i in range(9)]
+                            o = ["%s%d equal %d" %(lets[i//3],nums[(i+1)%3],orient[i]) for i in range(9)]
                             inFile = inF.inFile(fileName = self.fileName,readFile = self.inTemplate,runTime=time,timeStep = self.timeStep)
                             inFile.writeInFile(options = ["TEMPERATURE equal " + str(temp),"RANDOM equal " + str(randint(1000000,99999999)),"CONC equal " + str(conc),"A equal " + str(self.latticeConst),"SYSTEMSIZE equal " + str(size)] + o)
                             self.runLammps()
