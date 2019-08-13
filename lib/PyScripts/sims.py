@@ -130,7 +130,7 @@ class GrainBdry(simulation):
     """
     This class is meant to run simulations to get the energy due to an interface between two misaligned crystal structures for a range of temperatures and concentrations of CuNi
     """
-    def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [10,],alloy = "custom",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [14,],temperatures = [1,]+[x for x in range(100,2501,100)],pressures = [],lengths = [],concPercents = [x for x in range(0,101,10)],orientations = [[1,0,0,0,1,0,0,0,1],],timeStep = 0.0005,simType = "",fileName = "grainBdry",potentialFile = "CuNi.eam.alloy",inTemplate = "in.grainBdryTemplate",copyDir = "./In"):
+    def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [10,],alloy = "custom",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [14,],temperatures = [1,]+[x for x in range(100,2501,100)],pressures = [0,],lengths = [],concPercents = [x for x in range(0,101,10)],orientations = [[1,0,0,0,1,0,0,0,1],],timeStep = 0.0005,simType = "",fileName = "grainBdry",potentialFile = "CuNi.eam.alloy",inTemplate = "in.grainBdryTemplate",copyDir = "./In"):
         self.lib = lib 
         self.lammps = lammps
         self.runTimes = runTimes
@@ -158,13 +158,13 @@ class GrainBdry(simulation):
 
     
 
-    def getWorkDir(self,time,size,temp,concPercent,orientation):
+    def getWorkDir(self,time,size,temp,press,concPercent,orientation):
         """
         This function returns the path to the directory in which a simulation will be run.
         """
         o = orientation
         orientStr = "%d%d%d-%d%d%d-%d%d%d" %(o[0],o[1],o[2],o[3],o[4],o[5],o[6],o[7],o[8])
-        return "Out/RunTime" + str(int(time)) + "Size" + str(int(size)) + "Temp" + str(int(temp)) + "Conc" + str(int(concPercent)) + "Orient" + orientStr
+        return "Out/RunTime" + str(int(time)) + "Size" + str(int(size)) + "Temp" + str(int(temp)) + "Conc" + str(int(concPercent)) + "Press" + str(int(press)) + "Orient" + orientStr
 
     def runGBSims(self):
         cwd = os.getcwd()
@@ -172,19 +172,20 @@ class GrainBdry(simulation):
         for time in self.runTimes:
             for size in self.systemSizes:
                 for temp in self.temperatures:
-                    for conc in self.concPercents:
-                        for orient in self.orientations:
-                            wd = self.getWorkDir(time,size,temp,conc,orient)
-                            sh("mkdir " + wd)
-                            self.cpTemplate(wd)
-                            os.chdir(wd)
-                            nums = [3,1,2]
-                            lets = ["x","y","z"]
-                            o = ["%s%d equal %d" %(lets[i//3],nums[(i+1)%3],orient[i]) for i in range(9)]
-                            inFile = inF.inFile(fileName = self.fileName,readFile = self.inTemplate,runTime=time,timeStep = self.timeStep)
-                            inFile.writeInFile(options = ["TEMPERATURE equal " + str(temp),"RANDOM equal " + str(randint(1000000,99999999)),"CONC equal " + str(conc),"A equal " + str(self.latticeConst),"SYSTEMSIZE equal " + str(size)] + o)
-                            self.runLammps()
-                            os.chdir(cwd)
+                    for press in self.pressures:
+                        for conc in self.concPercents:
+                            for orient in self.orientations:
+                                wd = self.getWorkDir(time,size,temp,press,conc,orient)
+                                sh("mkdir " + wd)
+                                self.cpTemplate(wd)
+                                os.chdir(wd)
+                                nums = [3,1,2]
+                                lets = ["x","y","z"]
+                                o = ["%s%d equal %d" %(lets[i//3],nums[(i+1)%3],orient[i]) for i in range(9)]
+                                inFile = inF.inFile(fileName = self.fileName,readFile = self.inTemplate,runTime=time,timeStep = self.timeStep)
+                                inFile.writeInFile(options = ["TEMPERATURE equal " + str(temp),"PRESSURE equal " + str(press),"RANDOM equal " + str(randint(1000000,99999999)),"CONC equal " + str(conc),"A equal " + str(self.latticeConst),"SYSTEMSIZE equal " + str(size)] + o)
+                                self.runLammps()
+                                os.chdir(cwd)
         return
 
     def dataFile(self): # This override the simulation method becasue the grainbdry sim does not use a data file
@@ -252,10 +253,59 @@ class elastic(simulation):
                         os.chdir(cwd)
         return
 
+
+    
     def getElasticConsts(self):
         f = open(self.logFile)
+        searchline = "print \"Bulk Modulus = $(v_bulkmodulus) +/- $(v_dbulkmodulus) ${cunits}\"\n"
+        N = -1
+        start = False
+        values = []
+        errors = []
+        for line in f:
+            if line == searchline:
+                N = 1
+            if ((N+1)%2):
+                sline = line.split()
+                if sline[0] == "Total":
+                    pass
+                else:
+                    for i in range(len(sline)):
+                        if sline[i] == "=":
+                            x = float(sline[i+1])
+                        elif sline[i] == "+/-":
+                            y = float(sline[i+1])
+                values.append(x)
+                errors.append(y)
+            if N > 0:
+                N += 1
         f.close()
-        return
+        return values,errors
+    
+
+
+
+    def getElasticData(self):
+        cwd = os.getcwd()
+        header = ["Run Time (ps)","N Atoms","Temperature (K)","Concentraition of Cu","Bulk Mod (GPa)","Shear Mod Aniso (GPa)","Shear Mod Iso (GPa)","Poisson","Youngs","Lames","P-Wave","Bulk Mod Error","Shear Mod Aniso Error","Shear Mod Iso Error","Poisson Error","Youngs Error","Lames Error","P-Wave Error"]
+        data = []
+        for time in self.runTimes:
+            for size in self.systemSizes:
+                for temp in self.temperatures:
+                    for conc in self.concPercents:
+                        try:
+                            d = [time,4*size**3,temp,conc]
+                            wd = self.getWorkDir(time,size,temp,conc)
+                            os.chdir(wd)
+                            temporary=open(self.logFile)
+                            temporary.close()
+                            v,e = self.getElasticConsts()
+                            data.append(d + v + e)
+                        except:
+                            pass
+                        os.chdir(cwd)
+        return data, header 
+
 
 
 

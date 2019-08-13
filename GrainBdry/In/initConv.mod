@@ -23,28 +23,28 @@ variable enthalpySq equal "enthalpy^2"
 
 # Computing Averages and Standard Deviations
 
-fix aveEnergy all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_energy mode scalar ave window 20
-fix aveEnergySq all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_energySq mode scalar ave window 20
+fix aveEnergy all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_energy mode scalar ave running
+fix aveEnergySq all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_energySq mode scalar ave running
 variable energySTD equal "sqrt(abs(f_aveEnergySq - f_aveEnergy^2))"
 variable varAveEnergy equal f_aveEnergy
 
-fix aveVolume all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_volume mode scalar ave window 20
-fix aveVolumeSq all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_volumeSq mode scalar ave window 20
+fix aveVolume all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_volume mode scalar ave running
+fix aveVolumeSq all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_volumeSq mode scalar ave running
 variable volumeSTD equal "sqrt(abs(f_aveVolumeSq - f_aveVolume^2))"
 variable varAveVolume equal f_aveVolume
 
-fix avePress all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_my_press mode scalar ave window 20
-fix avePressSq all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_pressSq mode scalar ave window 20
+fix avePress all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_my_press mode scalar ave running
+fix avePressSq all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_pressSq mode scalar ave running
 variable pressSTD equal "sqrt(abs(f_avePressSq - f_avePress^2))"
 variable varAvePress equal f_avePress
 
-fix aveTemp all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_my_temp mode scalar ave window 20
-fix aveTempSq all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_tempSq mode scalar ave window 20
+fix aveTemp all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_my_temp mode scalar ave running
+fix aveTempSq all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_tempSq mode scalar ave running
 variable tempSTD equal "sqrt(abs(f_aveTempSq - f_aveTemp^2))"
 variable varAveTemp equal f_aveTemp
 
-fix aveEnthalpy all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_my_enthalpy mode scalar ave window 20
-fix aveEnthalpySq all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_enthalpySq mode scalar ave window 20
+fix aveEnthalpy all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_my_enthalpy mode scalar ave running
+fix aveEnthalpySq all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_enthalpySq mode scalar ave running
 variable enthalpySTD equal "sqrt(abs(f_aveEnthalpySq - f_aveEnthalpy^2))"
 variable varAveEnthalpy equal f_aveEnthalpy
 
@@ -56,7 +56,7 @@ thermo_style 	custom step temp v_varAveTemp v_tempSTD etotal v_varAveEnergy v_en
 # Setup MD
 
 timestep 	${TIMESTEP}
-fix 		1 all nve
+fix 		1 all nph aniso ${PRESSURE} ${PRESSURE} $(v_TIMESTEP*1000)
 fix 		2 all langevin ${TEMPERATURE} ${TEMPERATURE} $(v_TIMESTEP*100) ${RANDOM}
 
 

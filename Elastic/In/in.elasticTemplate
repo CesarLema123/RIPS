@@ -92,16 +92,16 @@ run ${RUNTIME}
 variable pxx0 equal $(v_varAvePxx)
 variable pyy0 equal $(v_varAvePyy)
 variable pzz0 equal $(v_varAvePzz)
-variable pxy0 equal $(v_varAvePxy)
+variable pxy0 equal $(v_varAvePyz)
 variable pxz0 equal $(v_varAvePxz)
-variable pyz0 equal $(v_varAvePyz)
+variable pyz0 equal $(v_varAvePxy)
 
 variable dpxx0 equal $(v_pxxSTD)
 variable dpyy0 equal $(v_pyySTD)
 variable dpzz0 equal $(v_pzzSTD)
-variable dpxy0 equal $(v_pxySTD)
+variable dpxy0 equal $(v_pyzSTD)
 variable dpxz0 equal $(v_pxzSTD)
-variable dpyz0 equal $(v_pyzSTD)
+variable dpyz0 equal $(v_pxySTD)
 
 variable tmp equal lx
 variable lx0 equal ${tmp}
@@ -120,12 +120,12 @@ variable d5 equal -(v_pxz1-${pxz0})/(v_delta/v_len0)*${cfac}
 variable d6 equal -(v_pxy1-${pxy0})/(v_delta/v_len0)*${cfac}
 
 
-variable dd1 equal v_d1*sqrt(((${dpxx0}/${pxx0})^2)+((v_dpxx1/v_pxx1)^2))
-variable dd2 equal v_d2*sqrt((${dpyy0}/${pyy0})^2+(v_dpyy1/v_pyy1)^2)
-variable dd3 equal v_d3*sqrt((${dpzz0}/${pzz0})^2+(v_dpzz1/v_pzz1)^2)
-variable dd4 equal v_d4*sqrt((${dpxy0}/${pxy0})^2+(v_dpxy1/v_pxy1)^2)
-variable dd5 equal v_d5*sqrt((${dpxz0}/${pxz0})^2+(v_dpxz1/v_pxz1)^2)
-variable dd6 equal v_d6*sqrt((${dpyz0}/${pyz0})^2+(v_dpyz1/v_pyz1)^2)
+variable dd1 equal abs(v_d1)*sqrt((${dpxx0}/${pxx0})^2+(v_dpxx1/v_pxx1)^2)
+variable dd2 equal abs(v_d2)*sqrt((${dpyy0}/${pyy0})^2+(v_dpyy1/v_pyy1)^2)
+variable dd3 equal abs(v_d3)*sqrt((${dpzz0}/${pzz0})^2+(v_dpzz1/v_pzz1)^2)
+variable dd4 equal abs(v_d4)*sqrt((${dpyz0}/${pyz0})^2+(v_dpyz1/v_pyz1)^2)
+variable dd5 equal abs(v_d5)*sqrt((${dpxz0}/${pxz0})^2+(v_dpxz1/v_pxz1)^2)
+variable dd6 equal abs(v_d6)*sqrt((${dpxy0}/${pxy0})^2+(v_dpxy1/v_pxy1)^2)
 
 # Write restart
 write_restart restart.equil
