@@ -11,6 +11,11 @@ import outputReader as OR
 import matplotlib.pyplot as plt
 
 '''
+def getInterfaceXPosition()
+
+'''
+
+'''
 class SimunlationConstants:
     def __init__(self):
         self.systemSize = 5
@@ -32,7 +37,7 @@ xSize, ySize, zSize =  9, 3, 3      # 12, 6 ,6
 latConst = 3.63
 dumpFilename = 'pos.XYZ'
 logFilename = 'log.interfaceTracking'
-thermoArgs = 'custom step atoms temp press etotal enthalpy' #since log file labels arent same as arguements, might have to make a dictionary with arguements as keys and log labels as value {etotal:}
+thermoArgs = 'step atoms temp press etotal enthalpy' #since log file labels arent same as arguements, might have to make a dictionary with arguements as keys and log labels as value {etotal:}
 
 
 #---------Creating Atom position Datafiles ---------------  # Currently DFG class does not work with float systemsizes, maybe fix if have time
@@ -54,7 +59,7 @@ lmp = PyLammps(ptr=_lmp)
 # ----------------------- Output settings ---------------------------
 lmp.reset_timestep(0)
 lmp.thermo(10)
-lmp.thermo_style(thermoArgs)
+lmp.thermo_style('custom',thermoArgs)
 
 #lmp.log('log.interfaceTracking')
 
@@ -150,14 +155,12 @@ lmp.run(1000)
 # import plotter and plot total enrgy vs time
 thermo_labels = 'Step Atoms Temp Press TotEng Enthalpy'
 
-ThermoDF = OR.LogReader(logFilename,thermo_labels).getDataframe()
-LogDF = OR.DumpReader(dumpFN,dumpLabel).getDataframe()     # need id as first dumplabel
-simData = OR.DumpReader(dumpFN,dumpLabel).getNdArray()
+ThermoDF = OR.OutputReader(logFilename,'log',thermo_labels).getDataFrame()
+dumpDF = OR.OutputReader(dumpFN,'dump',dumpLabel)    # need id as first dumplabel
+simData =dumpDF.getNDArray()
+print(simData[0])
 
-atomNum = 100
-atom1Data = np.array([np.array(i) for i in simData[:,atomNum]])
-
-OA.DataFrameAnalyzer(pd.DataFrame(atom1Data,columns=dumpLabel.split()[1:]),10).plotColumnAgainstRT('c_ptm[1]')
+OA.DataFrameAnalyzer(dumpDF.getDataFrame().xs(200),10).plotColumnAgainstRT('c_ptm[1]')
 #OA.DataFrameAnalyzer(ThermoDF,10).plotColumnAgainstRT('TotEng')
 #OA.DataFrameAnalyzer(ThermoDF,10).plotColumnAgainstRT('Enthalpy')
 
@@ -173,8 +176,8 @@ appDirectory = '/Applications/Ovito.app/Contents/MacOS/ovitos'
 os.system(appDirectory + ' -g ' + 'vis.py')
 
 
-
 '''
+
 
 
 
