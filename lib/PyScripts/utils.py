@@ -76,9 +76,9 @@ def fixAtomIdCuNi(readFile,writeFile):
     w = open(writeFile,mode = "w")
     for line in r:
         if line[0] == "1":
-            line = "Ni" + line[1:]
-        elif line[0] == "2":
             line = "Cu" + line[1:]
+        elif line[0] == "2":
+            line = "Ni" + line[1:]
         w.write(line)
     r.close()
     w.close()
@@ -225,10 +225,8 @@ def dForwDif(X,dX,Y,dY):
     N = len(X)
     dYdX,ddYdX,nX = [0.0]*(N-1),[0.0]*(N-1),[0.0]*(N-1) # confusing labels but ddYdX is the error in the derivative
     for i in range(N-1):
-        DX = X[i+1] - X[i]
-        DY = Y[i+1] - Y[i]
-        dYdX[i] = DY/DX
-        ddYdX[i] = dYdX[i]*np.sqrt((dY[i+1]/DY)**2 + (dY[i]/DY)**2 + (dX[i+1]/DX)**2 + (dX[i]/DX)**2)
+        dYdX[i] = (Y[i+1] - Y[i])/(X[i+1] - X[i])
+        ddYdX[i] = np.sqrt((dY[i+1]/(X[i+1] - X[i]))**2 + (dY[i]/(X[i+1] - X[i]))**2 + (dX[i+1]*(Y[i+1] - Y[i])/(X[i+1] - X[i])**2)**2 + (dX[i]*(Y[i+1] - Y[i])/(X[i+1] - X[i])**2)**2) 
         nX[i] = (X[i+1] + X[i])/2
     return dYdX,ddYdX,nX
     

@@ -76,18 +76,21 @@ reset_timestep	0
 
 # RUN SYSTEM CONVERGENCE
 
+#dump		1 all xyz 10 dump.minxyz
 
-min_style	cg
-minimize	1e-15 1e-15 1000 10000
+#min_style	cg
+#minimize	1e-15 1e-15 1000 10000
 
+#undump		1
 reset_timestep	0
 
+#dump		1 all xyz 1000 dump.xyzTilt
 
 
-log		log.convGB
-include 	initConv.mod
-include 	convergence.mod
-include 	exitConv.mod
+#log		log.convGB
+#include 	initConv.mod
+#include 	convergence.mod
+#include 	exitConv.mod
 
 if "${TRACKGRAIN} == 1" then "jump in.grainBdryTemplate track" else "jump in.grainBdryTemplate break"
 
@@ -105,23 +108,23 @@ label		break
 
 # RUN THE SIMULATION
 
-include 	initConv.mod
-include		energyAtom.mod
+#include 	initConv.mod
+#include		energyAtom.mod
 
-log		log.runGB
-run 		${RUNTIME}
+#log		log.runGB
+#run 		${RUNTIME}
 
 # GET THE FINAL ENERGY OF THE SYSTEM WITH A GRAIN BOUNDARY
 
-variable 	PEg equal $(v_varAvePe)
-variable	dPEg equal $(v_peSTD)
+#variable 	PEg equal $(v_varAvePe)
+#variable	dPEg equal $(v_peSTD)
 
-variable	Y equal ly
-variable	Z equal lz
-variable	Area equal $(2.0*v_Y*v_Z)
-variable 	dArea equal abs(${Area})*sqrt((${volumeSTD}^(1/3)/${Y})^2+(${volumeSTD}^(1/3)/${Z})^2) 
-include 	exitConv.mod
-include 	exitEnergyAtom.mod
+#variable	Y equal ly
+#variable	Z equal lz
+#variable	Area equal $(2.0*v_Y*v_Z)
+#variable 	dArea equal abs(${Area})*sqrt((${volumeSTD}^(1/3)/${Y})^2+(${volumeSTD}^(1/3)/${Z})^2) 
+#include 	exitConv.mod
+#include 	exitEnergyAtom.mod
 
 # RESTARTING THE SIMULATION TO RUN WITH NO TILT
 
@@ -136,7 +139,8 @@ change_box	all x final 0 $(2*v_A*v_SYSTEMSIZE) y final 0 $(v_A*v_SYSTEMSIZE) z f
 lattice		fcc ${A} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
 
 create_atoms	1 region wholeSim
-delete_atoms	porosity wholeSim $(v_CONC/100) $(v_RANDOM + 4)
+delete_atoms	porosity side1 .5 476538
+delete_atoms	porosity side2 .5 845346
 create_atoms	2 region wholeSim
 
 group		Ni delete
@@ -151,40 +155,49 @@ group 		Cu delete
 group		Ni type 1
 group 		Cu type 2
 
-velocity 	all create ${TEMPERATURE} ${RANDOM}
 
 
 # RUNNING CONVERGENCE CHECKING
 
-min_style	cg
-minimize	1e-15 1e-15 1000 10000
-
-log		log.conv
-include 	initConv.mod
-include 	convergence.mod
-include 	exitConv.mod
-
-# RUN THE SIMULATION
-
-include 	initConv.mod
-include		energyAtom.mod
-
-log		log.run
-run 		${RUNTIME}
-
-# GET THE FINAL ENERGY OF THE SYSTEM WITH A GRAIN BOUNDARY
-
-variable 	PE equal $(v_varAvePe)
-variable	dPE equal $(v_peSTD)
-variable 	EperA equal $((v_PEg-v_PE)/v_Area)
-variable	diff equal ${PEg}-${PE}
-log		log.results
-
-print "The energy per atom no tilt: 				${PE} +/- ${dPE}"
-print "The energy per atom with tilt:				${PEg} +/- ${dPEg}"
-print "The energy per atom per area due to the interface:	${EperA} +/- $(abs(v_EperA)*sqrt((v_dPEg/v_diff)^2+(v_dPE/v_diff)^2+(v_dArea/v_Area)^2))"
+#min_style	cg
+#minimize	1e-15 1e-15 1000 10000
+#undump		1
+dump		1 all xyz 1000 dump.xyz
 
 
+
+timestep 	0.001
+reset_timestep	0
+thermo		1000
+thermo_style	custom step pe etotal temp vol press
+thermo_modify	norm no
+
+group 		side1 region side1
+group		side2 region side2
+
+velocity 	side2 create 1650 128374
+
+fix		1 all nve
+fix 		2 side1 setforce 0 0 0 
+fix		3 side2 langevin 3000 3000 $(10*v_TIMESTEP) 4876483 zero yes
+
+run		20000
+
+
+unfix 		3
+fix		3 side2 langevin 3000 1700 $(100*v_TIMESTEP) 33849343 zero yes
+
+
+run 		100000
+
+
+unfix		3
+unfix		2
+fix		3 all langevin 1600 1600 $(1000*v_TIMESTEP) 983423 zero yes
+
+velocity 	side1 create 1600 948759
+
+run		20000 
 
 
 

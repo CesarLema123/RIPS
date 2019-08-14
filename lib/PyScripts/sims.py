@@ -275,8 +275,8 @@ class elastic(simulation):
                             x = float(sline[i+1])
                         elif sline[i] == "+/-":
                             y = float(sline[i+1])
-                values.append(x)
-                errors.append(y)
+                    values.append(x)
+                    errors.append(y)
             if N > 0:
                 N += 1
         f.close()
