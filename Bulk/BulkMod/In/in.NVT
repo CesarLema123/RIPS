@@ -5,6 +5,18 @@
 
 # -------------------- SPECIFY ANY VARIABLES WHICH MIGHT BE GIVEN FROM CMD LATER --------------------  
 
+
+# variable RUNTIME equal 100000
+# variable INFILE equal in.bulkMod
+# variable DATAFILE equal data.bulkMod
+# variable TIMESTEP equal 0.0001
+# variable LENGTH equal 3.6*8
+# variable TEMPERATURE equal 300
+# variable RANDOM equal 48539875
+
+
+
+
 # -------------------- COMPUTE DIFF COEFF FOR CuNi AT A RANGE OF CONCENTRATIONS AND TEMPERATURES -------------------- 
 
 # nvt variables
@@ -17,100 +29,43 @@ variable		minTempErr equal "v_TEMPERATURE - v_aveTempErr"
 
 
 # -------------------- INITIALIZING THE CONFIGURATION --------------------------
-include 		init.lmp
+include 		init.mod
+
+
+# ---------- CREATE SIMULATION BOX / CREATE ATOMS ----------
+
+read_data 		${DATAFILE}
+
+
 
 # ------------ DEFINE INTERATOMIC POTENTIAL ----------------
-include			potential.lmp
-
-
-thermo			100
-thermo_style		custom step etotal vol temp press 
-timestep		${TIMESTEP}
-
-
-reset_timestep		0
+include			potential.mod
 
 
 
-# -------------------- SET UP COMPUTES AND FIX AVE/TIME -------------------- 
-# AVERAGE AND STANDARD DEVIATION 
-# TEMPERATURE 
-variable 		TEMP equal temp
-fix			aveTemp all ave/time 10 100 1000 v_TEMP mode scalar start 1000 ave one
-variable		varAveTemp equal "f_aveTemp"
-variable		tempSq equal "v_TEMP^2"
-fix			aveTempSq all ave/time 10 100 1000 v_tempSq mode scalar start 1000 ave one
-variable		tempSTD equal "sqrt(f_aveTempSq - f_aveTemp^2)"
 
-# PRESSURE
-variable		PRESS equal press
-fix 			avePress all ave/time 10 100 1000 v_PRESS mode scalar start 1000 ave one
-variable		varAvePress equal "f_avePress"
-variable		pressSq equal "v_PRESS^2"
-fix 			avePressSq all ave/time 10 100 1000 v_pressSq mode scalar start 1000 ave one
-variable 		pressSTD equal "sqrt(f_avePressSq - f_avePress^2)"
+# ------------- SETTING THERMODYNAMIC BOUNDARY CONDITIONS ----------------
 
-# ENERGY
-variable		ENERGY equal etotal
-fix			aveEnergy all ave/time 10 100 1000 v_ENERGY mode scalar start 1000 ave one
-variable 		varAveEnergy equal "f_aveEnergy"
-variable		energySq equal "v_ENERGY^2"
-fix			aveEnergySq all ave/time 10 100 1000 v_energySq mode scalar start 1000 ave one
-variable		energySTD equal "sqrt(f_aveEnergySq - f_aveEnergy^2)"
-
-# VOLUME
-variable		VOLUME equal vol
-fix			aveVolume all ave/time 10 100 1000 v_VOLUME mode scalar start 1000 ave one
-variable 		varAveVolume equal "f_aveVolume"
-variable		volumeSq equal "v_VOLUME^2"
-fix			aveVolumeSq all ave/time 10 100 1000 v_volumeSq mode scalar start 1000 ave one 
-variable		volumeSTD equal "sqrt(abs(f_aveVolumeSq - f_aveVolume^2))"
-
-# ENTHALPY
-variable                ENTH equal enthalpy
-fix                     aveEnthalpy all ave/time 10 100 1000 v_ENTH mode scalar start 1000 ave one
-variable                varAveEnthalpy equal "f_aveEnthalpy"
-variable                enthalpySq equal "v_ENTH^2"
-fix                     aveEnthalpySq all ave/time 10 100 1000 v_enthalpySq mode scalar start 1000 ave one
-variable                enthalpySTD equal "sqrt(f_aveEnthalpySq - f_aveEnthalpy^2)"
+variable 			kT equal 100
 
 
-# -------------------- SET UP THERMO STYLES AND DUMPS -------------------- 
-
-variable		dampT equal "v_TIMESTEP * v_kT"
-variable 		dampP equal "v_TIMESTEP * v_kP"
-
-variable 		kT equal 100
-variable 		kP equal 10000
-
-
-fix			1 all nve
-fix			2 all langevin ${TEMPERATURE} ${TEMPERATURE} ${dampT} ${RANDOM} zero yes 
-fix 			3 all deform 10000 x final 0.0 ${LENGTH} y final 0.0 ${LENGTH} z final 0.0 ${LENGTH}
-
-thermo			5000
-thermo_style		custom step etotal v_varAveEnergy v_energySTD enthalpy v_varAveEnthalpy v_enthalpySTD temp v_varAveTemp v_tempSTD vol v_varAveVolume v_volumeSTD press v_varAvePress v_pressSTD
+fix					1 all nve
+fix					2 all langevin ${TEMPERATURE} ${TEMPERATURE} $(dt*v_kT) ${RANDOM} zero yes fix 			
+fix 				3 all deform 0 x final 0.0 ${LENGTH} y final 0.0 ${LENGTH} z final 0.0 ${LENGTH}
 
 
 
-log			log.loop
-dump			1 all xyz $(floor(v_RUNTIME*0.01)) dump.xyz 
-
-variable  		saveEnergySTD equal 0.0
-variable		savePressSTD equal 0.0
-label loop
-
-run 			5000
+# --------------- INITIALIZING AND RUNNING SIMULATION CONVERGENCE ------------------
+include 			initConv.mod
+include 			convergenceNVT.mod
 
 
-if "$(abs(v_saveEnergySTD - v_energySTD)) > $(v_energyErr * v_energySTD) || $(abs(v_pressSTD - v_savePressSTD)) > $(v_pressErr * v_pressSTD) || ${varAveTemp} > ${maxTempErr} || ${varAveTemp} < ${minTempErr}" then "variable saveEnergySTD equal $(v_energySTD)" "variable savePressSTD equal $(v_pressSTD)" "jump ${INFILE} loop"
+
+# --------------- INITIALIZING AND RUNNING DATA COLLECTION RUN -----------------
+
+include 			initRunNVT.mod
 
 
-compute			MSD all msd com yes
-
-thermo 			5000
-thermo_style		custom step etotal v_varAveEnergy v_energySTD enthalpy v_varAveEnthalpy v_enthalpySTD temp v_varAveTemp v_tempSTD vol v_varAveVolume v_volumeSTD press v_varAvePress v_pressSTD c_MSD[4]
-
-log			log.run
-run 			${RUNTIME}
+log					log.run
+run 				${RUNTIME}
 
