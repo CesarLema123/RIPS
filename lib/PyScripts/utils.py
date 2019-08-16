@@ -75,9 +75,9 @@ def fixAtomIdCuNi(readFile,writeFile):
     r = open(readFile)
     w = open(writeFile,mode = "w")
     for line in r:
-        if line[0] == "1":
+        if line[0:2] == "1 ":
             line = "Cu" + line[1:]
-        elif line[0] == "2":
+        elif line[0:2] == "2 ":
             line = "Ni" + line[1:]
         w.write(line)
     r.close()
@@ -223,10 +223,10 @@ def dForwDif(X,dX,Y,dY):
     the mid points between each adjacent pair.
     """
     N = len(X)
-    dYdX,ddYdX,nX = [0.0]*(N-1),[0.0]*(N-1),[0.0]*(N-1) # confusing labels but ddYdX is the error in the derivative
+    dYdX,ddYdX,nX = [],[],[] # confusing labels but ddYdX is the error in the derivative
     for i in range(N-1):
-        dYdX[i] = (Y[i+1] - Y[i])/(X[i+1] - X[i])
-        ddYdX[i] = np.sqrt((dY[i+1]/(X[i+1] - X[i]))**2 + (dY[i]/(X[i+1] - X[i]))**2 + (dX[i+1]*(Y[i+1] - Y[i])/(X[i+1] - X[i])**2)**2 + (dX[i]*(Y[i+1] - Y[i])/(X[i+1] - X[i])**2)**2) 
-        nX[i] = (X[i+1] + X[i])/2
+        dYdX.append( (Y[i+1] - Y[i])/(X[i+1] - X[i]))
+        ddYdX.append( np.sqrt((dY[i+1]/(X[i+1] - X[i]))**2 + (dY[i]/(X[i+1] - X[i]))**2 + (dX[i+1]*(Y[i+1] - Y[i])/(X[i+1] - X[i])**2)**2 + (dX[i]*(Y[i+1] - Y[i])/(X[i+1] - X[i])**2)**2))
+        nX.append((X[i+1] + X[i])/2)
     return dYdX,ddYdX,nX
     
