@@ -23,9 +23,7 @@
 
 variable		pressErr equal 0.05  # The change in standard deviation of pressure should be less than pressErr*pressSTD between evaluations
 variable 		energyErr equal 0.05
-variable		aveTempErr equal "0.5*(abs(5 - 0.01*v_TEMPERATURE) + 5 + 0.01*v_TEMPERATURE)"
-variable		maxTempErr equal "v_TEMPERATURE + v_aveTempErr"
-variable		minTempErr equal "v_TEMPERATURE - v_aveTempErr"
+variable		absTempErr equal "0.5*(abs(5-0.01*v_TEMPERATURE)+5+0.01*v_TEMPERATURE)"
 
 
 # -------------------- INITIALIZING THE CONFIGURATION --------------------------
@@ -50,8 +48,8 @@ variable 			kT equal 100
 
 
 fix					1 all nve
-fix					2 all langevin ${TEMPERATURE} ${TEMPERATURE} $(dt*v_kT) ${RANDOM} zero yes fix 			
-fix 				3 all deform 0 x final 0.0 ${LENGTH} y final 0.0 ${LENGTH} z final 0.0 ${LENGTH}
+fix					2 all langevin ${TEMPERATURE} ${TEMPERATURE} $(dt*v_kT) ${RANDOM} zero yes
+fix 				3 all deform 1 x final 0.0 ${LENGTH} y final 0.0 ${LENGTH} z final 0.0 ${LENGTH}
 
 
 
