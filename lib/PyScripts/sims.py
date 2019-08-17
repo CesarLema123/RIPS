@@ -506,7 +506,7 @@ class bulkProp(simulation):
                             os.chdir(cwd)
         return pd.DataFrame(df,columns = header)
 
-    def getForwDif(self,A,B):
+    def getForwDif(self,xString,yString):
         """
         This function computes the derivative of thermo variable B with respect to A
         using the forward difference method. A and B shoud be strings any of Volume Energy Press or Temp.
@@ -519,13 +519,13 @@ class bulkProp(simulation):
         ddYdX - the uncertainty in ddYdX
         midX - the midpoint between the values in the X variable
         """
-        varDict = {"Energy": ["Energy Ave","Energy Stdm"],"Enthalpy": ["Enthalpy Ave","Enthalpy Stdm"],"Volume": ["Volume Ave","Volume Stdm"],"Press": ["Press Ave","Press Stdm"],"Temp":["Temp Ave","Temp Stdm"]}
+        varDict = {"Energy": ["Energy Ave","Energy Std"],"Enthalpy": ["Enthalpy Ave","Enthalpy Std"],"Volume": ["Volume Ave","Volume Std"],"Press": ["Press Ave","Press Std"],"Temp":["Temp Ave","Temp Std"]}
         thermoDF = self.getData()
-        thermoDf = thermoDF.sort_values(varDict[A][0])
-        X = np.array(thermoDF[varDict[A][0]])
-        dX = np.array(thermoDF[varDict[A][1]])
-        Y = np.array(thermoDF[varDict[B][0]])
-        dY = np.array(thermoDF[varDict[B][1]])
+        thermoDF = thermoDF.sort_values(varDict[xString][0])
+        X = np.array(thermoDF[varDict[xString][0]])
+        dX = np.array(thermoDF[varDict[xString][1]])
+        Y = np.array(thermoDF[varDict[yString][0]])
+        dY = np.array(thermoDF[varDict[yString][1]])
         dYdX,ddYdX,midX = utils.dForwDif(X,dX,Y,dY)
         return X,dX,Y,dY,dYdX,ddYdX,midX
 
@@ -538,11 +538,9 @@ class bulkProp(simulation):
         bM = np.zeros(N) #Initializing Bulk Modulus
         dbM = np.zeros(N)# Uncertainty in bM
         dmidV = np.zeros(N) # Uncertainty in midV
-        for i in range(N):
-            bM[i] = -midV[i]*dPdV[i]
-            dmidV[i] = (1/2)*np.sqrt(dV[i+1]**2 + dV[i]**2)
-            dbM[i] = abs(bM[i])*np.sqrt((ddPdV[i]/dPdV[i])**2 + (dmidV[i]/midV[i])**2)
-        return bM,dbM,midV,dmidV
+        bM = [-V[i]*dPdV[i] for i in range(len(dPdV))]
+        dbM = [abs(bM[i])*np.sqrt((ddPdV[i]/dPdV[i])**2 + (dV[i]/V[i])**2)]
+        return bM,dbM,V[:-1],dV[:-1]
 
     def calcThermExp(self):
         """
@@ -550,14 +548,9 @@ class bulkProp(simulation):
         """
         T,dT,V,dV,dVdT,ddVdT,midT = self.getForwDif("Temp","Volume")
         N = len(midT)
-        tE = np.zeros(N)
-        dtE = np.zeros(N)
-        dmidT = np.zeros(N)
-        for i in range(N): # Note that here you need to make a choice for the volume at each point in nT (the midpoints between temperature values. I went with the left hand side volume.
-            tE[i] = dVdT[i]/V[i]
-            dmidT[i] = (1/2)*np.sqrt(dT[i+1]**2 + dT[i]**2)
-            dtE[i] = abs(dVdT[i])*np.sqrt((ddVdT[i]/dVdT[i])**2 + (dV[i]/V[i])**2)
-        return tE,dtE,midT,dmidT
+        tE = [dVdT[i]/V[i] for i in range(len(dVdT))]
+        dtE = [abs(tE[i])*np.sqrt((ddVdT[i]/dVdT[i])**2 + (dV[i]/V[i])**2) for i in range(len(tE))]
+        return tE,dtE,T[:-1],dT[:-1]
 
     def calcHeatCapV(self):
         """
@@ -565,7 +558,7 @@ class bulkProp(simulation):
         """
         T,dT,E,dE,dEdT,ddEdT,midT = self.getForwDif("Temp","Energy")
         dmidT = np.array((1/2)*sqrt(dT[i+1]**2 + dT[i]**2) for i in range(len(dT) - 1))
-        return dEdT,ddEdT,midT,dmidT
+        return dEdT,ddEdT,T[:-1],dT[:-1]
     
     def calcHeatCapP(self):
        """
@@ -573,7 +566,7 @@ class bulkProp(simulation):
        """
        T,dT,H,dH,dHdT,ddHdT,midT = self.getForwDif("Temp","Enthalpy")
        dmidT = np.array((1/2)*sqrt(dT[i+1]**2 + dT[i]**2) for i in range(len(dT) - 1))
-       return dHdT,ddHdT,midT,dmidT
+       return dHdT,ddHdT,T[:-1],dT[:-1]
 
 
     def simQPlot(self,logFile = "log.data"):
