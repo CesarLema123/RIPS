@@ -1,0 +1,67 @@
+# ALL RUNTIME,INFILE,DATAFILE TIMESTEP
+# nvt PRESSURE TEMPERATURE RANDOM
+
+
+
+# -------------------- SPECIFY ANY VARIABLES WHICH MIGHT BE GIVEN FROM CMD LATER --------------------  
+
+
+# variable RUNTIME equal 100000
+# variable INFILE equal in.bulkMod
+# variable DATAFILE equal data.bulkMod
+# variable TIMESTEP equal 0.0001
+# variable PRESSURE equal 0
+# variable TEMPERATURE equal 300
+# variable RANDOM equal 48539875
+
+
+
+
+# -------------------- COMPUTE DIFF COEFF FOR CuNi AT A RANGE OF CONCENTRATIONS AND TEMPERATURES -------------------- 
+
+# nvt variables
+
+variable		absTempErr equal 0.5*(abs(5-0.01*v_TEMPERATURE)+5+0.01*v_TEMPERATURE)
+variable		absPressErr equal 0.5*(abs(100-0.01*v_PRESSURE)+100+0.01*v_PRESSURE)
+
+
+# -------------------- INITIALIZING THE CONFIGURATION --------------------------
+include 		init.mod
+
+
+# ---------- CREATE SIMULATION BOX / CREATE ATOMS ----------
+
+read_data 		${DATAFILE}
+
+
+
+# ------------ DEFINE INTERATOMIC POTENTIAL ----------------
+include			potential.mod
+
+
+
+
+# ------------- SETTING THERMODYNAMIC BOUNDARY CONDITIONS ----------------
+
+variable 			kT equal 100 		# These variables step the damping term of thermostat and barostat. 
+variable			kP equal 1000 		# They are set to the values recommended in LAMMPS documentation.
+
+fix					1 all nph iso ${PRESSURE} ${PRESSURE} $(dt*v_kP) drag 1.0 		# drag included for convergence only. Recommended 0.5-2.0 in LAMMPS Doc
+fix					2 all langevin ${TEMPERATURE} ${TEMPERATURE} $(dt*v_kT) ${RANDOM} zero yes
+
+
+
+# --------------- INITIALIZING AND RUNNING SIMULATION CONVERGENCE ------------------
+include 			initConv.mod
+include 			convergenceNPT.mod
+
+
+
+# --------------- INITIALIZING AND RUNNING DATA COLLECTION RUN -----------------
+
+include 			initRunDiff.mod
+
+
+log					log.run
+run 				${RUNTIME}
+
