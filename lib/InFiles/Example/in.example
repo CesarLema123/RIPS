@@ -1,0 +1,62 @@
+
+variable			DATAFILE equal data.example
+variable			RUNTIME equal 50000
+variable			PRESSURE equal 0
+variable			TEMPERATURE equal 5
+variable			RANDOM equal 9859382
+variable			CONC equal 70
+variable			A equal 3.6
+variable			nx equal 4
+variable			ny equal 4
+variable			nz equal 4
+
+# Initialize the simulation
+
+include 			init.mod
+
+# CREATE SIMULATION BOX
+ 
+lattice 			fcc ${A} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+region				wholeSim block 0 ${nx} 0 ${ny} 0 ${nz} units lattice
+create_box 			2 wholeSim
+
+
+# Include the potential
+
+include 			potential.mod
+
+
+# Create Atoms 
+
+create_atoms		1 region wholeSim
+delete_atoms		porosity wholeSim $(v_CONC/100) ${RANDOM}
+create_atoms 		2 region wholeSim
+group 1 type 1
+group 2 type 2
+delete_atoms 		overlap 1 2 1
+group 1 delete
+group 2 delete
+
+
+# OR READ IN ATOM DATA (STILL INCLUDE POTENTIAL)
+
+#read_data 			${DATAFILE}
+
+
+
+# SET SIMULATION BOUNDARY CONDITIONS
+
+fix 				1 all nph iso ${PRESSURE} ${PRESSURE} $(dt*1000)
+fix 				2 all langevin ${TEMPERATURE} ${TEMPERATURE} $(dt*100) 847948
+velocity 			all create ${TEMPERATURE} ${RANDOM}
+
+# INITIALIZE CONVERGENCE STEP AND RUN CONVERGENCE
+
+include 			initConv.mod
+include 			convergence.mod
+
+# INITIALIZE RUN STEP AND RUN SIMULATION
+
+include 			initRun.mod
+
+run					${RUNTIME}

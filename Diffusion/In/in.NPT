@@ -1,5 +1,5 @@
 # ALL RUNTIME,INFILE,DATAFILE TIMESTEP
-# nvt LENGTH TEMPERATURE RANDOM
+# nvt PRESSURE TEMPERATURE RANDOM
 
 
 
@@ -10,7 +10,7 @@
 # variable INFILE equal in.bulkMod
 # variable DATAFILE equal data.bulkMod
 # variable TIMESTEP equal 0.0001
-# variable LENGTH equal 3.6*8
+# variable PRESSURE equal 0
 # variable TEMPERATURE equal 300
 # variable RANDOM equal 48539875
 
@@ -21,7 +21,8 @@
 
 # nvt variables
 
-variable		absTempErr equal "0.5*(abs(5-0.01*v_TEMPERATURE)+5+0.01*v_TEMPERATURE)"
+variable		absTempErr equal 0.5*(abs(5-0.01*v_TEMPERATURE)+5+0.01*v_TEMPERATURE)
+variable		absPressErr equal 0.5*(abs(100-0.01*v_PRESSURE)+100+0.01*v_PRESSURE)
 
 
 # -------------------- INITIALIZING THE CONFIGURATION --------------------------
@@ -42,24 +43,23 @@ include			potential.mod
 
 # ------------- SETTING THERMODYNAMIC BOUNDARY CONDITIONS ----------------
 
-variable 			kT equal 100
+variable 			kT equal 100 		# These variables step the damping term of thermostat and barostat. 
+variable			kP equal 1000 		# They are set to the values recommended in LAMMPS documentation.
 
-
-fix					1 all nve
+fix					1 all nph iso ${PRESSURE} ${PRESSURE} $(dt*v_kP) drag 1.0 		# drag included for convergence only. Recommended 0.5-2.0 in LAMMPS Doc
 fix					2 all langevin ${TEMPERATURE} ${TEMPERATURE} $(dt*v_kT) ${RANDOM} zero yes
-fix 				3 all deform 1 x final 0.0 ${LENGTH} y final 0.0 ${LENGTH} z final 0.0 ${LENGTH}
 
 
 
 # --------------- INITIALIZING AND RUNNING SIMULATION CONVERGENCE ------------------
 include 			initConv.mod
-include 			convergenceNVT.mod
+include 			convergenceNPT.mod
 
 
 
 # --------------- INITIALIZING AND RUNNING DATA COLLECTION RUN -----------------
 
-include 			initRunNVT.mod
+include 			initRunDiff.mod
 
 
 log					log.run
