@@ -136,9 +136,22 @@ def getFinalStats(fileName):
     return data,header 
 
 
-
-
-
+def computeStats(data):
+	N = len(data)
+	nBins = 20
+	while N//nBins < 100:
+		nBins -= 1
+	lBin = N//nBins
+	r = N - nBins*lBin
+	ave = sum(x for x in data)/N
+	std = sqrt(sum((x - ave)**2 for x in data))/(N-1)
+	binAves = []
+	d = data[r:]
+	for i in range(nBins):
+		binAve = sum(x for x in data[lBin*i:lBin*(i+1)])/lBin	 
+		binAves.append(binAve)
+	binSTD = sqrt(sum((x - ave)**2 for x in binAve))/(nBins - 1)
+	return ave,std,binSTD
 
 
 def getThermoStats(fileName):

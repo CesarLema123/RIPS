@@ -3,6 +3,7 @@ from random import randint
 import dataFileGenerator as dataF
 import inFiles as inF
 import pandas as pd
+from scipy.stats import linregress
 import numpy as np
 import os
 import csv
@@ -14,9 +15,9 @@ class simulation():
     The simulation class is meant to hold all of the parameters one would vary across a lammps md simulation in the npt or nvt ensemble.
     It is also capable to running the simulations.
     """
-    def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.eam.alloy",inTemplate = "in.Template",copyDir = "./In"):
+    def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.eam.alloy",inTemplate = "in.Template",copyDir = "./In",logFile = "log.run"):
         self.lib = lib 
-        self.lammps = lammps
+       	self.lammps = lammps
         self.runTimes = runTimes
         self.alloy = alloy
         self.latticeConst = latticeConst
@@ -33,9 +34,10 @@ class simulation():
         self.potentialFile = potentialFile
         self.inTemplate = inTemplate
         self.copyDir = copyDir
+        self.logFile = logFile
         return 
 
-    def setSimParams(self,lib = "",lammps = "",alloy = "",latticeConst = 0.0,latticeType = "",numAtomTypes = 0,runTimes = [],systemSizes = [],temperatures = [],pressures = [],lengths = [],concPercents = [],timeStep = 0.0,simType = "",fileName = "", potentialFile = "",inTemplate = "",copyDir = ""):
+    def setSimParams(self,lib = "",lammps = "",alloy = "",latticeConst = 0.0,latticeType = "",numAtomTypes = 0,runTimes = [],systemSizes = [],temperatures = [],pressures = [],lengths = [],concPercents = [],timeStep = 0.0,simType = "",fileName = "", potentialFile = "",inTemplate = "",copyDir = "",logFile = ""):
         """
         Change any of the initial parameters. Any unspecifies paramters are automatically unchanged.
         """
@@ -75,6 +77,8 @@ class simulation():
             self.potentialFile = potentialFile
         if copyDir:
             self.copyDir = copyDir
+        if logFile:
+            self.logFile = logFile
         return 
 
 
@@ -221,10 +225,6 @@ class elastic(simulation):
         self.copyDir = copyDir
         return 
 
-    def setLogFile(self,logFile = ""):
-        if logFile:
-            self.logFile = logFile
-        return
 
     def getWorkDir(self,time,size,temp,concPercent):
         """
@@ -334,11 +334,6 @@ class bulkProp(simulation):
         self.inTemplate = inTemplate
         self.copyDir = copyDir
         return 
-
-    def setLogFile(self,logFile = ""):
-        if logFile:
-            self.logFile = logFile
-        return
 
 
     def setBulkMod(self,latticeConst = ""):
@@ -598,3 +593,84 @@ class bulkProp(simulation):
                             qplot(logFile) # A function from utils which gives a 
                             os.chdir(cwd)
         return 
+
+
+class diffusion(simulation):
+	"""
+	This class is designed to run simulations to compute a diffusion coefficient
+	for a material at a range of concentrations, temperatures, and pressures in 
+	an NPT ensembe.
+	"""
+	def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.eam.alloy",inTemplate = "in.Template",copyDir = "./In",logFile = "log.run"):
+		self.lib = lib 
+		self.lammps = lammps
+		self.runTimes = runTimes
+		self.alloy = alloy
+		self.latticeConst = latticeConst
+		self.latticeType = latticeType
+		self.numAtomTypes = numAtomTypes
+		self.systemSizes = systemSizes
+		self.temperatures = temperatures
+		self.pressures = pressures
+		self.lengths = lengths
+		self.concPercents = concPercents
+		self.timeStep = timeStep
+		self.simType = simType
+		self.fileName = fileName
+		self.potentialFile = potentialFile
+		self.inTemplate = inTemplate
+		self.copyDir = copyDir
+		self.logFile = logFile
+		return 
+
+	def getWorkDir(self,time,size,temp,press,conc):
+		runTime = str(int(time/self.timeStep))
+		return "Out/RunTime" + runTime + "Size" + str(int(size)) + "Temp" +  str(int(temp)) + "Conc" + str(int(conc)) + "Press" + str(int(press))
+
+	def runDiffSims(self):
+		cwd = os.getcwd()
+		sh("mkdir Out")
+		for time in self.runTimes:
+			for size in self.systemSizes:
+				for temp in self.temperatures:
+					for press in self.pressures:
+						for conc in self.concPercents:
+							wd = self.getWorkDir(time,size,temp,press,conc)
+							sh("mkdir "+ wd)
+							self.cpTemplate(wd)
+							os.chdir(wd)
+							inFile = inF.inFile(fileName = self.fileName,readFile = self.inTemplate,runTime=time,timeStep = self.timeStep)
+							inFile.writeInFile(options = ["TEMPERATURE equal " + str(temp), "PRESSURE equal " + str(press),"RANDOM equal "  + str(randint(10000,9999999))])
+							dataFile = dataF.AtomDataFileGenerator(filename = self.fileName,latticeType = self.latticeType,alloy = self.alloy,customLatticeConst = self.latticeConst,systemSize = size, atomTypes =self.numAtomTypes,alloyCompPercent = conc)
+							dataFile.createDataFile()
+							self.runLammps()
+							os.chdir(cwd)
+		return 
+
+	def getDiffCoeffs(self,saveFile = None):
+		header = ["Simulation Time","System Size","Temperature (K)","Pressure (bar)","Concentration","Diffusion Coeff (cm" + u"\u00B2" + "s" + u"\u207B\u00B9" + ")","Standard Error of Diff Coeff.","r value of linear fit"]
+		data = []
+		cwd = os.getcwd()
+		for time in self.runTimes:
+			for size in self.systemSizes:
+				for temp in self.temperatures:
+					for press in self.pressures:
+						for conc in self.concPercents:
+							wd = self.getWorkDir(time,size,temp,press,conc)
+							os.chdir(wd)
+							df = utils.readLog(self.logFile)
+							t = [x*self.timeStep for x in df["Step"]]
+							msd = list(df["c_MSD[4]"])
+							N = len(msd)
+							m,b,r,p,dm = linregress(t[N//10:],msd[N//10:]) # I choose to ignore the first 10% of the data
+							data.append([time,size,temp,press,conc,m/60,dm/60,r])
+							os.chdir(cwd)
+		if not saveFile == None:
+			f = open(saveFile,mode = "w")
+			w = csv.writer(f)
+			w.writerow(header)
+			for row in data:
+				w.writerow(row)
+			f.close()
+		return pd.DataFrame(data,columns = header)
+		
