@@ -9,11 +9,9 @@ import matplotlib.pyplot as plt
 import outputAnalyzer as OA
 import outputReader as OR
 import matplotlib.pyplot as plt
+import interfaceTrackingFunctions as ITF
 
-'''
-def getInterfaceXPosition()
 
-'''
 
 '''
 class SimunlationConstants:
@@ -32,7 +30,12 @@ class InterfaceEnergySimulation:
 # Sim = simulation(...)
 #systemSize = 6
 geometry = 'parallelogram'
-xSize, ySize, zSize =  9, 3, 3      # 12, 6 ,6
+#xSize, ySize, zSize =  9, 3, 3      # 2.__
+#xSize, ySize, zSize =  12, 6 ,6      # 1.624
+#xSize, ySize, zSize =  18, 6 ,6      # 1.901
+#xSize, ySize, zSize =  15, 9, 9      # 1.966,1.815
+#xSize, ySize, zSize =  21 , 9 , 9      # 1.901, 1.980
+xSize, ySize, zSize =  6 , 3 , 3      # 1.901, 1.980
 
 latConst = 3.63
 dumpFilename = 'pos.XYZ'
@@ -66,9 +69,10 @@ lmp.thermo_style('custom',thermoArgs)
 lmp.compute('ptm all ptm/atom default 0.1') #*********
 lmp.compute('cna all cna/atom',2.15) #********* seems to not be working properly
 lmp.compute('centro all centro/atom 12') #*********
-lmp.dump(2,'all','custom',10,dumpFilename,'type','id','x','y','z','c_ptm[1]','c_centro','c_cna')
+#lmp.dump(2,'all','custom',10,dumpFilename,'type','id','x','y','z','c_ptm[1]','c_centro','c_cna') dont use cna, to many errors
+lmp.dump(2,'all','custom',10,dumpFilename,'type','id','x','y','z','c_ptm[1]','c_centro')
 
-dumpLabel = 'id type c_ptm[1] c_ptm[2] c_ptm[3] c_centro' # id first so it works with reader class, time step has to be at 0
+dumpLabel = 'id type x c_ptm[1] c_ptm[2] c_ptm[3] c_centro' # id first so it works with reader class, time step has to be at 0
 dumpFN = 'atomParameters.data'
 lmp.dump('PTMOutput','all','custom',10,dumpFN,dumpLabel)
 
@@ -158,11 +162,26 @@ thermo_labels = 'Step Atoms Temp Press TotEng Enthalpy'
 ThermoDF = OR.OutputReader(logFilename,'log',thermo_labels).getDataFrame()
 dumpDF = OR.OutputReader(dumpFN,'dump',dumpLabel)    # need id as first dumplabel
 simData =dumpDF.getNDArray()
-print(simData[0])
+#print(simData[0])
 
 OA.DataFrameAnalyzer(dumpDF.getDataFrame().xs(200),10).plotColumnAgainstRT('c_ptm[1]')
 #OA.DataFrameAnalyzer(ThermoDF,10).plotColumnAgainstRT('TotEng')
 #OA.DataFrameAnalyzer(ThermoDF,10).plotColumnAgainstRT('Enthalpy')
+
+
+# use c_ptmp[1] and c_entro to find interface
+#ptmData = np.array([simData[])
+
+
+
+
+ptmData = simData[:,:,4].astype(float)
+centroData = simData[:,:,7].astype(float)
+xPositionData = simData[:,:,3].astype(float)
+
+
+
+print(ITF.getInterfaceVelocity(ptmData,centroData,xPositionData,CentroLimit = 3, groupAtomsMaxError = .7))
 
 
 
@@ -175,8 +194,33 @@ OA.DataFrameAnalyzer(dumpDF.getDataFrame().xs(200),10).plotColumnAgainstRT('c_pt
 appDirectory = '/Applications/Ovito.app/Contents/MacOS/ovitos'
 os.system(appDirectory + ' -g ' + 'vis.py')
 
-
 '''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -222,6 +266,14 @@ plt.show
 
 
 '''
+
+
+
+
+
+
+
+
 
 
 
