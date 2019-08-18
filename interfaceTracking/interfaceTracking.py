@@ -164,7 +164,7 @@ dumpDF = OR.OutputReader(dumpFN,'dump',dumpLabel)    # need id as first dumplabe
 simData =dumpDF.getNDArray()
 #print(simData[0])
 
-OA.DataFrameAnalyzer(dumpDF.getDataFrame().xs(200),10).plotColumnAgainstRT('c_ptm[1]')
+#OA.DataFrameAnalyzer(dumpDF.getDataFrame().xs(200),10).plotColumnAgainstRT('c_ptm[1]')
 #OA.DataFrameAnalyzer(ThermoDF,10).plotColumnAgainstRT('TotEng')
 #OA.DataFrameAnalyzer(ThermoDF,10).plotColumnAgainstRT('Enthalpy')
 

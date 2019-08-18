@@ -19,7 +19,7 @@ read_data data.CuNi_50% group solAtoms
   1 by 1 by 1 MPI processor grid
   reading atoms ...
   216 atoms
-  read_data CPU = 0.002074 secs
+  read_data CPU = 0.011193 secs
 
 # --------- DEFINE INTERATOMIC POTENTIAL ---------
 

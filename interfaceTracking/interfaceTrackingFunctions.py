@@ -80,6 +80,8 @@ def getInterfaceVelocity(ptmData,centroData,xPositionData,CentroLimit = 3, group
     # for visualizations
     for vect in groupedAtomMeansFCC:
         plt.plot(vect)
+    plt.show()
+    plt.savefig('interfaceAtoms.png')
 
     return np.mean(np.gradient(np.array([xPos[0] for xPos in groupedAtomMeansFCC])))
 
