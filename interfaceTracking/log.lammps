@@ -19,7 +19,7 @@ read_data data.CuNi_50% group solAtoms
   1 by 1 by 1 MPI processor grid
   reading atoms ...
   216 atoms
-  read_data CPU = 0.011193 secs
+  read_data CPU = 0.002366 secs
 
 # --------- DEFINE INTERATOMIC POTENTIAL ---------
 
@@ -35,12 +35,4 @@ neigh_modify delay 10 check yes
 #COMPUTES (do in Pylammps)
 #MINIMIZATION/RUN (do in pylammps)
 
-reset_timestep 0
-thermo 10
-thermo_style custom step atoms temp press etotal enthalpy
-compute ptm all ptm/atom default 0.1
-compute cna all cna/atom 2.15
-compute centro all centro/atom 12
-dump 2 all custom 10 pos.XYZ type id x y z c_ptm[1] c_centro
-dump PTMOutput all custom 10 atomParameters.data id type x c_ptm[1] c_ptm[2] c_ptm[3] c_centro
 log log.interfaceTracking

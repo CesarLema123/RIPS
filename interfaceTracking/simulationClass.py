@@ -11,3 +11,15 @@ class Simulation:
         '<code>'
 
     def getParam1:
+
+    def pauseSimulation(self):
+    '''
+    method that stops the excution of function code
+    useful when expensive simulation has already been done and just want to rerun postprocessing
+    '''
+
+    def writeResultsDict(self,filename,results):
+    '''
+    method that takes in a dictionary of results and writes it to a text file with specififc filename
+    '''
+
