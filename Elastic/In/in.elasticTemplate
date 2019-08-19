@@ -92,16 +92,16 @@ run ${RUNTIME}
 variable pxx0 equal $(v_varAvePxx)
 variable pyy0 equal $(v_varAvePyy)
 variable pzz0 equal $(v_varAvePzz)
-variable pxy0 equal $(v_varAvePyz)
+variable pyz0 equal $(v_varAvePyz)
 variable pxz0 equal $(v_varAvePxz)
-variable pyz0 equal $(v_varAvePxy)
+variable pxy0 equal $(v_varAvePxy)
 
 variable dpxx0 equal $(v_pxxSTD)
 variable dpyy0 equal $(v_pyySTD)
 variable dpzz0 equal $(v_pzzSTD)
-variable dpxy0 equal $(v_pyzSTD)
+variable dpyz0 equal $(v_pyzSTD)
 variable dpxz0 equal $(v_pxzSTD)
-variable dpyz0 equal $(v_pxySTD)
+variable dpxy0 equal $(v_pxySTD)
 
 variable tmp equal lx
 variable lx0 equal ${tmp}
