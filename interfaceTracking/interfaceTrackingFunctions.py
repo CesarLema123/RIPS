@@ -32,6 +32,7 @@ def averageXPositionOfInterfaceAtoms(ptmData,centroData,xPositionData,CentroLimi
 
 
 def getAtomIndicesThatWereSolidThenTurnedLiqOnce(data):    #atoms that were FCC then all of a suddent turned to liquids
+    percentTimeSpentAsFCC = .80
     atomIndCollection = []
     for ind in range(data.shape[0]):    # this could probably be turned to a boolean index array
         melted = 0            # turned to liquid
@@ -47,8 +48,10 @@ def getAtomIndicesThatWereSolidThenTurnedLiqOnce(data):    #atoms that were FCC 
                 addThisAtom = True
             else:
                 addThisAtom = False
+        if np.mean(data[ind]) > percentTimeSpentAsFCC:      # check to ignore atoms that melted toward the end of the interface/end of simulation
+            addThisAtom = False
         if addThisAtom:
-            atomIndCollection.append(ind)
+                atomIndCollection.append(ind)
     return atomIndCollection
 
 
@@ -80,7 +83,7 @@ def getInterfaceVelocity(ptmData,centroData,xPositionData,CentroLimit = 3, group
     # for visualizations
     for vect in groupedAtomMeansFCC:
         plt.plot(vect)
-    plt.show()
+    #plt.show()
     plt.savefig('interfaceAtoms.png')
 
     return np.mean(np.gradient(np.array([xPos[0] for xPos in groupedAtomMeansFCC])))
