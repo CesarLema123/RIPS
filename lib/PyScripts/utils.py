@@ -139,18 +139,18 @@ def getFinalStats(fileName):
 def computeStats(data):
 	N = len(data)
 	nBins = 20
-	while N//nBins < 100:
+	while N//nBins < 30:
 		nBins -= 1
 	lBin = N//nBins
 	r = N - nBins*lBin
 	ave = sum(x for x in data)/N
-	std = sqrt(sum((x - ave)**2 for x in data))/(N-1)
+	std = np.sqrt(sum((x - ave)**2 for x in data))/(N-1)
 	binAves = []
 	d = data[r:]
 	for i in range(nBins):
 		binAve = sum(x for x in data[lBin*i:lBin*(i+1)])/lBin	 
 		binAves.append(binAve)
-	binSTD = sqrt(sum((x - ave)**2 for x in binAve))/(nBins - 1)
+	binSTD = np.sqrt(sum((x - ave)**2 for x in binAves))/(nBins - 1)
 	return ave,std,binSTD
 
 
@@ -186,6 +186,25 @@ def getThermoStats(fileName):
             print("Column %s not found. Entering zeros for all values." %(var))
             data.extend([0.0,0.0,0.0])
     return data,header 
+
+
+def getThermoStats1(fileName):
+    """
+    This funtion reads a log file and outputs the average, standatd deviation, and standard deviation of the mean for each row.
+    """
+    df = readLog(fileName)
+    header = list(df.columns)
+    d = []
+    for colName in header:
+        data = list(df[colName])
+        ave,std,stdm = computeStats(data)
+        d.extend([ave,std,stdm])
+    fullHeader = []
+    for x in header:
+        fullHeader.extend([x+ " ave",x + " std",x + " stdm"])
+    return d,fullHeader
+
+
 
 
 def qplot(fileName,stepSize = 0.0001):
