@@ -24,8 +24,15 @@ print "$i"
 if "$(abs(v_energySTD-v_energySTD1)>(v_energyErr*v_energySTD1)) || $(abs(v_tempSTD-v_tempSTD1)>(v_tempErr*v_tempSTD1)) || $(abs(v_volumeSTD-v_volumeSTD1)>(v_volumeErr*v_volumeSTD1)) || $(abs(v_pressSTD-v_pressSTD1)>(v_pressErr*v_pressSTD1))" then &
 	"variable i delete" &
 	"variable i loop ${loopExit}" &
-	"jump convergence.mod set_vars" 
-if "$i < ${loopExit}" then "next i" "jump convergence.mod set_vars" else "jump convergence.mod break"
+	"jump convergenceNVT.mod set_vars" 
+
+# Part Specific to NVT: It must also be near the target temperature
+if "$(abs(v_varAveTemp-v_TEMPERATURE)>v_absTempErr)" then &
+	"variable i delete" &
+	"variable i loop ${loopExit}" &
+	"jump convergenceNVT.mod set_vars" 
+	
+if "$i < ${loopExit}" then "next i" "jump convergenceNVT.mod set_vars" else "jump convergenceNVT.mod break"
 
 label set_vars
 
@@ -33,7 +40,7 @@ variable energySTD1 equal $(v_energySTD)
 variable pressSTD1 equal $(v_pressSTD)
 variable volumeSTD1 equal $(v_volumeSTD)
 variable tempSTD1 equal $(v_tempSTD)
-jump convergence.mod top
+jump convergenceNVT.mod top
 
 label break
 

@@ -54,5 +54,5 @@ variable varAveEnthalpy equal f_aveEnthalpy
 
 thermo		${NFREQ}
 thermo_style 	custom step temp v_varAveTemp v_tempSTD etotal v_varAveEnergy v_energySTD vol v_varAveVolume v_volumeSTD press v_varAvePress v_pressSTD enthalpy v_varAveEnthalpy v_enthalpySTD
-thermo_modify norm no
+thermo_modify 	norm no
 
