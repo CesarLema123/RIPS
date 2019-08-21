@@ -1,2 +1,0 @@
-unfix avePe
-unfix avePeSq
