@@ -43,6 +43,7 @@ include			potential.mod
 
 # ------------- SETTING THERMODYNAMIC BOUNDARY CONDITIONS ----------------
 
+velocity			all create ${TEMPERATURE} ${RANDOM}
 variable 			kT equal 100 		# These variables step the damping term of thermostat and barostat. 
 variable			kP equal 1000 		# They are set to the values recommended in LAMMPS documentation.
 

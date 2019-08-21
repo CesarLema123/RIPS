@@ -1,2 +1,2 @@
 Simulation Time,System Size,Temperature (K),Pressure (bar),Concentration,Diffusion Coeff (cm²s⁻¹),Standard Error of Diff Coeff.,r value of linear fit
-100,4,300,0,50,-1.2659279219470645e-07,5.799862823145685e-08,-0.07260452856431047
+200,8,1600,0,50,0.01467111505600059,9.224961877229877e-06,0.9996445549405386

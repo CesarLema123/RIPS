@@ -1,4 +1,5 @@
 import sims
+import matplotlib.pyplot as plt
 
 runOne = True
 
@@ -9,7 +10,7 @@ concPercents = [0,50,70,90,100]
 
 if runOne:
     systemSizes = [4,]
-    temperatures = [300,]
+    temperatures = [1500,]
     pressures = [0,]
     concPercents = [50,]
 
@@ -20,6 +21,7 @@ if runOne:
 sim = sims.bulkProp(lib = "$HOME/Research/git-RIPS/RIPS/lib/",lammps = "lmp_mpi -in", runTimes = [10,],alloy = "custom",latticeConst = 3.6,systemSizes = systemSizes,temperatures = temperatures,pressures = pressures,concPercents = concPercents,timeStep = 0.0005, simType ="npt",fileName = "HCP", inTemplate = "in.NPT",copyDir = "./In")
 
 sim.runBulkSims()
-sim.recordData("HCPData")
-sim.calcHeatCapP()
-
+#sim.recordData("HCPData")
+hcp,dhcp,t,dt = sim.calcHeatCapP()
+plt.errorbar(t,hcp,yerr = dhcp,xerr = dt,fmt = "x",c = "r")
+plt.show()

@@ -42,6 +42,9 @@ include			potential.mod
 
 # ------------- SETTING THERMODYNAMIC BOUNDARY CONDITIONS ----------------
 
+
+velocity 			all create ${TEMPERATURE} ${RANDOM}
+
 variable 			kT equal 100
 
 
