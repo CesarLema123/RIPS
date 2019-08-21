@@ -15,11 +15,11 @@ atom_style atomic
 
 #----------------- CREATE ATOMS ------------------------
 read_data data.CuNi_50% group solAtoms
-  triclinic box = (0 0 0) to (21.78 10.89 10.89) with tilt (0 0 0)
+  triclinic box = (0 0 0) to (54.45 32.67 32.67) with tilt (0 0 0)
   1 by 1 by 1 MPI processor grid
   reading atoms ...
-  216 atoms
-  read_data CPU = 0.002366 secs
+  4860 atoms
+  read_data CPU = 0.005746 secs
 
 # --------- DEFINE INTERATOMIC POTENTIAL ---------
 

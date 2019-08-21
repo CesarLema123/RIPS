@@ -1,7 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
+"""
+    
+    
+    
+    
+    
+    This file can be imported as module and contains the following functions:
+        asdfsad -
+        asefasd -
+    
+"""
 
 # ------------------ INTERFACE TRACKING FUNCTIONS ------------------------------
 
@@ -32,7 +42,7 @@ def averageXPositionOfInterfaceAtoms(ptmData,centroData,xPositionData,CentroLimi
 
 
 def getAtomIndicesThatWereSolidThenTurnedLiqOnce(data):    #atoms that were FCC then all of a suddent turned to liquids
-    percentTimeSpentAsFCC = .80
+    percentTimeSpentAsFCC = .70
     atomIndCollection = []
     for ind in range(data.shape[0]):    # this could probably be turned to a boolean index array
         melted = 0            # turned to liquid

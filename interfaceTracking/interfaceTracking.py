@@ -27,7 +27,8 @@ import interfaceTrackingFunctions as ITF
 
 # Sim = simulation(...)
 geometry = 'parallelogram'
-xSize, ySize, zSize =  6 , 3 , 3
+xSize, ySize, zSize =  15 , 9 , 9
+#xSize, ySize, zSize =  9 , 6 , 6
 
 latConst = 3.63
 atomPositionFilename = 'pos.XYZ'
@@ -81,7 +82,7 @@ lmp.region('liqRegion','block', liqBox_xLow, liqBox_xUpp,0,ySize*latConst,0,zSiz
 
 lmp.create_atoms('2','random', DFGenerator.getNumAtoms(),1,'liqRegion')
 lmp.group('liqAtoms region liqRegion')
-lmp.fix('liquify liqAtoms nvt temp 2000 2000 0.1')
+#lmp.fix('liquify liqAtoms nvt temp 2000 2000 0.1')
 
 
 # DIVIDING EACH SOL/LIQ REGION INTO 3 SUB-REGIONS
@@ -106,11 +107,25 @@ lmp.group('solRegion2Atoms region solRegion2')
 lmp.region('solRegion3','block',solBox_xUpp*(region2Fract),solBox_xUpp,0,ySize*latConst,0,zSize*latConst)
 lmp.group('solRegion3Atoms region solRegion3')
 
+#lmp.fix('solConstT1 solRegion2Atoms langevin 2100.0 2100.0 0.01 3746823')
+solTemp = 3000
+
+lmp.fix('liqNullForce liqAtoms setforce 0 0 0')
+lmp.fix('solConstT1 solRegion3Atoms nvt temp',solTemp,solTemp,.1)
+lmp.fix('solConstT2 solRegion2Atoms nvt temp',solTemp,solTemp,.1)
+
+lmp.run(500)
+
+lmp.unfix('liqNullForce')
+lmp.unfix('solConstT1')
+lmp.unfix('solConstT2')
+lmp.fix('liquify liqAtoms nvt temp 2000 2000 0.1')
+
 lmp.run(10)
 
 lmp.fix('solConstE solRegion3Atoms nve')
 lmp.fix('liqConstE liqRegion1Atoms nve')
-lmp.fix('solConstT solRegion2Atoms langevin 1600.0 1600.0 0.01 3746823')
+lmp.fix('solConstT solRegion2Atoms langevin',solTemp,solTemp,0.01,3746823)
 lmp.fix('liqConstT liqRegion2Atoms langevin 2000.0 2000.0 0.01 37496823')
 lmp.fix('solNullForce solRegion1Atoms setforce 0 0 0')
 #lmp.fix('liqBath liqRegion3Atoms nve')
@@ -125,7 +140,7 @@ lmp.fix('liqNullForce liqRegion3Atoms setforce 0 0 0')                # should c
 ### then use another python script to run multiple interfaceTracking simulations                       ###
 ##########################################################################################################
 
-lmp.run(1000)      
+lmp.run(1000)
 
 # -------------------------------- Post Processing ---------------------------------------------
 
