@@ -55,14 +55,13 @@ delete_atoms 	region side2
 
 
 lattice		fcc ${A} orient x ${x1} ${x2} ${x3} orient y ${y1} ${y2} ${y3} orient z ${z1} ${z2} ${z3}
-create_atoms 	1 region tilt
-delete_atoms	porosity tilt $(v_CONC/100) $(v_RANDOM + 1)
-create_atoms	2 region tilt
+create_atoms 	1 region side2
+delete_atoms	porosity side2 $(v_CONC/100) $(v_RANDOM + 1)
+create_atoms	2 region side2
 group		Ni type 1
 group 		Cu type 2
 delete_atoms  	overlap 1 Cu Ni 
 
-group		tilt region tilt
 group		Ni delete
 group 		Cu delete
 group		Ni type 1
@@ -77,17 +76,16 @@ reset_timestep	0
 # RUN SYSTEM CONVERGENCE
 
 
-min_style	cg
-minimize	1e-15 1e-15 1000 10000
+#min_style	cg
+#minimize	1e-15 1e-15 1000 10000
 
 reset_timestep	0
 
 
-
-log		log.convGB
-include 	initConv.mod
-include 	convergence.mod
-include 	exitConv.mod
+#log		log.convGB
+#include 	initConv.mod
+#include 	convergence.mod
+#include 	exitConv.mod
 
 if "${TRACKGRAIN} == 1" then "jump in.grainBdryTemplate track" else "jump in.grainBdryTemplate break"
 
@@ -105,23 +103,23 @@ label		break
 
 # RUN THE SIMULATION
 
-include 	initConv.mod
-include		energyAtom.mod
+#include 	initConv.mod
+#include		energyAtom.mod
 
-log		log.runGB
-run 		${RUNTIME}
+#log		log.runGB
+#run 		${RUNTIME}
 
 # GET THE FINAL ENERGY OF THE SYSTEM WITH A GRAIN BOUNDARY
 
-variable 	PEg equal $(v_varAvePe)
-variable	dPEg equal $(v_peSTD)
+#variable 	PEg equal $(v_varAvePe)
+#variable	dPEg equal $(v_peSTD)
 
-variable	Y equal ly
-variable	Z equal lz
-variable	Area equal $(2.0*v_Y*v_Z)
-variable 	dArea equal abs(${Area})*sqrt((${volumeSTD}^(1/3)/${Y})^2+(${volumeSTD}^(1/3)/${Z})^2) 
-include 	exitConv.mod
-include 	exitEnergyAtom.mod
+#variable	Y equal ly
+#variable	Z equal lz
+#variable	Area equal $(2.0*v_Y*v_Z)
+#variable 	dArea equal abs(${Area})*sqrt((${volumeSTD}^(1/3)/${Y})^2+(${volumeSTD}^(1/3)/${Z})^2) 
+#include 	exitConv.mod
+#include 	exitEnergyAtom.mod
 
 # RESTARTING THE SIMULATION TO RUN WITH NO TILT
 
@@ -156,6 +154,12 @@ velocity 	all create ${TEMPERATURE} ${RANDOM}
 
 # RUNNING CONVERGENCE CHECKING
 
+reset_timestep 0
+thermo 100
+thermo_style custom step etotal pe temp press vol
+
+
+dump		1 all xyz 1000 dump.xyz
 min_style	cg
 minimize	1e-15 1e-15 1000 10000
 

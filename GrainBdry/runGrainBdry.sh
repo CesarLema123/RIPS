@@ -2,6 +2,7 @@
 
 # Please make sure that you have a python3 command
 
-#export PYTHONPATH="$HOME/RIPS120819/RIPS/lib/PyScripts:$PYTHONPATH"
-export PYTHONPATH="$HOME/git-RIPS/RIPS/lib/PyScripts:$PYTHONPATH"
+# Appending the path to the python scripts to the PYTHONPATH variable
+export PYTHONPATH="$HOME/Research/git-RIPS/RIPS/lib/PyScripts:$PYTHONPATH" # Laptop
+
 python3 runGrainBdry.py
