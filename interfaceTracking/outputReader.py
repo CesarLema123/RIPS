@@ -2,20 +2,9 @@ import pandas as pd
 import numpy as np
 
 """
-    log files output global quantities
-    dump files output peratom quatities
+    This file contains a class that can be used to extract simulation data from log and dump type LAMMPS output files.
     
-    assumes run start at 0 timestep,
-    assumes first line is not a dataline
-    #can edit class to take in only filename and assume all log filenames begin with log.<filename>, so seperate filename by '.' and if first string is log then set output type as 'log'
-    
-    for dump:
-    assumes id is first row  # can fix this by looping through labels list and finding index and checking that index for atom ids
-    assumes ids are in same row order for in each timestep
-    assumes no clear way in datafile to differentiate run commans, in log data is grouped by run commands
-    
-    This file can be imported as a module
-
+    This file can be imported as a module.
 """
 
 
@@ -25,7 +14,8 @@ class OutputReader:
     The class is meant to be used as an object that extracts data from an associated (specificed as string representing the filename) LAMMPS output file. Class instances are meant to be initialized with a default existing LAMMPS dump or log type
     output file, file type, label(s) of the data outputted, and (specific) for log type files: a boolean for whether the extracted data collection should be compartmentalized by unique LAMMPS run commands. Once initialized, the class methods are
     meant to get data from the associated files as a Pandas datafile or Numpy ndarray and to update/change the LAMMPS output file associated with the class instance.
-    LAMMPS log type output files have global simulation quatities and dump type output files 
+    LAMMPS log type output files contain global simulation quatities and dump type output files contain per atom simulation quantities. Therefore methods for extracting data and format of the resulting data collectoins are different for each
+    output type. Some simulation assumtions are made including: simulation data outputted in files start a 0 timestep and is not reset to 0, output files follow specific formats, dataLables/data headers always come before simulation data, etc.
     
     Attributes:
         filename = A string representing the filename (with file extension) of a LAMMPS type output file.
@@ -34,7 +24,7 @@ class OutputReader:
         sepUniqueRun = For log type output files, a boolean representing whether the data collection object returned from the class methods ia compartmentalized by unique LAMMPS run commands. The default value is False, indicating that the data collection object returned from the class methods should be returned as one collection for the entire simulation.
         datafile = A Pandas DataFrame instance with the extracted data from the associated LAMMPS output file. This should not be directly accessed, instead the respective method should be called to get the DataFrame as the object may be set or reset to None through out the life of the class instace.
         ndArray = A Numpy ndarray instance with the extracted data from the associated LAMMPS output file. This should not be directly accessed, instead the respective method should be called to get the ndarray a the object may be set or reset to None through out the life of the class instace.
-    
+    o
     Methods:
         getDataFrame(): returns data specified by data labels attribute as a Pandas Dataframe from the associated LAMMPS output file.
         getNDArray(): returns data specified by set data labels attribute as a Numpy ndarray from the associated LAMMPS output file.
@@ -206,9 +196,8 @@ class OutputReader:
     def extractDumpData(self):
         """ Extract data under the specified outputLabels in the associated dump output file.
         
-        An implementation method used by the class to read data from the associated dump file. Extracts data using the dataLabels and sepUniqueRun attributes. Data is extracted by indexing all of the space seperated data values lines in the dump file associated with each atom id.
-        
-        This method should not be called by the user.
+        An implementation method used by the class to read data from the associated dump file. Extracts data using the dataLabels and sepUniqueRun attributes. Data is extracted by indexing all of the space seperated data values lines in the dump
+        file associated with each atom id. This method should not be called by the user. Assumptions made about the dump file are: tom ID's are in the same increasing order (starting from 1) for the data under each timestep.
         
         Return:
             Python list instance with each element as a Numpy ndarray with the data lines corresponding to one specific atoom ID.
