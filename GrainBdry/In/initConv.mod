@@ -56,7 +56,7 @@ thermo_style 	custom step temp v_varAveTemp v_tempSTD etotal v_varAveEnergy v_en
 # Setup MD
 
 timestep 	${TIMESTEP}
-fix 		1 all nph aniso ${PRESSURE} ${PRESSURE} $(v_TIMESTEP*1000)
+fix 		1 all nve
 fix 		2 all langevin ${TEMPERATURE} ${TEMPERATURE} $(v_TIMESTEP*100) ${RANDOM}
 
 
