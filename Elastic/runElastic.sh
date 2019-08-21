@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Please make sure that you have a python3 command
-
+# Add the location of the python scripts to PYTHONPATH (path/to/RIPS/lib/PyScripts)
 export PYTHONPATH="$HOME/Research/git-RIPS/RIPS/lib/PyScripts:$PYTHONPATH"
+
+#run the elastic python script
 python3 runElastic.py
