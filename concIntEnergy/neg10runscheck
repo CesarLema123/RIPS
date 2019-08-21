@@ -1,0 +1,121 @@
+---------------RUN 1--------------------
+alloy1 concentration is:  0.50732421875
+alloy2 concentration is:  0.4189453125
+
+The average energy for c1 is:  -15913.696735849056
+The average energy for c2 is:  -16229.770018867923
+The average energy for cmixed is:  -16072.369886792454
+The interfacial energy in eV is:  -0.01095918446906871
+
+---------------RUN 2--------------------
+alloy1 concentration is:  0.5068359375
+alloy2 concentration is:  0.39697265625
+
+The average energy for c1 is:  -15917.97958823529
+The average energy for c2 is:  -16309.132352941177
+The average energy for cmixed is:  -16114.237647058824
+The interfacial energy in eV is:  -0.011736853832487962
+
+---------------RUN 3--------------------
+alloy1 concentration is:  0.50537109375
+alloy2 concentration is:  0.40771484375
+
+The average energy for c1 is:  -15921.317431372549
+The average energy for c2 is:  -16269.840392156862
+The average energy for cmixed is:  -16095.29656862745
+The interfacial energy in eV is:  0.00486127991143678
+
+---------------RUN 4--------------------
+alloy1 concentration is:  0.48486328125
+alloy2 concentration is:  0.40234375
+
+The average energy for c1 is:  -15994.25776470588
+The average energy for c2 is:  -16289.418823529413
+The average energy for cmixed is:  -16142.196588235296
+The interfacial energy in eV is:  -0.006168975854856669
+
+---------------RUN 5--------------------
+alloy1 concentration is:  0.51025390625
+alloy2 concentration is:  0.40380859375
+
+The average energy for c1 is:  -15904.90482352941
+The average energy for c2 is:  -16282.875215686274
+The average energy for cmixed is:  -16094.142745098039
+The interfacial energy in eV is:  -0.004351334197591231
+
+---------------RUN 6--------------------
+alloy1 concentration is:  0.517578125
+alloy2 concentration is:  0.40283203125
+
+The average energy for c1 is:  -15876.127392156863
+The average energy for c2 is:  -16289.23931372549
+The average energy for cmixed is:  -16082.76505882353
+The interfacial energy in eV is:  -0.001406781720972313
+
+---------------RUN 7--------------------
+alloy1 concentration is:  0.4990234375
+alloy2 concentration is:  0.41357421875
+
+The average energy for c1 is:  -15997.736235294118
+The average energy for c2 is:  -16313.117235294116
+The average energy for cmixed is:  -16156.546215686276
+The interfacial energy in eV is:  -0.01927480014047776
+
+
+WE SWITCH TO TOTAL ENERGY HERE
+---------------RUN 8--------------------
+alloy1 concentration is:  0.505859375
+alloy2 concentration is:  0.3974609375
+
+The average energy for c1 is:  -15656.31031372549
+The average energy for c2 is:  -16041.172999999997
+The average energy for cmixed is:  -15849.145686274505
+The interfacial energy in eV is:  -0.006956429265877531
+
+---------------RUN 9--------------------
+alloy1 concentration is:  0.4970703125
+alloy2 concentration is:  0.3916015625
+
+The average energy for c1 is:  -15681.97156862745
+The average energy for c2 is:  -16062.570509803922
+The average energy for cmixed is:  -15873.008313725493
+The interfacial energy in eV is:  -0.012694120347922194
+
+---------------RUN 10--------------------
+alloy1 concentration is:  0.50244140625
+alloy2 concentration is:  0.4033203125
+
+The average energy for c1 is:  -15666.253215686274
+The average energy for c2 is:  -16020.050490196078
+The average energy for cmixed is:  -15842.727117647059
+The interfacial energy in eV is:  0.007312935504792761
+
+---------------RUN 11--------------------
+alloy1 concentration is:  0.51513671875
+alloy2 concentration is:  0.39697265625
+
+The average energy for c1 is:  -15623.777098039216
+The average energy for c2 is:  -16043.903999999999
+The average energy for cmixed is:  -15834.171509803924
+The interfacial energy in eV is:  -0.005698360611512233
+
+---------------RUN 12--------------------
+with 50000 runs instead of 10000
+alloy1 concentration is:  0.50732421875
+alloy2 concentration is:  0.39453125
+
+The average energy for c1 is:  -15651.829705179283
+The average energy for c2 is:  -16052.633904382468
+The average energy for cmixed is:  -15852.203003984063
+The interfacial energy in eV is:  0.0004958814878411116
+
+---------------RUN 13--------------------
+with 50000 runs instead of 10000
+alloy1 concentration is:  0.49169921875
+alloy2 concentration is:  0.39306640625
+
+The average energy for c1 is:  -15706.4773625498
+The average energy for c2 is:  -16061.095039840637
+The average energy for cmixed is:  -15884.014689243028
+The interfacial energy in eV is:  -0.003934022861727804
+
