@@ -75,19 +75,43 @@ class ParallelogramBox:
 
 
 class AtomDataFileGenerator:
-    """
+    """ A class for generating simulation datafiles for atom related parameters and positions to be read by the LAMMPS read_data command
         
-        
+    This class is meant to be importated and used as a object that generates LAMMPS simulation datafiles respective to the values of an instances attributes. Instance methods can be called to update the attribute values and generate new datafiles.
+    currently the class was implemented to work best for binary alloys.
+    
+    Attributes:
+        filename = A string representing the desired filename (without file extension) for the data file created.
+        latticeType = a string indicating the desired lattice type for the atoms in the data file created.
+        alloy = a string indicating the alloy in the data file created.
+        atomTypes = an int representing the number of elements in the alloy used in data file created.
+        alloyCompPercent = a float from 0 to 1 indicating the desired precentage of type 2 atoms in the data file created.
+        geometry = a string indicating the shape of the region the atom positions fill in the data file created.
+        systemSize = an int indicating the multiplication factor of the lattice constant along one side of a cubic region of atoms.
+        customLatticeConst = a float of lattice constant for a custom style alloy
+        xSize = an int indicating the multiplication factor of the lattice constant along the unit x vector of a paralleliped region the atom positions are created in for the data file created.
+        ySize = an int indicating the multiplication factor of the lattice constant along the unit y vector of a paralleliped region the atom positions are created in for the data file created.
+        zSize = an int indicating the multiplication factor of the lattice constant along the unit z vector of a paralleliped region the atom positions are created in for the data file created.
+    
+    Methods:
+        getActualCompPercent(): returns a calculated percentage of type 2 atoms in the data file created.
+        getNumAtoms(): return the number of atoms in the data file created.
+        setFilename(newFilename): change the desired filename for the data file created
+        setSystemSize(newSize=1, newX=1, newY=1 ,newZ=1 ): change the lengths of the respective regions the atoms positions created should fit in.
+        setCompPercent(newPercent): change the desired precentage of type 2 atoms in the data file created.
+        setGeometry(geometry,systemSize=1,xSize=1,ySize=1,zSize=1): change the shape of the region the atom positions are creatd in the data file.
+        generatePositionList(): implementation method for generation atom position with respects to the the value of an instances attributes.
+        generateAtomType(): implementation for generating the type of an atom to satisfy the alloyCompPercent attribute.
+        createDataFile(): method to create a LAMMPS data file.
     """
     
-    def __init__(self, filename='atom', latticeType='FCC', alloy='CuNi', atomTypes=2, alloyCompPercent = 0, geometry='cubic', systemSize=1, customLatticeConst=None, xSize=1, ySize=1, zSize=1):
+    def __init__(self, filename='atom', latticeType='FCC', alloy='CuNi', atomTypes=2 ,alloyCompPercent = 0, geometry='cubic', systemSize=1, customLatticeConst=None, xSize=1, ySize=1, zSize=1):
         # FILE SETUP
         self.filename = 'data.'+filename
         self.atomTypes = atomTypes
         self.alloy = alloy
         self.fileCreated = False
         
-
         # BOX INITIALIZATION
         if geometry == 'cubic':           # THIS MAKES MORE SENSE IF WE HAVE MULTIPLE systemBox TYPES
             self.systemBox = CubicBox(systemSize)
