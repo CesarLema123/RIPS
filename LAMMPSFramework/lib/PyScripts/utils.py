@@ -72,9 +72,9 @@ def readLog(fileName,runNum = 1):
 
 
 def fixAtomIdCuNi(readFile,writeFile):
-	""" 
-	Dump files output by lammps labesl the atoms by 1 and 2 and so this function rewrites the dump file so that it is called Cu and Ni
-	"""
+    """ 
+    Dump files output by lammps labesl the atoms by 1 and 2 and so this function rewrites the dump file so that it is called Cu and Ni
+    """
     r = open(readFile)
     w = open(writeFile,mode = "w")
     for line in r:

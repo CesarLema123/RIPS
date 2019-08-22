@@ -10,7 +10,7 @@ temperatures = [300,]
 concPercents = [50,]
 
 # Initialize the simulation with the variables above.
-sim = sims.bulkProp(lib = "$HOME/git-RIPS/RIPS/lib/PyScripts",lammps = "lmp_daily -in",runTimes = [1000,],alloy = "custom",latticeConst = latticeConst,numAtomTypes = 2,systemSizes = systemSizes,temperatures = temperatures,pressures = [],lengths = lengths,concPercents = concPercents,timeStep = 0.0001,simType = "nvt",fileName = "thermExp",potentialFile ="CuNi.eam.alloy",inTemplate = "in.NVT",copyDir = "./In",logFile="log.run")
+sim = sims.bulkProp(lib = "$HOME/git-RIPS/RIPS/lib/PyScripts",lammps = "lmp_mpi -in",runTimes = [1000,],alloy = "custom",latticeConst = latticeConst,numAtomTypes = 2,systemSizes = systemSizes,temperatures = temperatures,pressures = [],lengths = lengths,concPercents = concPercents,timeStep = 0.0001,simType = "nvt",fileName = "thermExp",potentialFile ="CuNi.eam.alloy",inTemplate = "in.NVT",copyDir = "./In",logFile="log.run")
 
 # Run the simulations
 sim.runBulkSims()
