@@ -1,0 +1,38 @@
+LAMMPS (18 Jun 2019)
+#lammps input file for setting up simulation
+# Execute actual simulation using Pylammps in python
+
+#-------------- INITIALIZE SIMULATION-----------------
+clear
+
+#log log.interfaceTracking
+
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+#atom_modify map array
+
+#----------------- CREATE ATOMS ------------------------
+read_data data.CuNi_50% group solAtoms
+  triclinic box = (0 0 0) to (54.45 32.67 32.67) with tilt (0 0 0)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  4860 atoms
+  read_data CPU = 0.005746 secs
+
+# --------- DEFINE INTERATOMIC POTENTIAL ---------
+
+pair_style eam/alloy
+pair_coeff * * CuNi.eam.alloy Ni Cu
+Reading potential file CuNi.eam.alloy with DATE: 2014-07-11
+neighbor .05 bin
+neigh_modify delay 10 check yes
+
+
+#---------------------- RUN ------------------------
+
+#COMPUTES (do in Pylammps)
+#MINIMIZATION/RUN (do in pylammps)
+
+log log.interfaceTracking
