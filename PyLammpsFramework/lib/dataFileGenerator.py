@@ -1,14 +1,18 @@
 import numpy as np
 
+"""
+    This file contains classes for generating Atom positions data files to be input in a LAMMPS read_data command.
+    
+    This file can be imported as a module inorder to initialize instances of the AtomDataFileGenerator class.
+"""
+
 AlloyLatticeConsts = {'CuNi': 3.63,'custom': 'UserDefined'}  # MAKE THIS MORE UPDATABLE W/OUT HAVING TO MANUALLY CHNAGE
 
-''' CLASS FOR ANOTHER LATTICE TYPE
-class BCC:
-    def __init__(self,alloy='CuNi'):
-        < TO DO >
-'''
 
 class FCC:
+    """
+        
+    """
     def __init__(self,alloy='CuNi',customLatticeConst=1):
         if alloy == 'custom':
             self.latticeParameter = customLatticeConst
@@ -24,8 +28,19 @@ class FCC:
     def getLatticeType(self):
         return 'FCC'
 
+""" CLASS FOR ANOTHER LATTICE TYPE
+    class BCC:
+        def __init__(self,alloy='CuNi'):
+            <TODO>
+"""
+
+
 # better code would make a geometry base class w/ getBoxType, resize, and getXSize methods for CubicBox,ParallelogramBox
 class CubicBox:
+    """
+        
+    """
+    
     def __init__(self,systemSize=1):
         self.systemSize = systemSize
 
@@ -37,6 +52,10 @@ class CubicBox:
             self.systemSize = systemSize
 
 class ParallelogramBox:
+    """
+        
+    """
+    
     def __init__(self, xSize = 1, ySize=1, zSize=1):
         self.xSize = xSize
         self.ySize = ySize
@@ -56,6 +75,11 @@ class ParallelogramBox:
 
 
 class AtomDataFileGenerator:
+    """
+        
+        
+    """
+    
     def __init__(self, filename='atom', latticeType='FCC', alloy='CuNi', atomTypes=2, alloyCompPercent = 0, geometry='cubic', systemSize=1, customLatticeConst=None, xSize=1, ySize=1, zSize=1):
         # FILE SETUP
         self.filename = 'data.'+filename

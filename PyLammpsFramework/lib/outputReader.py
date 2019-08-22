@@ -23,8 +23,8 @@ class OutputReader:
         dataLabels = A space seperated string inidicating the data labels/arguements in the LAMMPS output file. The input should match the entire data header in the output file.
         sepUniqueRun = For log type output files, a boolean representing whether the data collection object returned from the class methods ia compartmentalized by unique LAMMPS run commands. The default value is False, indicating that the data collection object returned from the class methods should be returned as one collection for the entire simulation.
         datafile = A Pandas DataFrame instance with the extracted data from the associated LAMMPS output file. This should not be directly accessed, instead the respective method should be called to get the DataFrame as the object may be set or reset to None through out the life of the class instace.
-        ndArray = A Numpy ndarray instance with the extracted data from the associated LAMMPS output file. This should not be directly accessed, instead the respective method should be called to get the ndarray a the object may be set or reset to None through out the life of the class instace.
-    o
+        ndArray = A Numpy ndarray instance with the extracted data from the associated LAMMPS output file. This should not be directly accessed, instead the respective method should be called to get the ndarray a the object may be set or reset to None through out the life of the class instance.
+        
     Methods:
         getDataFrame(): returns data specified by data labels attribute as a Pandas Dataframe from the associated LAMMPS output file.
         getNDArray(): returns data specified by set data labels attribute as a Numpy ndarray from the associated LAMMPS output file.
