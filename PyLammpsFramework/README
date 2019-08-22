@@ -1,2 +1,7 @@
-readme
+# PyLammps Framework
+
+A collection of scripts and classes for seting up LAMMPS Molecular Dynamic simulation and post processing of the simulation outputted data.
+
+KineticCoefficient
+  The scripts in this directory are used as an example to calculate solid-liquid interfacial velocitiy for a 
 
