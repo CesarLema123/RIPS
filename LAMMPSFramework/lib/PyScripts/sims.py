@@ -152,7 +152,8 @@ class simulation():
 class GrainBdry(simulation):
     """
     This class is meant to run simulations to get the energy due to an interface between two misaligned crystal structures for a range of temperatures and concentrations of CuNi
-    """
+    See the simulation object for list of initialization vaiables.
+   	"""
     def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [10,],alloy = "custom",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [14,],temperatures = [1,]+[x for x in range(100,2501,100)],pressures = [0,],lengths = [],concPercents = [x for x in range(0,101,10)],orientations = [[1,0,0,0,1,0,0,0,1],],timeStep = 0.0005,simType = "",fileName = "grainBdry",potentialFile = "CuNi.eam.alloy",inTemplate = "in.grainBdryTemplate",copyDir = "./In"):
         self.lib = lib 
         self.lammps = lammps
@@ -176,6 +177,10 @@ class GrainBdry(simulation):
         return 
 
     def setOrientations(self,orientations):
+        """
+        Change any of the lattice orientations in the simulations
+        input- list(list(int*9)) [[x1,x2,x3,y1,y2,y3,z1,z2,z3],...] directions to point the lattice vectors (must be orthogonal)
+        """
         self.orientations = orientations
         return
 
@@ -190,6 +195,9 @@ class GrainBdry(simulation):
         return "Out/RunTime" + str(int(time)) + "Size" + str(int(size)) + "Temp" + str(int(temp)) + "Conc" + str(int(concPercent)) + "Press" + str(int(press)) + "Orient" + orientStr
 
     def runGBSims(self):
+        """
+        Run simulations to get the interfacial energy due to a misorientation between grains
+        """
         cwd = os.getcwd()
         sh("mkdir Out")
         for time in self.runTimes:
@@ -220,7 +228,7 @@ class GrainBdry(simulation):
 class elastic(simulation):
     """
     This class is meant to run simulations to get the elastic constants over a range of temperatures and 
-    concentrations
+    concentrations. See simulation object for initialization parameters
     """
     def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [1,],alloy = "CuNi",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [14,],temperatures = [1,]+[x for x in range(100,2501,100)],pressures = [],lengths = [],concPercents = [x for x in range(0,101,10)],timeStep = 0.0005,simType = "",fileName = "elastic",potentialFile = "CuNi.eam.alloy",inTemplate = "in.elasticTemplate",copyDir = "./In",logFile = "log.run"):
         self.lib = lib 
@@ -254,6 +262,9 @@ class elastic(simulation):
 
 
     def runElasticSims(self):
+        """
+        Runs the simulations to get the elastic constants
+        """
         cwd = os.getcwd()
         sh("mkdir Out")
         for time in self.runTimes:
@@ -275,6 +286,10 @@ class elastic(simulation):
 
     
     def getElasticConsts(self):
+        """
+        This function reads a logFile for the results of the simulations. It is very specific to the current
+        print statements in in.elasticTemplate so please do not change those.
+        """
         f = open(self.logFile)
         searchline = "print \"Bulk Modulus = $(v_bulkmodulus) +/- $(v_dbulkmodulus) ${cunits}\"\n"
         N = -1
@@ -305,6 +320,10 @@ class elastic(simulation):
 
 
     def getElasticData(self):
+        """
+        This function uses getElasticConsts to read the elastic data from all of the directories created by the simulation run and makes a data set with 
+        all of the data.
+        """
         cwd = os.getcwd()
         header = ["Run Time (ps)","N Atoms","Temperature (K)","Concentraition of Cu","Bulk Mod (GPa)","Shear Mod Aniso (GPa)","Shear Mod Iso (GPa)","Poisson","Youngs","Lames","P-Wave","Bulk Mod Error","Shear Mod Aniso Error","Shear Mod Iso Error","Poisson Error","Youngs Error","Lames Error","P-Wave Error"]
         data = []
@@ -330,7 +349,7 @@ class elastic(simulation):
 
 class bulkProp(simulation):
     """
-    This class allows one to run simulations in NVT or NPT to compute the bulk properties of a material.
+    This class allows one to run simulations in NVT or NPT to compute the bulk properties of a material. See the simulation object for list of input parameters
     """
     def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [1,],alloy = "CuNi",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [14,],temperatures = [1,]+[x for x in range(100,2501,100)],pressures = [0,],lengths = [14*3.6,],concPercents = [x for x in range(0,101,10)],timeStep = 0.0005,simType = "",fileName = "bulk",potentialFile = "CuNi.eam.alloy",inTemplate = "in.elasticTemplate",copyDir = "./In",logFile = "log.run"):
         self.lib = lib 
@@ -647,10 +666,16 @@ class diffusion(simulation):
 		return 
 
 	def getWorkDir(self,time,size,temp,press,conc):
+        """
+        Get the name of the directory for the current simulation
+        """
 		runTime = str(int(time/self.timeStep))
 		return "Out/RunTime" + runTime + "Size" + str(int(size)) + "Temp" +  str(int(temp)) + "Conc" + str(int(conc)) + "Press" + str(int(press))
 
 	def runDiffSims(self):
+        """
+        Creates directories and runs the diffusion simulations
+        """
 		cwd = os.getcwd()
 		sh("mkdir Out")
 		for time in self.runTimes:
@@ -671,6 +696,9 @@ class diffusion(simulation):
 		return 
 
 	def getDiffCoeffs(self,saveFile = None):
+        """
+        Go into each of the directories for the simulations and calculate the diffusion coefficient from the results
+        """
 		header = ["Simulation Time","System Size","Temperature (K)","Pressure (bar)","Concentration","Diffusion Coeff (cm" + u"\u00B2" + "s" + u"\u207B\u00B9" + ")","Standard Error of Diff Coeff.","r value of linear fit"]
 		data = []
 		cwd = os.getcwd()
