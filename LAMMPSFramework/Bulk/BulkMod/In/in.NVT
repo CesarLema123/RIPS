@@ -17,12 +17,12 @@
 
 
 
-# -------------------- COMPUTE DIFF COEFF FOR CuNi AT A RANGE OF CONCENTRATIONS AND TEMPERATURES -------------------- 
+# -------------------- COMPUTE Bulk Modulus FOR CuNi AT A RANGE OF CONCENTRATIONS AND TEMPERATURES -------------------- 
 
 # nvt variables
 
+# This is the absolute error on the average temperature acceptable for convergence
 variable		absTempErr equal "0.5*(abs(5-0.01*v_TEMPERATURE)+5+0.01*v_TEMPERATURE)"
-
 
 # -------------------- INITIALIZING THE CONFIGURATION --------------------------
 include 		init.mod
@@ -42,9 +42,10 @@ include			potential.mod
 
 # ------------- SETTING THERMODYNAMIC BOUNDARY CONDITIONS ----------------
 
-
+# Give the atoms vlocities
 velocity 			all create ${TEMPERATURE} ${RANDOM}
 
+# This variable is the relation between the time step and the thermo damping parameter. 100 is recommended by LAMMPS
 variable 			kT equal 100
 
 
@@ -62,7 +63,7 @@ include 			convergenceNVT.mod
 
 # --------------- INITIALIZING AND RUNNING DATA COLLECTION RUN -----------------
 
-include 			initRunNVT.mod
+include 			initRunBulkMod.mod
 
 
 log					log.run

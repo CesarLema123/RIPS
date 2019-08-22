@@ -1,7 +1,8 @@
+# importing the necesary packages 
 import sims
-import csv
 
 
+# Specify thermodynamic boundary conditions for simulations to be run.
 temperatures = [300,]
 concPercents = [50,]
 systemSizes = [14,]

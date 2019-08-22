@@ -1,0 +1,50 @@
+# ALL RUNTIME,DATAFILE TIMESTEP
+# npt TEMPERATURE PRESSURE RANDOM
+variable RUNTIME equal 10000
+variable DATAFILE string data.test
+variable TIMESTEP equal 0.0001
+variable PRESSURE equal 0
+variable RANDOM equal 736846
+variable TEMPERATURE equal 300
+
+
+# -------------------- SPECIFY ANY VARIABLES WHICH MIGHT BE GIVEN FROM CMD LATER --------------------  
+
+variable 		kT equal 100
+variable 		kP equal 10000
+variable		dampT equal "v_TIMESTEP * v_kT"
+variable 		dampP equal "v_TIMESTEP * v_kP"
+variable		NEVERY equal 10
+variable		NREPEAT equal 100
+variable		NFREQ equal ${NEVERY}*${NREPEAT}
+variable		NTHERMO equal ${NFREQ} 
+variable		NCONV equal 5*${NFREQ}
+
+
+
+# npt variables
+# Dependent
+variable		volumeErr equal 0.05
+variable		energyErr equal 0.05
+# Independent
+variable		tempErr equal 0.01
+variable		absTempErr equal 0.5*(abs(1-${TEMPERATURE}*${tempErr})+(1+${TEMPERATURE}*${tempErr})) # max of 1 and tempErr * TEMPERATURE
+variable		pressErr equal 0.05
+variable		absPressErr equal 0.5*(abs(100-${PRESSURE}*${pressErr})+(100+${PRESSURE}*${pressErr})) # max of 100 and pressErr * PRESSURE
+
+# -------------------- INITIALIZING THE CONFIGURATION --------------------------
+include			init.mod
+
+# ------------ DEFINE INTERATOMIC POTENTIAL ----------------
+include			potentialNPT.mod
+
+velocity 		all create ${TEMPERATURE} ${RANDOM}
+# -------------- Run convergence -------------------
+include			convNPT.mod
+
+# --------------- Reset fixes and themo ------------------------
+include 		potentialNPT.mod	
+# ---------------- Do main run -----------------------------
+log			log.run
+run 			${RUNTIME}
+

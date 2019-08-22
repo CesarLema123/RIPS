@@ -1,0 +1,41 @@
+This file contains directories which hold the files need to compute bulk modulus,
+thermal expansion coeff., diffusion coeff., elastic properties, and orientation interfacial energy.
+It also contains the lib folder which stores python processing scripts as well as general versions of the scripts found
+in the other directories.
+
+In order to compute a parameter, 
+	- Enter the directory of interest
+	- Edit the run***.sh file so that the PYTHONPATH variable adds the correct directory for lib/PyScripts
+	- Edit the run***.py file to whichever thermodynamic variables you want to run simulations 
+	- Type ./run***.sh to run the script
+
+What is happening when you start a run,
+	- A directory called Out is made in the current directory
+	- For each set of input parameters, a folder like RunTime***Size***Temp***Conc***Length*** is created in Out
+	- All of the files in the directory specified by the copyDir variable in run***.py are copied into this directory (For the ones given it is called In)
+	- The thermodyanmic boundary conditions are written to the top of an input file called in.fileName where fileName is specified in run***.py 
+		and the file specified by inTemplate (run***.py) is written below
+	- This input file is then run in the new directory
+	- After the simulation is complete, another directory is made and another run starts
+
+Data collection functions which integrate with the structure are specified in the sims.py file
+Each property has its own python object associated with it which has a calculate function to get the desired property.
+The best way to call these functions is to do so in the run***.py below the run command so that all of the thermodynamic
+	boundary conditions are the same and error don't occur due to missing directories (though some error handling of this sort is included)
+GrainBdry is the only one which does not have a data collection function. The results of the simulation are written a file called log.results 
+	which can be found in the directory in which the simulation was run
+
+
+Directories:
+Bulk
+	BulkMod
+	HeatCapP
+	HeaTCapV
+	ThermExp
+Diffusion
+Elastic
+GrainBdry
+lib
+	PyScripts - Contains all of the python functions and scripts used throughout
+	InFiles - Generic input files which you might like to use and modify 
+	Potentials - A place to stor potential files

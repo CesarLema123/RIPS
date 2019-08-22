@@ -1,5 +1,9 @@
 
-# Setup output
+# Specify averaging variables - 
+# NEVERY: Use 1 out of every NEVERY value in averaging
+# NREPEAT: NREPEAT observation in computing the average
+# NFREQ: Output the average every NFREQ timesteps (must be an integer multiple of NEVER*NREPEAT)
+
 variable NEVERY equal 10
 variable NREPEAT equal 100
 variable NFREQ equal $(v_NEVERY*v_NREPEAT)
@@ -7,6 +11,8 @@ variable NFREQ equal $(v_NEVERY*v_NREPEAT)
 
 reset_timestep 0
 
+
+# Making variables of the thermodynamic values to be time-averaged.
 variable energy equal etotal
 variable energySq equal "etotal^2"
 
@@ -23,7 +29,7 @@ variable my_enthalpy equal enthalpy
 variable enthalpySq equal "enthalpy^2"
 
 
-# Computing Averages and Standard Deviations
+# Computing Averages and Standard Deviations of the thermodynamic variables listed above
 
 fix aveEnergy all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_energy mode scalar ave running
 fix aveEnergySq all ave/time ${NEVERY} ${NREPEAT} ${NFREQ} v_energySq mode scalar ave running
@@ -51,6 +57,7 @@ variable enthalpySTD equal "sqrt(abs(f_aveEnthalpySq - f_aveEnthalpy^2))"
 variable varAveEnthalpy equal f_aveEnthalpy
 
 
+# Set up the log output to display all of the values above.
 
 thermo		${NFREQ}
 thermo_style 	custom step temp v_varAveTemp v_tempSTD etotal v_varAveEnergy v_energySTD vol v_varAveVolume v_volumeSTD press v_varAvePress v_pressSTD enthalpy v_varAveEnthalpy v_enthalpySTD

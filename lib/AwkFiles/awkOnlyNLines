@@ -1,2 +1,0 @@
-BEGIN{N=2;read=N}
-{if (read==N){ print $0; read=1 } else { read++ }}

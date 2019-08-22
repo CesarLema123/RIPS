@@ -1,0 +1,42 @@
+# ALL RUNTIME,DATAFILE TIMESTEP
+# nvt LENGTH TEMPERATURE RANDOM
+variable RUNTIME equal 10000
+variable DATAFILE string data.test
+variable TIMESTEP equal 0.0001
+variable LENGTH equal 4*3.6
+variable RANDOM equal 478536
+variable TEMPERATURE equal 300
+
+# -------------------- SPECIFY ANY VARIABLES WHICH MIGHT BE GIVEN FROM CMD LATER --------------------  
+
+variable 		kT equal 100
+variable 		kP equal 10000
+variable		dampT equal "v_TIMESTEP * v_kT"
+variable 		dampP equal "v_TIMESTEP * v_kP"
+variable		NEVERY equal 10
+variable		NREPEAT equal 100
+variable		NFREQ equal ${NEVERY}*${NREPEAT}
+variable		NTHERMO equal ${NFREQ}
+variable		NCONV equal 5*${NFREQ}
+
+
+variable		energyErr equal 0.05
+variable		pressErr equal 0.05
+variable		tempErr equal 0.01
+
+
+# -------------------- INITIALIZING THE CONFIGURATION --------------------------
+include 		init.mod
+
+# ------------ DEFINE INTERATOMIC POTENTIAL ----------------
+include			potentialNVT.mod
+
+velocity		all create ${TEMPERATURE} ${RANDOM}
+# ------------- Run convergence check --------------------
+include 		convNVT.mod
+# ------------- Reset thermo output ------------------
+include 		potentialNVT.mod
+# ------------- DO main run -------------------------
+log			log.run
+run 			${RUNTIME}
+

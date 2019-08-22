@@ -1,6 +1,6 @@
 # Specify the initial inputs for the simulation
-
-variable 		TIMESTEP equal 0.0001
+# This is used in every lammps simulation
+# variable 		TIMESTEP equal 0.0001 Should be specified in the header of in.*
 
 
 clear

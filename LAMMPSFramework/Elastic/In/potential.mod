@@ -13,7 +13,9 @@ pair_coeff 	* * CuNi.eam.alloy Ni Cu
 neighbor	0.5 bin
 neigh_modify delay 10 check yes
 
-# Setup output
+# Setup output: 
+# Include are time averaged thermo-variables
+# and in particular, each of the elements of the pressure tensor
 
 variable energy equal etotal
 variable energySq equal "etotal^2"
