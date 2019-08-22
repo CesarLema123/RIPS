@@ -1,0 +1,4 @@
+The LAMMPSFramework directory contains all of the scripts which ran lammmps using the native lammps input scripting.
+It contains the scripts to calculate bulk and elastic properties, a diffusion coefficient, and an interfacial energy
+due to a misorientation between two region of fcc crystal. It contains a copy of some of the files in the lib directory.
+Most cases, if the file in lib exists in the LAMMPSFramework/lib directory, it is commented more there. 
