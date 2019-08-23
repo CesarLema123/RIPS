@@ -528,27 +528,19 @@ class bulkProp(simulation):
                     for var in volOrPress:
                         for concPercent in self.concPercents:
                             wd = self.getWorkDir(time,size,temp,var,concPercent)
-                            print("Changing to directory %s" %(wd))
                             os.chdir(wd)
                             try:
                                 if not header:
                                     data,header = utils.getThermoStats1(self.logFile) # Used for reading variables defined in initConv.mod
-                                    print("The header of the data is:")
-                                    print(header)
                                     #data,header = utils.getFinalStats(self.logFile) # Use this when out is whole sim time average
                                     df.append(data)
-                                    print("Line of Data")
-                                    print(data)
                                 else:
                                     data = utils.getThermoStats1(self.logFile)[0]
                                     #data = utils.getFinalStats(self.logFile)[0]
                                     df.append(data)
-                                    print("Line of Data")
-                                    print(data)
                             except:
                                 pass
                             os.chdir(cwd)
-                            print("Changing to directory %s" %(cwd)) 
         return pd.DataFrame(df,columns = header)
 
     def getForwDif(self,xString,yString):
