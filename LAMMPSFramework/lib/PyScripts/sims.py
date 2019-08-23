@@ -14,29 +14,28 @@ class simulation():
     """
     The simulation class is meant to hold all of the parameters one would vary across a lammps md simulation in the npt or nvt ensemble.
     It is also capable to running the simulations.
-
-	lib: string - absolute path the the lib directory
-	lammps: string - a string containing the system command to run lammps
-	runTimes: list[int] - a list of runTimes to use in the simulations
-	alloy: string - name of alloy to use preset lattice constants. Set to \"custom\" to specify your own lattice constant
-	latticeConst: float
-	numAtomTypes: int - number of atoms types in the simulation (only works with 1 or 2 right now)
-	systemSizes: list[int] - a list of ints giving the number of unit lattice cells to use on each side (10 -> 4000 atoms in fcc)
-	temperatures: list[float]
-	pressures: list[float]
-	lengths: list[float] - this is a list of lengths which correspond to the side of the cubic simulation cell (latConst*systemSize)
-	concPercents: int - the percentage of atom 1 (Cu for all but GB and Ni for GB)
-	timeStep: float
-	simType: "nvt" or "npt" for Bulk and Diffusion, "" for rest
-	fileName: string - The name of the data and in files to be written
-	potentialFile: string - name of the potentialFile to be used.
-	inTemplate: string -name of the in.*** lammps file to be copied during simulations
-	copyDir: string - name of the directory containing the files to be copied to run a simulation (see one of the main directories for examples)
-	logFile: string - name of the log file to read for data analysis
+    lib: string - absolute path the the lib directory
+    lammps: string - a string containing the system command to run lammps
+    runTimes: list[int] - a list of runTimes to use in the simulations
+    alloy: string - name of alloy to use preset lattice constants. Set to \"custom\" to specify your own lattice constant
+    latticeConst: float
+    numAtomTypes: int - number of atoms types in the simulation (only works with 1 or 2 right now)
+    systemSizes: list[int] - a list of ints giving the number of unit lattice cells to use on each side (10 -> 4000 atoms in fcc)
+    temperatures: list[float]
+    pressures: list[float]
+    lengths: list[float] - this is a list of lengths which correspond to the side of the cubic simulation cell (latConst*systemSize)
+    concPercents: int - the percentage of atom 1 (Cu for all but GB and Ni for GB)
+    timeStep: float
+    simType: "nvt" or "npt" for Bulk and Diffusion, "" for rest
+    fileName: string - The name of the data and in files to be written
+    potentialFile: string - name of the potentialFile to be used.
+    inTemplate: string -name of the in.*** lammps file to be copied during simulations
+    copyDir: string - name of the directory containing the files to be copied to run a simulation (see one of the main directories for examples)
+    logFile: string - name of the log file to read for data analysis
     """
     def __init__(self,lib = "$HOME/RIPS/lib/",lammps = "lmp_daily -in",runTimes = [100,],alloy = "CuNi",latticeConst = 3.6,latticeType = "FCC",numAtomTypes = 2,systemSizes = [6,],temperatures = [300,],pressures = [0,],lengths = [6*3.63,],concPercents = [30,],timeStep = 0.0001,simType = "npt",fileName = "CuNi",potentialFile = "CuNi.eam.alloy",inTemplate = "in.Template",copyDir = "./In",logFile = "log.run"):
         self.lib = lib 
-       	self.lammps = lammps
+        self.lammps = lammps
         self.runTimes = runTimes
         self.alloy = alloy
         self.latticeConst = latticeConst
