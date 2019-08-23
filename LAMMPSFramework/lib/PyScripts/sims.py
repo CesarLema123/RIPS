@@ -587,7 +587,7 @@ class bulkProp(simulation):
         dbM = np.zeros(N)# Uncertainty in bM
         dmidV = np.zeros(N) # Uncertainty in midV
         bM = [-V[i]*dPdV[i] for i in range(len(dPdV))]
-        dbM = [abs(bM[i])*np.sqrt((ddPdV[i]/dPdV[i])**2 + (dV[i]/V[i])**2)]
+        dbM = [abs(bM[i])*np.sqrt((ddPdV[i]/dPdV[i])**2 + (dV[i]/V[i])**2) for i in range(len(bM))]
         return bM,dbM,V[:-1],dV[:-1]
 
     def calcThermExp(self):
